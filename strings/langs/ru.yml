@@ -1,0 +1,453 @@
+start_1: Добро пожаловать!
+start_2: 'Привет {0}! 👋
+
+
+  Добро пожаловать в {1}.
+
+
+  Я готов помочь тебе. Используй кнопки ниже для начала.'
+language_changed: ✅ Язык изменён на русский!
+choose_language: '🌐 Пожалуйста, выберите язык:'
+back: « Назад
+language_btn: 🇷🇺 Русский
+menu_wallet: 💰 Кошелёк
+menu_market: 🛒 Магазин
+menu_apikey: 🔑 Мой API-ключ
+menu_profile: 👤 Профиль
+menu_updates: 📢 Новости
+menu_support: 💬 Поддержка
+menu_language: 🌐 Язык
+menu_back: 🔙 Назад
+welcome_caption: '👋 Welcome, {0}!
+
+
+  🦊 **TG-Fox API**
+
+  _Один из ведущих мировых маркетов с API-провайдером для создания вашего сайта или приложения._
+
+
+  💳 **Balance:** `${2}`
+
+  🏆 **Rank:** `{3}`
+
+
+  Use the buttons below to get started 👇'
+home_title: TG-Fox API
+home_welcome: 👋 С возвращением, {0}!
+home_tagline: 'Один из ведущих мировых маркетов с API-провайдером для создания вашего сайта или приложения.
+
+
+  Используйте кнопки ниже, чтобы начать 👇'
+btn_profile: 👤 Профиль
+btn_market: 🛒 Маркет
+btn_updates: 📢 Новости
+btn_support: 💬 Поддержка
+btn_language: 🌐 Язык
+btn_apikey: 🔑 API Ключ
+btn_deposit: 💰 Пополнить
+btn_withdraw: 💸 Вывести
+btn_refer_earn: 👥 Рефералы
+btn_transactions: 📜 Транзакции
+btn_back: ⬅️ Назад
+btn_back_profile: ⬅️ В профиль
+btn_back_market: ⬅️ В маркет
+btn_back_wallet: 💳 В кошелёк
+btn_regen_key: 🔄 Обновить ключ
+btn_deposits: 📥 Пополнения
+btn_withdrawals: 📤 Выводы
+btn_purchases: 🛒 Покупки
+btn_all_history: 📋 Вся история
+btn_manage_addr: 🔑 Адреса вывода
+profile_title: ВАШ ПРОФИЛЬ
+wallet_title_section: КОШЕЛЁК
+trade_title: СТАТИСТИКА ТОРГОВЛИ
+ref_title_section: РЕФЕРАЛЫ
+lbl_user_id: ID
+lbl_username: Юзернейм
+lbl_rank: Ранг
+lbl_member_since: Участник с
+lbl_balance: Баланс
+lbl_total_deposited: Всего пополнено
+lbl_total_spent: Всего потрачено
+lbl_total_earned: Всего заработано
+lbl_accounts_bought: Куплено аккаунтов
+lbl_accounts_sold: Продано аккаунтов
+lbl_ref_link: Ваша ссылка
+lbl_referred_users: Приглашено
+lbl_bonus_earned: Заработано бонусов
+lbl_no_username: Нет имени
+lbl_tap_to_copy: Нажмите для копирования
+refer_title: РЕФЕРАЛЫ
+refer_earn_line: 🎁 **Зарабатывайте за каждого приглашённого!**
+refer_link_lbl: 🔗 **Ваша реферальная ссылка:**
+refer_total_lbl: 👤 **Всего приглашено:** `{0}` пользователей
+refer_bonus_lbl: 💰 **Бонусов заработано:** `${0}`
+refer_tip: '📌 Делитесь ссылкой с друзьями. Вы получите
+
+  бонус, когда они сделают первый депозит!'
+tx_title: ИСТОРИЯ ТРАНЗАКЦИЙ
+tx_subtitle: 'Просмотрите свою финансовую историю.
+
+  Выберите категорию ниже 👇'
+tx_dep_title: ИСТОРИЯ ПОПОЛНЕНИЙ
+tx_wit_title: ИСТОРИЯ ВЫВОДОВ
+tx_pur_title: ИСТОРИЯ ПОКУПОК
+tx_all_title: ПОЛНАЯ ИСТОРИЯ
+tx_empty_dep: 📭 Пополнений ещё нет.
+tx_empty_wit: 📭 Выводов ещё нет.
+tx_empty_pur: 📭 Покупок ещё нет.
+tx_empty_all: 📭 Транзакций ещё нет.
+apikey_title: ВАШ API КЛЮЧ
+apikey_header_fmt: '📌 **Формат заголовка:**
+
+  `X-Api-Key: tg_{user_id}_{secret}`'
+apikey_docs: 📖 **Документация:** `/docs`
+apikey_warn: ⚠️ Никому не передавайте свой API ключ!
+apikey_regen_title: API КЛЮЧ ОБНОВЛЁН
+apikey_regen_warn: '⚠️ Старый ключ недействителен.
+
+  Обновите все интеграции.'
+apikey_regen_alert: ✅ Новый ключ создан!
+lang_title: ВЫБОР ЯЗЫКА
+lang_subtitle: 'Выберите предпочтительный язык:'
+lang_changed_alert: ✅ Язык обновлён!
+wallet_main_title: ВАШ КОШЕЛЁК
+wallet_addr_section: АДРЕСА ДЛЯ ВЫВОДА (USDT)
+wallet_addr_tip: 'Установите адреса для вывода средств.
+
+  Депозиты обрабатываются автоматически через OxaPay.'
+wallet_manage_title: АДРЕСА ДЛЯ ВЫВОДА
+wallet_manage_body: "Установите адреса кошелька USDT для вывода.\n\n\U0001F4CC **Поддерживаемые сети:**\n  • **TRC20** — USDT в сети TRON\n  • **BEP20** — USDT в сети Binance Smart Chain\n\n⚠️ Всегда проверяйте адрес.\nНеверный адрес = безвозвратная потеря средств!"
+trc_not_set: Не задан ⚠️
+bep_not_set: Не задан ⚠️
+btn_add_trc: ➕ Добавить TRC20
+btn_add_bep: ➕ Добавить BEP20
+wallet_deposit_title: ПОПОЛНЕНИЕ БАЛАНСА
+wallet_deposit_body: 'Отправьте сумму **(в USD)** для пополнения.
+
+
+  📌 Принимаемые криптовалюты:
+
+  BTC, ETH, USDT, LTC и другие
+
+
+  💵 **Минимальный депозит:** ${0}
+
+
+  Для отмены: /cancel'
+wallet_withdraw_title: ЗАПРОС НА ВЫВОД
+wallet_withdraw_body: '📌 **Доступные сети:** {0}
+
+
+  Отправьте сумму **(в USD)** для вывода.
+
+
+  💵 **Минимальная сумма:** ${1}
+
+
+  Для отмены: /cancel'
+wallet_no_addr_alert: '⚠️ Сначала укажите адрес вывода!
+
+  Кошелёк → Адреса вывода'
+wallet_select_network: ВЫБОР СЕТИ
+wallet_select_network_body: В какой сети вывести `${0} USDT`?
+wallet_confirm_title: ПОДТВЕРЖДЕНИЕ ВЫВОДА
+wallet_confirm_body: '💵 **Сумма:** `${0} USDT`
+
+  🌐 **Сеть:** `{1}`
+
+  📬 **Адрес:** `{2}`
+
+
+  Отправьте **YES** для подтверждения или /cancel для отмены.'
+wallet_confirm_word: ДА
+wallet_confirm_prompt: Напишите **YES** для подтверждения или /cancel для отмены.
+wallet_success_title: ВЫВОД ЗАПРОШЕН!
+wallet_success_body: '🆔 **ID:** `{0}`
+
+  💵 **Сумма:** `${1} USDT`
+
+  🌐 **Сеть:** `{2}`
+
+  📬 **Адрес:** `{3}`
+
+
+  Вывод ожидает одобрения администратора.
+
+  Средства будут отправлены после обработки.'
+wallet_payment_title: ССЫЛКА ДЛЯ ОПЛАТЫ ГОТОВА
+wallet_payment_body: '💵 **Сумма:** `${0} USD`
+
+  🔗 **Ссылка для оплаты:**
+
+  {1}
+
+
+  ✅ Баланс будет зачислен автоматически
+
+  после подтверждения OxaPay.
+
+
+  ⏱ **Истекает через:** 60 минут
+
+  💡 Оплата: BTC, ETH, USDT, LTC и др.'
+wallet_insufficient: '❌ **Недостаточно средств.**
+
+
+  Ваш баланс: `${0}`
+
+  Требуется: `${1}`'
+err_invalid_amount: '❌ Введите корректное число (например: `10` или `25.50`)'
+err_min_deposit: ❌ Минимальный депозит — ${0}. Попробуйте снова или /cancel.
+err_min_withdraw: ❌ Минимальная сумма — ${0}. Попробуйте снова или /cancel.
+err_payment_fail: '❌ Не удалось создать ссылку для оплаты.
+
+  Попробуйте позже или обратитесь в поддержку.'
+err_withdraw_fail: '❌ Не удалось создать запрос на вывод.
+
+  Ваш баланс возвращён. Попробуйте снова.'
+err_unexpected: ❌ Неожиданная ошибка. Попробуйте позже.
+err_session_exp: Сессия истекла. Начните заново.
+err_no_withdraw_addr: '⚠️ **Адрес вывода не указан.**
+
+
+  Используйте /setwallet для добавления TRC20 или BEP20 адреса.'
+err_invalid_trc20: ❌ Неверный адрес TRC20. Должен начинаться с `T` и содержать 34 символа.
+err_invalid_bep20: ❌ Неверный адрес BEP20. Должен начинаться с `0x` и содержать 42 символа.
+set_addr_title: УСТАНОВКА {0} АДРЕСА
+set_addr_body: 'Отправьте ваш USDT **{0}** адрес кошелька.
+
+
+  Пример: {1}
+
+
+  ⚠️ Только действительный USDT адрес!
+
+  Для отмены: /cancel'
+addr_saved_title: '{0} АДРЕС СОХРАНЁН!'
+addr_saved_body: Теперь вы можете выводить USDT на этот адрес.
+oxapay_not_configured: '❌ OxaPay не настроен.
+
+  Обратитесь к администратору.'
+cancel_success: ✅ Отменено. Используйте /start для возврата в меню.
+cancel_nothing: Нечего отменять.
+banned_msg: 🚫 Вы заблокированы в этом боте.
+generating_link: ⏳ Генерация ссылки для оплаты…
+processing_withdrawal: ⏳ Обработка вывода…
+dep_choose_title: ВЫБЕРИТЕ МЕТОД ПОПОЛНЕНИЯ
+dep_choose_body: 'Выберите предпочтительный способ оплаты:'
+dep_enter_amount: 'Введите сумму **(в USD)** для пополнения:'
+dep_type_cancel: Введите /cancel для отмены.
+dep_select_network: ВЫБЕРИТЕ СЕТЬ
+dep_which_network: Через какую сеть хотите пополнить?
+dep_ready_title: ПЛАТЁЖ ГОТОВ
+dep_send_title: ОТПРАВЬТЕ КРИПТУ
+dep_manual_title: РУЧНОЙ ПЕРЕВОД
+dep_created_title: ДЕПОЗИТ СОЗДАН
+dep_tap_pay: Нажмите **Оплатить** для перехода на страницу оплаты.
+dep_auto_credit: Баланс будет зачислен автоматически после подтверждения платежа.
+dep_addr_warn: Отправьте **точную сумму** через правильную сеть. Неверная сеть = потеря средств.
+dep_manual_note: Укажите ID депозита в комментарии к переводу, затем отправьте квитанцию в поддержку.
+dep_back_methods: ⬅️ Назад к методам
+lbl_min_deposit: Минимальный депозит
+lbl_method: Метод
+lbl_amount: Сумма
+lbl_currency: Валюта
+lbl_expires: Истекает через
+lbl_minutes: минут
+lbl_network: Сеть
+lbl_address: Отправить на адрес
+lbl_ref: ID депозита
+lbl_send_amount: Сумма отправки
+lbl_send_to: Кому
+lbl_holder: Имя получателя
+btn_pay_now: 💳 Оплатить →
+btn_contact_support: 💬 Связаться с поддержкой
+no_deposit_methods: ❌ Нет доступных методов пополнения. Обратитесь к администратору.
+method_unavailable: ❌ Этот метод недоступен.
+market_title: МАРКЕТ
+market_balance_lbl: Ваш баланс
+market_tagline: 'Buy and sell verified Telegram accounts
+
+  with instant OTP delivery.'
+btn_buy_account: 🟢 Купить аккаунт
+btn_sell_account: 🔴 Продать аккаунт
+buy_title: ПОКУПКА АККАУНТА
+buy_no_stock: 🚫 No countries available right now. Check back later!
+buy_page_info: Стр. {0}/{1} — {2} стран
+buy_hint: Нажмите страну, чтобы увидеть детали 👇
+buy_country_title: ПОКУПКА — {0}
+buy_country_lbl: Страна
+buy_phone_code_lbl: Код номера
+buy_price_lbl: Цена
+buy_stock_lbl: В наличии
+buy_delivery_lbl: Доставка
+buy_delivery_val: Мгновенный OTP
+buy_confirm_hint: Press Buy Now to proceed.
+btn_buy_now: ✅ Купить
+buy_no_channel: ⚠️ Канал сессий не настроен. Обратитесь к админу.
+buy_no_clean_account: ⚠️ Нет чистых аккаунтов. Попробуйте позже.
+buy_purchased_title: АККАУНТ КУПЛЕН!
+buy_paid_lbl: Оплачено
+buy_new_balance_lbl: Новый баланс
+buy_tfa_lbl: Пароль 2FA
+buy_otp_waiting_title: Ожидание OTP…
+buy_otp_step1: 1️⃣ Откройте Telegram и введите номер выше
+buy_otp_step2: 2️⃣ Request a login OTP
+buy_otp_step3: 3️⃣ Я пришлю OTP сюда автоматически
+buy_otp_timeout_note: '_Таймаут: 2 минуты_'
+btn_cancel_otp: ❌ Отменить ожидание
+buy_success_alert: ✅ Куплено! Ожидаем OTP…
+buy_error_generic: ❌ Что-то пошло не так. Попробуйте ещё раз.
+buy_view_all_title: Все доступные страны
+buy_view_all_empty: 🚫 Нет доступных стран.
+otp_received_title: OTP ПОЛУЧЕН! 🎉
+otp_phone_lbl: Телефон
+otp_code_lbl: OTP код
+otp_enter_instruction: Введите этот код в Telegram, чтобы завершить вход.
+otp_sensitive_note: _Не делитесь кодом ни с кем._
+otp_timeout_title: 'OTP: ТАЙМАУТ ⏰'
+otp_timeout_body: 'No OTP was received within 2 minutes. Please make sure you entered the phone correctly and requested a login OTP.
+
+
+  Contact support if you need help.'
+otp_cancelled_title: ОЖИДАНИЕ OTP ОТМЕНЕНО
+otp_cancelled_body: 'Ожидание OTP отменено.
+
+
+  ⚠️ Ваша покупка остаётся действительной.
+
+  Обратитесь в поддержку, если нужен код.'
+otp_error: OTP delivery failed for {0}. Please contact support.
+btn_back_to_market: ⬅️ Назад в маркет
+sell_title: ПРОДАЖА АККАУНТА
+sell_no_countries: 🚫 No countries accepting accounts right now. Check back later!
+sell_page_info: Стр. {0}/{1} — {2} стран
+sell_hint: Выберите страну, чтобы увидеть цену 👇
+sell_country_title: ПРОДАЖА — {0}
+sell_country_lbl: Страна
+sell_phone_code_lbl: Код номера
+sell_we_pay_lbl: Мы платим
+sell_requirements_title: ✅ Требования
+sell_req_prefix: • Phone number must start with {0}
+sell_req_valid_session: • Файл сессии должен быть валидным и авторизованным
+sell_req_no_spam: • Аккаунт не должен быть в спам-блоке, заморожен или заблокирован
+sell_req_no_dupe: • Не должен быть дубликатом в нашей системе
+sell_how_title: 📋 Как это работает
+sell_how_step1: 1️⃣ Upload your .session file
+sell_how_step2: 2️⃣ Мы автоматически проверяем аккаунт
+sell_how_step3: 3️⃣ Funds go to your Pending Balance
+sell_how_step4: 4️⃣ Админ проверяет → баланс становится доступным
+sell_review_time: '⏱ Ориентировочное время проверки: 1–24 часа'
+sell_why_rejected: '📌 Частые причины отказа: не тот номер, истёкшая сессия, спам/бан, дубликат.'
+btn_start_selling: 📤 Начать продажу
+btn_my_requests: 📋 Мои заявки
+sell_my_requests_title: МОИ ЗАЯВКИ НА ПРОДАЖУ
+sell_empty_requests: 📭 У вас пока нет заявок.
+sell_requests_footer: Last 10 requests shown
+sell_country_full: 🚫 Эта страна сейчас не принимает аккаунты.
+sell_init_title: ПРОДАЖА — {0}
+sell_you_receive_lbl: Вы получите
+sell_required_prefix_lbl: Требуемый префикс
+sell_step1_title: Шаг 1 — Сгенерируйте файл сессии
+sell_telethon_note: Run this snippet on your computer. It creates my_session.session.
+sell_step2_title: Шаг 2 — Загрузите файл сюда
+sell_step2_body: 📎 Send the .session file as a document in this chat.
+sell_waiting: ⏳ Ожидаем ваш файл…
+sell_type_cancel: Напишите /cancel для отмены.
+sell_cancelled_title: ПРОДАЖА ОТМЕНЕНА
+sell_cancelled_body: Аккаунт не отправлен. Можно начать заново в любое время.
+sell_rate_limit: ⏱ Лимит достигнут. Макс {0} заявок за {1}ч. Попробуйте позже.
+sell_max_pending: ⏳ У вас {0} заявок в ожидании. Дождитесь проверки.
+sell_wrong_file: ❌ Wrong file type. Please send a .session file.
+sell_file_too_large: ❌ File too large. A valid session file is under 100 KB.
+sell_validating_title: ПРОВЕРКА СЕССИИ
+sell_validating_body: ⏳ Подключение к Telegram… подождите до 30 секунд.
+sell_no_channel: ⚠️ Платформа не настроена. Обратитесь к админу.
+sell_download_error: ❌ Could not read your file. Please send the file again, or type /cancel.
+sell_success_title: СЕССИЯ ОТПРАВЛЕНА! ✅
+sell_request_id_lbl: ID заявки
+sell_pending_balance_lbl: Ожидающий баланс
+sell_status_lbl: Статус
+sell_awaiting_review: ⏳ Ожидает проверки
+sell_success_note: Your pending balance will be credited once admin approves your request.
+sell_spam_flag_note: _⚠️ This account has a temporary spam flag. Admin will make the final decision._
+sell_track_hint: Track your request in My Sell Requests.
+sell_error_generic: ❌ Неожиданная ошибка. Попробуйте ещё раз или напишите в поддержку.
+btn_sell_another: 💼 Продать ещё
+btn_prev: ⬅️ Пред.
+btn_next: След. ➡️
+btn_view_all: 📋 Все
+btn_cancel: ❌ Отмена
+err_country_not_found: ❌ Страна не найдена.
+sell_country_name_lbl: Страна
+buy_otp_requesting: 📨 Запрашиваем OTP из Telegram…
+buy_otp_prompt: '📱 **Телефон:** `{0}`
+
+
+  Мы отправили код на этот номер.
+
+  Введите OTP здесь:'
+buy_otp_cancel_hint: _(Введите /cancel, чтобы отменить и вернуть средства)_
+buy_otp_invalid: '❌ Неверный OTP. Проверьте и повторите:'
+buy_otp_expired: ❌ OTP истёк. Покупка возвращена — попробуйте снова.
+buy_tfa_prompt: '🔐 У аккаунта включена **2FA**.
+
+
+  Введите пароль 2FA:'
+buy_tfa_invalid: '❌ Неверный пароль 2FA. Повторите:'
+buy_flood_wait: ⏳ Лимит Telegram — подождите **{0} секунд** и отправьте OTP снова.
+buy_auth_checking: 🔍 Проверяем аккаунт…
+buy_complete_title: АККАУНТ ГОТОВ! 🎉
+buy_logout_instruction: Откройте **Настройки → Конфиденциальность → Активные сеансы** и завершите остальные сеансы.
+buy_auth_cancelled_title: ПОКУПКА ОТМЕНЕНА
+buy_auth_cancelled_body: Возврат `${0}` выполнен.
+buy_account_banned: ❌ Аккаунт забанен Telegram. Средства возвращены.
+buy_sessions_terminated: ✅ Все остальные сеансы завершены.
+buy_sessions_partial: ⚠️ Некоторые сеансы не удалось завершить — уберите вручную из Настроек.
+buy_auth_send_code_fail: '❌ Не удалось запросить OTP. Средства возвращены.
+
+
+  Попробуйте позже или напишите в поддержку.'
+buy_auth_cancel_hint_inline: Нажмите Отмена для возврата средств.
+buy_auth_already_active: ⏳ You already have a pending OTP flow. Send the OTP or type /cancel.
+btn_home_deposit: 💰 Пополнить
+btn_home_withdraw_money: 👤 Вывод
+btn_extra: ✨ Дополнительно
+btn_sessions_menu: 📦 Продажа / Покупка Сессий
+btn_sell_account_start: 🔴 Начать Продажу
+btn_my_sell_record: 📋 Мои Продажи
+btn_open: 📖 Открыть
+btn_search_country: 🔍 Поиск
+btn_search_again: 🔍 Искать Снова
+registration_disabled_msg: "🚫 **Регистрация новых пользователей временно отключена.**\n\nПожалуйста, попробуйте позже. Как только регистрация будет снова доступна, вы сможете запустить бота.\n\nЕсли у вас есть вопросы или проблемы, обратитесь в поддержку."
+
+feature_disabled_alert: "Эта функция сейчас отключена."
+maintenance_mode_msg: "🔧 **На платформе сейчас включено обслуживание.**\n\nНовые заказы, депозиты и выводы временно приостановлены. Попробуйте позже.\n\nЕсли у вас есть вопрос или проблема, свяжитесь с поддержкой."
+deposits_disabled_msg: "🚫 **Новые депозиты сейчас отключены.**\n\nПопробуйте позже. Когда депозиты снова будут включены, вы сможете создать новый депозит.\n\nЕсли у вас есть вопрос или проблема, свяжитесь с поддержкой."
+withdrawals_disabled_msg: "🚫 **Новые заявки на вывод сейчас отключены.**\n\nПопробуйте позже. Когда выводы снова будут включены, вы сможете создать заявку на вывод.\n\nЕсли у вас есть вопрос или проблема, свяжитесь с поддержкой."
+
+# -- Session selling gate (auto-added) --
+sell_disabled_msg: '🛑 **Продажа сессий сейчас отключена.**
+
+
+  Попробуйте позже. Если возникли вопросы — свяжитесь с поддержкой.'
+sell_rank_locked_msg: '🔒 **Продажа сессий ограничена по рангу.**
+
+
+  • Минимальный ранг: **{min_rank}** (требуется потратить `${required_spend:g}`)
+
+  • Ваш ранг: **{current_rank}** — вы потратили `${current_spend:g}`
+
+  • Потратьте ещё **`${needed_spend:g}`**, чтобы разблокировать
+
+
+  Если есть вопросы, свяжитесь с поддержкой.'
+
+btn_user_dashboard: "🎛 Панель пользователя"
+
+# -- Binance Pay (Auto) deposit (auto-added) --
+binance_pay_auto_label: "Binance Pay (Auto)"
+dep_dup_order_title: "ID заказа уже использован"
+dep_dup_order_body: "Этот ID заказа Binance уже использовался для другого депозита. Каждый ID можно использовать только один раз."
+dep_dup_order_hint: "Совершите новый платёж или свяжитесь с поддержкой."

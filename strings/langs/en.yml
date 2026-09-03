@@ -1,0 +1,484 @@
+start_1: Welcome!
+start_2: 'Hey {0}! 👋
+
+
+  Welcome to {1}.
+
+
+  I am ready to assist you. Use the buttons below to get started.'
+language_changed: ✅ Language changed to English!
+choose_language: '🌐 Please choose your language:'
+back: « Back
+language_btn: 🇬🇧 English
+menu_wallet: 💰 Wallet
+menu_market: 🛒 Market
+menu_apikey: 🔑 My API Key
+menu_profile: 👤 Profile
+menu_updates: 📢 Updates
+menu_support: 💬 Support
+menu_language: 🌐 Language
+menu_back: 🔙 Back
+welcome_caption: '👋 Welcome, {0}!
+
+
+  🦊 **TG-Fox API**
+
+  _One of the top global markets with API provider to make your own website or app._
+
+
+  💳 **Balance:** `${2}`
+
+  🏆 **Rank:** `{3}`
+
+
+  Use the buttons below to get started 👇'
+home_title: TG-Fox API
+home_welcome: 👋 Welcome back, {0}!
+home_tagline: 'One of the top global markets with API provider to make your own website or app.
+
+
+  Use the buttons below to get started 👇'
+btn_profile: 👤 Profile
+btn_market: 🛒 Market
+btn_updates: 📢 ʀᴇᴄᴇɴᴛ ꜱᴇʟʟꜱ
+btn_support: Countries we buy
+btn_language: 🌐 Language
+btn_apikey: 🔑 API Key
+btn_deposit: 💰 Deposit
+btn_withdraw: 💸 Withdraw
+btn_refer_earn: 👥 Refer & Earn
+btn_transactions: 📜 Transactions
+btn_back: ⬅️ Back
+btn_back_profile: ⬅️ Back to Profile
+btn_back_market: ⬅️ Back to Market
+btn_back_wallet: 💳 Back to Wallet
+btn_regen_key: 🔄 Regenerate Key
+btn_deposits: 📥 Deposits
+btn_withdrawals: 📤 Withdrawals
+btn_purchases: 🛒 Purchases
+btn_all_history: 📋 All History
+btn_manage_addr: 🔑 Manage Addresses
+profile_title: YOUR PROFILE
+wallet_title_section: WALLET
+trade_title: TRADE STATS
+ref_title_section: REFERRALS
+lbl_user_id: User ID
+lbl_username: Username
+lbl_rank: Rank
+lbl_member_since: Member Since
+lbl_balance: Balance
+lbl_total_deposited: Total Deposited
+lbl_total_spent: Total Spent
+lbl_total_earned: Total Earned
+lbl_accounts_bought: Accounts Bought
+lbl_accounts_sold: Accounts Sold
+lbl_ref_link: Your Link
+lbl_referred_users: Referred Users
+lbl_bonus_earned: Bonus Earned
+lbl_no_username: No Username
+lbl_tap_to_copy: Tap to copy
+refer_title: REFER & EARN
+refer_earn_line: 🎁 **Earn rewards for every friend you refer!**
+refer_link_lbl: 🔗 **Your referral link:**
+refer_total_lbl: 👤 **Total referred:** `{0}` users
+refer_bonus_lbl: 💰 **Bonus earned:** `${0}`
+refer_tip: '📌 Share your link with friends. You earn a
+
+  bonus when they make their first deposit!'
+tx_title: TRANSACTION HISTORY
+tx_subtitle: 'View your complete financial history.
+
+  Choose a category below 👇'
+tx_dep_title: DEPOSIT HISTORY
+tx_wit_title: WITHDRAWAL HISTORY
+tx_pur_title: PURCHASE HISTORY
+tx_all_title: COMPLETE HISTORY
+tx_empty_dep: 📭 No deposits yet.
+tx_empty_wit: 📭 No withdrawals yet.
+tx_empty_pur: 📭 No purchases yet.
+tx_empty_all: 📭 No transactions yet.
+apikey_title: YOUR API KEY
+apikey_header_fmt: '📌 **Header format:**
+
+  `X-Api-Key: tg_{user_id}_{secret}`'
+apikey_docs: 📖 **Docs:** `/docs`
+apikey_warn: ⚠️ Never share your API key with anyone!
+apikey_regen_title: API KEY REGENERATED
+apikey_regen_warn: '⚠️ Your old key is now invalid.
+
+  Update all your integrations.'
+apikey_regen_alert: ✅ New key generated!
+lang_title: SELECT LANGUAGE
+lang_subtitle: 'Choose your preferred language:'
+lang_changed_alert: ✅ Language updated!
+wallet_main_title: YOUR WALLET
+wallet_addr_section: WITHDRAWAL ADDRESSES (USDT)
+wallet_addr_tip: 'Set your addresses below to enable withdrawals.
+
+  Deposits are processed automatically via OxaPay.'
+wallet_manage_title: WITHDRAWAL ADDRESSES
+wallet_manage_body: "Set your USDT wallet addresses for withdrawals.\n\n\U0001F4CC **Supported networks:**\n  • **TRC20** — USDT on TRON network\n  • **BEP20** — USDT on Binance Smart Chain\n\n⚠️ Always double-check your address.\nWrong address = permanently lost funds!"
+trc_not_set: Not set ⚠️
+bep_not_set: Not set ⚠️
+btn_add_trc: ➕ Add TRC20 Address
+btn_add_bep: ➕ Add BEP20 Address
+wallet_deposit_title: DEPOSIT FUNDS
+wallet_deposit_body: 'Send me the amount **(in USD)** you want to deposit.
+
+
+  📌 Accepted cryptocurrencies:
+
+  BTC, ETH, USDT, LTC, and more
+
+
+  💵 **Minimum deposit:** ${0}
+
+
+  Type /cancel to abort.'
+wallet_withdraw_title: WITHDRAWAL REQUEST
+wallet_withdraw_body: '📌 **Available networks:** {0}
+
+
+  Send me the amount **(in USD)** to withdraw.
+
+
+  💵 **Minimum withdrawal:** ${1}
+
+
+  Type /cancel to abort.'
+wallet_no_addr_alert: '⚠️ Set a withdrawal address first!
+
+  Go to: Wallet → Manage Addresses'
+wallet_select_network: SELECT NETWORK
+wallet_select_network_body: Which network for `${0} USDT` withdrawal?
+wallet_confirm_title: CONFIRM WITHDRAWAL
+wallet_confirm_body: '💵 **Amount:** `${0} USDT`
+
+  🌐 **Network:** `{1}`
+
+  📬 **Address:** `{2}`
+
+
+  Reply **YES** to confirm or /cancel to abort.'
+wallet_confirm_word: 'YES'
+wallet_confirm_prompt: Type **YES** to confirm the withdrawal or /cancel to abort.
+wallet_success_title: WITHDRAWAL REQUESTED!
+wallet_success_body: '🆔 **ID:** `{0}`
+
+  💵 **Amount:** `${1} USDT`
+
+  🌐 **Network:** `{2}`
+
+  📬 **Address:** `{3}`
+
+
+  Your withdrawal is pending admin approval.
+
+  Funds will be sent to your wallet once processed.'
+wallet_payment_title: PAYMENT LINK READY
+wallet_payment_body: '💵 **Amount:** `${0} USD`
+
+  🔗 **Payment Link:**
+
+  {1}
+
+
+  ✅ Your balance will be credited automatically
+
+  once payment is confirmed by OxaPay.
+
+
+  ⏱ **Expires in:** 60 minutes
+
+  💡 Pay with BTC, ETH, USDT, LTC and more.'
+wallet_insufficient: '❌ **Insufficient balance.**
+
+
+  Your balance: `${0}`
+
+  Required: `${1}`'
+err_invalid_amount: ❌ Please enter a valid number (e.g. `10` or `25.50`)
+err_min_deposit: ❌ Minimum deposit is ${0}. Try again or /cancel.
+err_min_withdraw: ❌ Minimum withdrawal is ${0}. Try again or /cancel.
+err_payment_fail: '❌ Failed to generate payment link.
+
+  Please try again later or contact support.'
+err_withdraw_fail: '❌ Failed to create withdrawal record.
+
+  Your balance has been refunded. Please try again.'
+err_unexpected: ❌ Unexpected error. Please try again later.
+err_session_exp: Session expired. Start again.
+err_no_withdraw_addr: '⚠️ **No withdrawal address set.**
+
+
+  Use /setwallet to add your TRC20 or BEP20 USDT address first.'
+err_invalid_trc20: ❌ Invalid TRC20 address. Must start with `T` and be 34 characters.
+err_invalid_bep20: ❌ Invalid BEP20 address. Must start with `0x` and be 42 characters.
+set_addr_title: SET {0} ADDRESS
+set_addr_body: 'Send your USDT **{0}** wallet address.
+
+
+  Example: {1}
+
+
+  ⚠️ Only send a valid USDT address!
+
+  Type /cancel to abort.'
+addr_saved_title: '{0} ADDRESS SAVED!'
+addr_saved_body: You can now withdraw USDT to this address.
+oxapay_not_configured: '❌ OxaPay is not configured.
+
+  Contact admin to enable deposits.'
+cancel_success: ✅ Cancelled. Use /start to return to the main menu.
+cancel_nothing: Nothing to cancel.
+banned_msg: 🚫 You are banned from using this bot.
+generating_link: ⏳ Generating payment link…
+processing_withdrawal: ⏳ Processing withdrawal…
+dep_choose_title: SELECT DEPOSIT METHOD
+dep_choose_body: 'Choose your preferred payment method:'
+dep_enter_amount: 'Enter the amount **(in USD)** you want to deposit:'
+dep_type_cancel: Type /cancel to abort.
+dep_select_network: SELECT NETWORK
+dep_which_network: 'Select the network you want to deposit via:'
+dep_ready_title: PAYMENT READY
+dep_send_title: SEND CRYPTO
+dep_manual_title: MANUAL TRANSFER
+dep_created_title: DEPOSIT CREATED
+dep_tap_pay: Tap **Pay Now** to open the payment page.
+dep_auto_credit: Your balance is credited automatically once payment is confirmed.
+dep_addr_warn: Send the **exact amount** via the correct network. Wrong network = lost funds.
+dep_manual_note: Include the Deposit ID in your transfer note, then send your receipt to Support for confirmation.
+dep_back_methods: ⬅️ Back to Methods
+lbl_min_deposit: Minimum deposit
+lbl_method: Method
+lbl_amount: Amount
+lbl_currency: Currency
+lbl_expires: Expires in
+lbl_minutes: minutes
+lbl_network: Network
+lbl_address: Send to this address
+lbl_ref: Deposit ID
+lbl_send_amount: Send Amount
+lbl_send_to: Send to
+lbl_holder: Account Name
+btn_pay_now: 💳 Pay Now →
+btn_contact_support: 💬 Contact Support
+no_deposit_methods: ❌ No deposit methods are available. Contact admin.
+method_unavailable: ❌ This method is currently unavailable.
+market_title: MARKETPLACE
+market_balance_lbl: Your Balance
+market_tagline: 'Buy and sell verified Telegram accounts
+
+  with instant OTP delivery.
+
+
+  Choose an action below 👇'
+btn_buy_account: 🟢 Buy Account
+btn_sell_account: 🔴 Sell Account
+buy_title: BUY ACCOUNT
+buy_no_stock: '🚫 No countries available right now.
+
+  Check back later!'
+buy_page_info: Page {0}/{1} — {2} countries
+buy_hint: Click a country to view details 👇
+buy_country_title: BUY ACCOUNT — {0}
+buy_country_lbl: Country
+buy_phone_code_lbl: Phone Code
+buy_price_lbl: Price
+buy_stock_lbl: Available
+buy_delivery_lbl: Delivery
+buy_delivery_val: Instant OTP
+buy_confirm_hint: Press **Buy Now** to proceed. Your balance will be deducted upon confirmation.
+btn_buy_now: ✅ Buy Now
+buy_no_channel: ⚠️ Session channel not configured. Contact admin.
+buy_no_clean_account: ⚠️ No clean account available right now. Try again later.
+buy_purchased_title: ACCOUNT PURCHASED!
+buy_paid_lbl: Paid
+buy_new_balance_lbl: New Balance
+buy_tfa_lbl: 2FA Password
+buy_otp_waiting_title: Waiting for OTP…
+buy_otp_step1: 1️⃣ Open Telegram and enter the number above
+buy_otp_step2: 2️⃣ Request a login OTP (SMS or app notification)
+buy_otp_step3: 3️⃣ I will deliver the OTP here automatically
+buy_otp_timeout_note: '_Timeout: 2 minutes_'
+btn_cancel_otp: ❌ Cancel OTP Wait
+buy_success_alert: ✅ Purchased! Awaiting OTP…
+buy_error_generic: ❌ Something went wrong. Please try again.
+buy_view_all_title: All Available Countries
+buy_view_all_empty: 🚫 No countries available right now.
+otp_received_title: OTP RECEIVED! 🎉
+otp_phone_lbl: Phone
+otp_code_lbl: OTP Code
+otp_enter_instruction: Enter this code in Telegram to complete your login.
+otp_sensitive_note: _Keep this code private — do not share it with anyone._
+otp_timeout_title: OTP TIMEOUT ⏰
+otp_timeout_body: 'No OTP was received within 2 minutes.
+
+
+  **Please make sure you:**
+
+  • Entered the phone number correctly in Telegram
+
+  • Actually requested a login OTP
+
+
+  Contact support if you need help.'
+otp_cancelled_title: OTP WAIT CANCELLED
+otp_cancelled_body: 'The OTP waiting period has been cancelled.
+
+
+  ⚠️ Your account purchase is still valid.
+
+  Contact support if you need the OTP delivered.'
+otp_error: OTP delivery failed for `{0}`. Please contact support.
+btn_back_to_market: ⬅️ Back to Market
+sell_title: SELL ACCOUNT
+sell_no_countries: '🚫 No countries accepting accounts right now.
+
+  Check back later!'
+sell_page_info: Page {0}/{1} — {2} countries
+sell_hint: Select a country to view the sell price 👇
+sell_country_title: SELL ACCOUNT — {0}
+sell_country_lbl: Country
+sell_phone_code_lbl: Phone Code
+sell_we_pay_lbl: We Pay
+sell_requirements_title: ✅ Requirements
+sell_req_prefix: • Phone number must start with `{0}`
+sell_req_valid_session: • Session file must be valid and authorised
+sell_req_no_spam: • Account must not be spam-restricted, frozen, or banned
+sell_req_no_dupe: • Must not be a duplicate already in our system
+sell_how_title: 📋 How It Works
+sell_how_step1: 1️⃣ Upload your `.session` file
+sell_how_step2: 2️⃣ We validate the account automatically
+sell_how_step3: 3️⃣ Funds go to your **Pending Balance**
+sell_how_step4: 4️⃣ Admin reviews → balance becomes available
+sell_review_time: '⏱ Estimated review time: 1–24 hours'
+sell_why_rejected: '📌 Common rejection reasons: wrong country number, expired session, spam/banned account, duplicate.'
+btn_start_selling: 📤 Start Selling
+btn_my_requests: 📋 My Requests
+sell_my_requests_title: MY SELL REQUESTS
+sell_empty_requests: 📭 You have no sell requests yet.
+sell_requests_footer: _Last 10 requests shown_
+sell_country_full: 🚫 This country is not accepting accounts right now.
+sell_init_title: SELL ACCOUNT — {0}
+sell_you_receive_lbl: You will receive
+sell_required_prefix_lbl: Required phone prefix
+sell_step1_title: Step 1 — Generate your session file
+sell_telethon_note: Run this snippet on your computer. It creates `my_session.session`.
+sell_step2_title: Step 2 — Upload the file here
+sell_step2_body: 📎 Send the `.session` file as a **document** in this chat.
+sell_waiting: ⏳ Waiting for your file…
+sell_type_cancel: Type /cancel to abort.
+sell_cancelled_title: SELL CANCELLED
+sell_cancelled_body: No account was submitted. You can start again anytime.
+sell_rate_limit: ⏱ Rate limit reached. Max {0} submissions per {1}h. Try again later.
+sell_max_pending: ⏳ You have {0} pending requests. Wait for them to be reviewed before submitting more.
+sell_wrong_file: '❌ **Wrong file type.**
+
+
+  Please send a `.session` file (generated by Telethon).
+
+
+  _Still waiting for your file…_ Type /cancel to abort.'
+sell_file_too_large: '❌ **File too large.**
+
+
+  A valid Telethon session file is under 100 KB.
+
+  Make sure you are sending the correct file.
+
+
+  _Still waiting…_ Type /cancel to abort.'
+sell_validating_title: VALIDATING YOUR SESSION
+sell_validating_body: ⏳ Connecting to Telegram… Please wait up to 30 seconds.
+sell_no_channel: ⚠️ Platform is not fully configured. Please contact admin.
+sell_download_error: '❌ **Could not read your file.**
+
+
+  Please send the file again, or type /cancel.'
+sell_success_title: SESSION SUBMITTED! ✅
+sell_request_id_lbl: Request ID
+sell_pending_balance_lbl: Pending Balance
+sell_status_lbl: Status
+sell_awaiting_review: ⏳ Awaiting admin review
+sell_success_note: Your pending balance will be credited to your available balance once admin approves your request.
+sell_spam_flag_note: '_⚠️ Note: This account has a temporary spam flag. The admin will make the final decision._'
+sell_track_hint: Track your request in **My Sell Requests**.
+sell_error_generic: ❌ An unexpected error occurred. Please try again or contact support.
+btn_sell_another: 💼 Sell Another
+btn_prev: ⬅️ Prev
+btn_next: Next ➡️
+btn_view_all: 📋 View All
+btn_cancel: ❌ Cancel
+err_country_not_found: ❌ Country not found.
+sell_country_name_lbl: Country
+buy_otp_requesting: 📨 Requesting OTP from Telegram…
+buy_otp_prompt: '📱 **Phone:** `{0}`
+
+
+  We''ve sent a login code to this number.
+
+  Please enter the OTP code here:'
+buy_otp_cancel_hint: _(Type /cancel to abort and get a full refund)_
+buy_otp_invalid: '❌ Wrong OTP code. Please check and try again:'
+buy_otp_expired: ❌ OTP has expired. Your purchase has been refunded — please try buying again.
+buy_tfa_prompt: '🔐 This account has **2FA** enabled.
+
+
+  Please enter the 2FA password:'
+buy_tfa_invalid: '❌ Wrong 2FA password. Please try again:'
+buy_flood_wait: ⏳ Telegram rate limit — please wait **{0} seconds** then send the OTP again.
+buy_auth_checking: 🔍 Verifying account…
+buy_complete_title: ACCOUNT READY! 🎉
+buy_logout_instruction: Go to **Settings → Privacy & Security → Active Sessions** and log out all other sessions to fully secure this account.
+buy_auth_cancelled_title: PURCHASE CANCELLED
+buy_auth_cancelled_body: Your balance of `${0}` has been refunded.
+buy_account_banned: ❌ This account has been banned by Telegram. Your purchase has been refunded.
+buy_sessions_terminated: ✅ All other sessions have been terminated automatically.
+buy_sessions_partial: ⚠️ Some sessions could not be terminated — please remove them manually from Settings → Active Sessions.
+buy_auth_send_code_fail: '❌ Could not request OTP from Telegram. Your purchase has been refunded.
+
+
+  Please try again later or contact support.'
+buy_auth_cancel_hint_inline: Press Cancel to abort and get a refund.
+btn_home_deposit: 💰 Deposit
+btn_home_withdraw_money: 👤 Withdraw
+btn_extra: ✨ Extra
+btn_sessions_menu: 📦 Sell / Buy Sessions
+btn_sell_account_start: 🔴 Start Selling
+btn_my_sell_record: 📋 My Sell Record
+btn_open: 📖 Open
+btn_search_country: 🔍 Search
+btn_search_again: 🔍 Search Again
+registration_disabled_msg: "🚫 **New user registration is currently disabled.**\n\nPlease try again after some time. Whenever new user registration is re-enabled, you will be able to start the bot.\n\nIf you have any doubt or issue, please contact support."
+
+maintenance_mode_msg: "🔧 **Platform maintenance is currently active.**\n\nNew orders, deposits, and withdrawals are temporarily paused. Please try again later.\n\nIf you have any doubt or issue, please contact support."
+deposits_disabled_msg: "🚫 **New deposits are currently disabled.**\n\nPlease try again after some time. Whenever deposits are enabled again, you will be able to create a new deposit.\n\nIf you have any doubt or issue, please contact support."
+withdrawals_disabled_msg: "🚫 **New withdrawal requests are currently disabled.**\n\nPlease try again after some time. Whenever withdrawals are enabled again, you will be able to request a withdrawal.\n\nIf you have any doubt or issue, please contact support."
+
+feature_disabled_alert: "This feature is currently disabled."
+
+# -- Session selling gate (auto-added) --
+sell_disabled_msg: '🛑 **Session selling is currently disabled.**
+
+
+  Please try again later. If you have any doubt or issue, contact support.'
+sell_rank_locked_msg: '🔒 **Session selling is rank-locked.**
+
+
+  • Minimum rank: **{min_rank}** (needs `${required_spend:g}` spent)
+
+  • Your rank: **{current_rank}** — you''ve spent `${current_spend:g}`
+
+  • Spend **`${needed_spend:g}`** more to unlock
+
+
+  If you have any doubt or issue, contact support.'
+
+btn_user_dashboard: "🎛 User Dashboard"
+
+# -- Binance Pay (Auto) deposit (auto-added) --
+binance_pay_auto_label: "Binance Pay (Auto)"
+dep_dup_order_title: "Order ID Already Used"
+dep_dup_order_body: "This Binance Order ID has already been used for another deposit. Each Order ID can only be used once."
+dep_dup_order_hint: "Please make a new payment or contact support."

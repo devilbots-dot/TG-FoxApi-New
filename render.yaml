@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: tgfox-api
+    runtime: python
+    # Runs once per deploy. Render's native Python runtime includes Node and pnpm.
+    buildCommand: bash build_miniapp.sh && pip install -r requirements.txt
+    # The bot, FastAPI API, and compiled /app/ Mini App share this one process.
+    startCommand: python3 -m server
+    autoDeploy: true
+    envVars:
+      - key: WEBAPP_BASE_URL
+        sync: false

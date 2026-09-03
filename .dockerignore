@@ -1,0 +1,29 @@
+# Repository metadata and local tooling
+.git
+.gitignore
+.pytest_cache
+.ruff_cache
+__pycache__
+**/__pycache__
+*.py[cod]
+
+# Local secrets, logs and operator-only artifacts
+.env
+.env.*
+sample.env
+*.log
+log.txt
+TGFOX_DEEP_AUDIT_*.md
+
+# Frontend development/build files; the multi-stage builder creates dist/public.
+miniapp/node_modules
+miniapp/dist
+miniapp/.manus
+miniapp/.manus-logs
+miniapp/.project-config.json
+
+# Editor and platform files
+.DS_Store
+.idea
+.vscode
+coverage

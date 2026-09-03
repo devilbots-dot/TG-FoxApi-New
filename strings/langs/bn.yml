@@ -1,0 +1,450 @@
+start_1: স্বাগতম!
+start_2: 'হ্যালো {0}! 👋
+
+
+  {1}-এ আপনাকে স্বাগতম।
+
+
+  আমি আপনাকে সাহায্য করতে প্রস্তুত। শুরু করতে নিচের বোতামগুলি ব্যবহার করুন।'
+language_changed: ✅ ভাষা বাংলায় পরিবর্তন করা হয়েছে!
+choose_language: '🌐 অনুগ্রহ করে আপনার ভাষা বেছে নিন:'
+back: « পিছনে
+language_btn: 🇧🇩 বাংলা
+menu_wallet: 💰 ওয়ালেট
+menu_market: 🛒 মার্কেট
+menu_apikey: 🔑 আমার API কী
+menu_profile: 👤 প্রোফাইল
+menu_updates: 📢 আপডেট
+menu_support: 💬 সাপোর্ট
+menu_language: 🌐 ভাষা
+menu_back: 🔙 পিছনে
+welcome_caption: '👋 Welcome, {0}!
+
+
+  🦊 **TG-Fox API**
+
+  _নিজের ওয়েবসাইট বা অ্যাপ বানানোর জন্য API প্রদানকারী শীর্ষস্থানীয় গ্লোবাল মার্কেট।_
+
+
+  💳 **Balance:** `${2}`
+
+  🏆 **Rank:** `{3}`
+
+
+  Use the buttons below to get started 👇'
+home_title: TG-Fox API
+home_welcome: 👋 আবার স্বাগতম, {0}!
+home_tagline: 'নিজের ওয়েবসাইট বা অ্যাপ বানানোর জন্য API প্রদানকারী শীর্ষস্থানীয় গ্লোবাল মার্কেট।
+
+
+  শুরু করতে নিচের বোতামগুলি ব্যবহার করুন 👇'
+btn_profile: 👤 প্রোফাইল
+btn_market: 🛒 মার্কেট
+btn_updates: 📢 সাম্প্রতিক বিক্রি
+btn_support: দেশগুলো ক্রয় করে
+btn_language: 🌐 ভাষা
+btn_apikey: 🔑 API কী
+btn_deposit: 💰 জমা
+btn_withdraw: 💸 উত্তোলন
+btn_refer_earn: 👥 রেফার ও আয়
+btn_transactions: 📜 লেনদেন
+btn_back: ⬅️ পিছনে
+btn_back_profile: ⬅️ প্রোফাইলে ফিরুন
+btn_back_market: ⬅️ মার্কেটে ফিরুন
+btn_back_wallet: 💳 ওয়ালেটে ফিরুন
+btn_regen_key: 🔄 কী পুনরায় তৈরি করুন
+btn_deposits: 📥 জমা
+btn_withdrawals: 📤 উত্তোলন
+btn_purchases: 🛒 ক্রয়
+btn_all_history: 📋 সব ইতিহাস
+btn_manage_addr: 🔑 ঠিকানা পরিচালনা
+profile_title: আপনার প্রোফাইল
+wallet_title_section: ওয়ালেট
+trade_title: ট্রেড পরিসংখ্যান
+ref_title_section: রেফারেল
+lbl_user_id: ব্যবহারকারী ID
+lbl_username: ইউজারনেম
+lbl_rank: র‍্যাংক
+lbl_member_since: সদস্য হওয়ার তারিখ
+lbl_balance: ব্যালেন্স
+lbl_total_deposited: মোট জমা
+lbl_total_spent: মোট ব্যয়
+lbl_total_earned: মোট আয়
+lbl_accounts_bought: কেনা অ্যাকাউন্ট
+lbl_accounts_sold: বেচা অ্যাকাউন্ট
+lbl_ref_link: আপনার লিঙ্ক
+lbl_referred_users: রেফার করা ব্যবহারকারী
+lbl_bonus_earned: বোনাস আয়
+lbl_no_username: ইউজারনেম নেই
+lbl_tap_to_copy: কপি করতে ট্যাপ করুন
+refer_title: রেফার ও আয়
+refer_earn_line: 🎁 **প্রতিটি বন্ধু রেফার করলে পুরস্কার পান!**
+refer_link_lbl: 🔗 **আপনার রেফারেল লিঙ্ক:**
+refer_total_lbl: 👤 **মোট রেফার:** `{0}` জন
+refer_bonus_lbl: 💰 **বোনাস আয়:** `${0}`
+refer_tip: '📌 বন্ধুদের সাথে লিঙ্ক শেয়ার করুন। তারা প্রথম
+
+  জমা দিলে আপনি বোনাস পাবেন!'
+tx_title: লেনদেনের ইতিহাস
+tx_subtitle: 'আপনার সম্পূর্ণ আর্থিক ইতিহাস দেখুন।
+
+  নিচে একটি বিভাগ বেছে নিন 👇'
+tx_dep_title: জমার ইতিহাস
+tx_wit_title: উত্তোলনের ইতিহাস
+tx_pur_title: ক্রয়ের ইতিহাস
+tx_all_title: সম্পূর্ণ ইতিহাস
+tx_empty_dep: 📭 এখনো কোনো জমা নেই।
+tx_empty_wit: 📭 এখনো কোনো উত্তোলন নেই।
+tx_empty_pur: 📭 এখনো কোনো ক্রয় নেই।
+tx_empty_all: 📭 এখনো কোনো লেনদেন নেই।
+apikey_title: আপনার API কী
+apikey_header_fmt: '📌 **হেডার ফরম্যাট:**
+
+  `X-Api-Key: tg_{user_id}_{secret}`'
+apikey_docs: 📖 **ডকুমেন্টেশন:** `/docs`
+apikey_warn: ⚠️ কখনো আপনার API কী কারো সাথে শেয়ার করবেন না!
+apikey_regen_title: API কী পুনরায় তৈরি হয়েছে
+apikey_regen_warn: '⚠️ পুরানো কী এখন অকার্যকর।
+
+  আপনার সকল ইন্টিগ্রেশন আপডেট করুন।'
+apikey_regen_alert: ✅ নতুন কী তৈরি হয়েছে!
+lang_title: ভাষা নির্বাচন
+lang_subtitle: 'আপনার পছন্দের ভাষা বেছে নিন:'
+lang_changed_alert: ✅ ভাষা আপডেট হয়েছে!
+wallet_main_title: আপনার ওয়ালেট
+wallet_addr_section: উত্তোলনের ঠিকানা (USDT)
+wallet_addr_tip: 'উত্তোলন সক্ষম করতে আপনার ঠিকানা সেট করুন।
+
+  জমা OxaPay এর মাধ্যমে স্বয়ংক্রিয়ভাবে প্রক্রিয়া হয়।'
+wallet_manage_title: উত্তোলনের ঠিকানা
+wallet_manage_body: "উত্তোলনের জন্য USDT ওয়ালেট ঠিকানা সেট করুন।\n\n\U0001F4CC **সমর্থিত নেটওয়ার্ক:**\n  • **TRC20** — TRON নেটওয়ার্কে USDT\n  • **BEP20** — Binance Smart Chain এ USDT\n\n⚠️ সর্বদা আপনার ঠিকানা যাচাই করুন।\nভুল ঠিকানা = স্থায়ীভাবে অর্থ হারানো!"
+trc_not_set: সেট করা নেই ⚠️
+bep_not_set: সেট করা নেই ⚠️
+btn_add_trc: ➕ TRC20 ঠিকানা যোগ করুন
+btn_add_bep: ➕ BEP20 ঠিকানা যোগ করুন
+wallet_deposit_title: ফান্ড জমা
+wallet_deposit_body: 'আপনি যত পরিমাণ **(USD তে)** জমা দিতে চান পাঠান।
+
+
+  📌 গ্রহণযোগ্য ক্রিপ্টো:
+
+  BTC, ETH, USDT, LTC এবং আরো
+
+
+  💵 **সর্বনিম্ন জমা:** ${0}
+
+
+  বাতিল করতে: /cancel'
+wallet_withdraw_title: উত্তোলনের অনুরোধ
+wallet_withdraw_body: '📌 **উপলব্ধ নেটওয়ার্ক:** {0}
+
+
+  উত্তোলনের পরিমাণ **(USD তে)** পাঠান।
+
+
+  💵 **সর্বনিম্ন উত্তোলন:** ${1}
+
+
+  বাতিল করতে: /cancel'
+wallet_no_addr_alert: '⚠️ আগে উত্তোলনের ঠিকানা সেট করুন!
+
+  ওয়ালেট → ঠিকানা পরিচালনা'
+wallet_select_network: নেটওয়ার্ক নির্বাচন
+wallet_select_network_body: '`${0} USDT` উত্তোলনের জন্য কোন নেটওয়ার্ক?'
+wallet_confirm_title: উত্তোলন নিশ্চিত করুন
+wallet_confirm_body: '💵 **পরিমাণ:** `${0} USDT`
+
+  🌐 **নেটওয়ার্ক:** `{1}`
+
+  📬 **ঠিকানা:** `{2}`
+
+
+  নিশ্চিত করতে **YES** লিখুন বা বাতিল /cancel।'
+wallet_confirm_word: হ্যাঁ
+wallet_confirm_prompt: উত্তোলন নিশ্চিত করতে **YES** লিখুন বা /cancel।
+wallet_success_title: উত্তোলনের অনুরোধ হয়েছে!
+wallet_success_body: '🆔 **ID:** `{0}`
+
+  💵 **পরিমাণ:** `${1} USDT`
+
+  🌐 **নেটওয়ার্ক:** `{2}`
+
+  📬 **ঠিকানা:** `{3}`
+
+
+  আপনার উত্তোলন অ্যাডমিনের অনুমোদনের অপেক্ষায়।
+
+  প্রক্রিয়ার পরে আপনার ওয়ালেটে পাঠানো হবে।'
+wallet_payment_title: পেমেন্ট লিঙ্ক প্রস্তুত
+wallet_payment_body: '💵 **পরিমাণ:** `${0} USD`
+
+  🔗 **পেমেন্ট লিঙ্ক:**
+
+  {1}
+
+
+  ✅ OxaPay নিশ্চিত করার পরে আপনার ব্যালেন্স
+
+  স্বয়ংক্রিয়ভাবে যোগ হবে।
+
+
+  ⏱ **মেয়াদ:** ৬০ মিনিট
+
+  💡 BTC, ETH, USDT, LTC দিয়ে পেমেন্ট করুন।'
+wallet_insufficient: '❌ **অপর্যাপ্ত ব্যালেন্স।**
+
+
+  আপনার ব্যালেন্স: `${0}`
+
+  প্রয়োজন: `${1}`'
+err_invalid_amount: ❌ একটি বৈধ সংখ্যা লিখুন (যেমন `10` বা `25.50`)
+err_min_deposit: ❌ সর্বনিম্ন জমা ${0}। আবার চেষ্টা করুন বা /cancel।
+err_min_withdraw: ❌ সর্বনিম্ন উত্তোলন ${0}। আবার চেষ্টা করুন বা /cancel।
+err_payment_fail: '❌ পেমেন্ট লিঙ্ক তৈরি করা যায়নি।
+
+  পরে আবার চেষ্টা করুন বা সাপোর্টে যোগাযোগ করুন।'
+err_withdraw_fail: '❌ উত্তোলন রেকর্ড তৈরি করা যায়নি।
+
+  আপনার ব্যালেন্স ফেরত দেওয়া হয়েছে। আবার চেষ্টা করুন।'
+err_unexpected: ❌ অপ্রত্যাশিত ত্রুটি। পরে আবার চেষ্টা করুন।
+err_session_exp: সেশন মেয়াদ শেষ। আবার শুরু করুন।
+err_no_withdraw_addr: '⚠️ **উত্তোলনের ঠিকানা নেই।**
+
+
+  TRC20 বা BEP20 USDT ঠিকানা যোগ করতে /setwallet ব্যবহার করুন।'
+err_invalid_trc20: ❌ ভুল TRC20 ঠিকানা। এটি `T` দিয়ে শুরু হতে হবে এবং ৩৪ অক্ষরের হতে হবে।
+err_invalid_bep20: ❌ ভুল BEP20 ঠিকানা। এটি `0x` দিয়ে শুরু হতে হবে এবং ৪২ অক্ষরের হতে হবে।
+set_addr_title: '{0} ঠিকানা সেট করুন'
+set_addr_body: 'আপনার USDT **{0}** ওয়ালেট ঠিকানা পাঠান।
+
+
+  উদাহরণ: {1}
+
+
+  ⚠️ শুধুমাত্র বৈধ USDT ঠিকানা পাঠান!
+
+  বাতিল করতে: /cancel'
+addr_saved_title: '{0} ঠিকানা সংরক্ষিত হয়েছে!'
+addr_saved_body: আপনি এখন এই ঠিকানায় USDT উত্তোলন করতে পারবেন।
+oxapay_not_configured: '❌ OxaPay কনফিগার করা নেই।
+
+  জমা সক্ষম করতে অ্যাডমিনের সাথে যোগাযোগ করুন।'
+cancel_success: ✅ বাতিল হয়েছে। মূল মেনুতে ফিরতে /start ব্যবহার করুন।
+cancel_nothing: বাতিল করার কিছু নেই।
+banned_msg: 🚫 আপনি এই বটটি ব্যবহার করা থেকে নিষিদ্ধ।
+generating_link: ⏳ পেমেন্ট লিঙ্ক তৈরি হচ্ছে…
+processing_withdrawal: ⏳ উত্তোলন প্রক্রিয়া হচ্ছে…
+dep_choose_title: ডিপোজিট পদ্ধতি বেছে নিন
+dep_choose_body: 'আপনার পছন্দের পেমেন্ট পদ্ধতি বেছে নিন:'
+dep_enter_amount: 'আপনি যে পরিমাণ **(USD-এ)** ডিপোজিট করতে চান তা লিখুন:'
+dep_type_cancel: বাতিল করতে /cancel টাইপ করুন।
+dep_select_network: নেটওয়ার্ক বেছে নিন
+dep_which_network: কোন নেটওয়ার্কে ডিপোজিট করতে চান?
+dep_ready_title: পেমেন্ট প্রস্তুত
+dep_send_title: ক্রিপ্টো পাঠান
+dep_manual_title: ম্যানুয়াল ট্রান্সফার
+dep_created_title: ডিপোজিট তৈরি হয়েছে
+dep_tap_pay: পেমেন্ট পেজ খুলতে **এখনই পে করুন** চাপুন।
+dep_auto_credit: পেমেন্ট নিশ্চিত হলে আপনার ব্যালেন্স স্বয়ংক্রিয়ভাবে যোগ হবে।
+dep_addr_warn: সঠিক নেটওয়ার্কে **নির্ভুল পরিমাণ** পাঠান। ভুল নেটওয়ার্ক = অর্থ হারানো।
+dep_manual_note: ট্রান্সফার নোটে ডিপোজিট আইডি উল্লেখ করুন, তারপর রসিদ সাপোর্টে পাঠান।
+dep_back_methods: ⬅️ পদ্ধতিতে ফিরুন
+lbl_min_deposit: সর্বনিম্ন ডিপোজিট
+lbl_method: পদ্ধতি
+lbl_amount: পরিমাণ
+lbl_currency: মুদ্রা
+lbl_expires: মেয়াদ শেষ
+lbl_minutes: মিনিট
+lbl_network: নেটওয়ার্ক
+lbl_address: এই ঠিকানায় পাঠান
+lbl_ref: ডিপোজিট আইডি
+lbl_send_amount: পাঠানোর পরিমাণ
+lbl_send_to: প্রাপক
+lbl_holder: অ্যাকাউন্টের নাম
+btn_pay_now: 💳 এখনই পে করুন →
+btn_contact_support: 💬 সাপোর্টে যোগাযোগ করুন
+no_deposit_methods: ❌ কোনো ডিপোজিট পদ্ধতি উপলব্ধ নেই। অ্যাডমিনের সাথে যোগাযোগ করুন।
+method_unavailable: ❌ এই পদ্ধতি বর্তমানে উপলব্ধ নেই।
+market_title: মার্কেটপ্লেস
+market_balance_lbl: আপনার ব্যালেন্স
+market_tagline: 'Buy and sell verified Telegram accounts
+
+  with instant OTP delivery.'
+btn_buy_account: 🟢 অ্যাকাউন্ট কিনুন
+btn_sell_account: 🔴 অ্যাকাউন্ট বিক্রি
+buy_title: অ্যাকাউন্ট কিনুন
+buy_no_stock: 🚫 No countries available right now. Check back later!
+buy_page_info: পৃষ্ঠা {0}/{1} — {2} টি দেশ
+buy_hint: বিস্তারিত দেখতে দেশ ক্লিক করুন 👇
+buy_country_title: কিনুন — {0}
+buy_country_lbl: দেশ
+buy_phone_code_lbl: ফোন কোড
+buy_price_lbl: দাম
+buy_stock_lbl: মজুত
+buy_delivery_lbl: ডেলিভারি
+buy_delivery_val: তৎক্ষণাৎ OTP
+buy_confirm_hint: Press Buy Now to proceed.
+btn_buy_now: ✅ এখনই কিনুন
+buy_no_channel: ⚠️ সেশন চ্যানেল সেট নেই। অ্যাডমিনকে জানান।
+buy_no_clean_account: ⚠️ এখন কোনো ক্লিন অ্যাকাউন্ট নেই।
+buy_purchased_title: অ্যাকাউন্ট কেনা হয়েছে!
+buy_paid_lbl: পরিশোধিত
+buy_new_balance_lbl: নতুন ব্যালেন্স
+buy_tfa_lbl: 2FA পাসওয়ার্ড
+buy_otp_waiting_title: OTP অপেক্ষায়…
+buy_otp_step1: 1️⃣ Telegram খুলুন এবং উপরের নম্বর দিন
+buy_otp_step2: 2️⃣ Request a login OTP
+buy_otp_step3: 3️⃣ OTP এখানে স্বয়ংক্রিয় আসবে
+buy_otp_timeout_note: '_সময়সীমা: 2 মিনিট_'
+btn_cancel_otp: ❌ OTP বাতিল
+buy_success_alert: ✅ কেনা হয়েছে! OTP অপেক্ষায়…
+buy_error_generic: ❌ কিছু ভুল হয়েছে। আবার চেষ্টা করুন।
+buy_view_all_title: সব উপলব্ধ দেশ
+buy_view_all_empty: 🚫 এখন কোনো দেশ নেই।
+otp_received_title: OTP এসেছে! 🎉
+otp_phone_lbl: ফোন
+otp_code_lbl: OTP কোড
+otp_enter_instruction: লগইন সম্পূর্ণ করতে এই কোডটি Telegram এ দিন।
+otp_sensitive_note: _কোডটি কারো সাথে শেয়ার করবেন না।_
+otp_timeout_title: OTP সময়শেষ ⏰
+otp_timeout_body: 'No OTP was received within 2 minutes. Please make sure you entered the phone correctly and requested a login OTP.
+
+
+  Contact support if you need help.'
+otp_cancelled_title: OTP অপেক্ষা বাতিল
+otp_cancelled_body: 'OTP অপেক্ষা বাতিল হয়েছে।
+
+
+  ⚠️ কেনাকাটা এখনো বৈধ।
+
+  দরকার হলে সাপোর্টে যোগাযোগ করুন।'
+otp_error: OTP delivery failed for {0}. Please contact support.
+btn_back_to_market: ⬅️ মার্কেটে ফিরুন
+sell_title: অ্যাকাউন্ট বিক্রি
+sell_no_countries: 🚫 No countries accepting accounts right now. Check back later!
+sell_page_info: পৃষ্ঠা {0}/{1} — {2} টি দেশ
+sell_hint: দাম দেখতে দেশ বাছুন 👇
+sell_country_title: বিক্রি — {0}
+sell_country_lbl: দেশ
+sell_phone_code_lbl: ফোন কোড
+sell_we_pay_lbl: আমরা দিই
+sell_requirements_title: ✅ শর্ত
+sell_req_prefix: • Phone number must start with {0}
+sell_req_valid_session: • সেশন ফাইল বৈধ এবং অনুমোদিত হতে হবে
+sell_req_no_spam: • অ্যাকাউন্ট স্প্যাম/ফ্রোজেন/ব্যান নয়
+sell_req_no_dupe: • সিস্টেমে ডুপ্লিকেট নয়
+sell_how_title: 📋 কিভাবে কাজ করে
+sell_how_step1: 1️⃣ Upload your .session file
+sell_how_step2: 2️⃣ আমরা স্বয়ংক্রিয়ভাবে যাচাই করি
+sell_how_step3: 3️⃣ Funds go to your Pending Balance
+sell_how_step4: 4️⃣ অ্যাডমিন পর্যালোচনা → ব্যালেন্স উপলব্ধ
+sell_review_time: '⏱ পর্যালোচনা: 1–24 ঘণ্টা'
+sell_why_rejected: '📌 প্রত্যাখ্যান কারণ: ভুল নম্বর, সেশন এক্সপায়ার্ড, স্প্যাম/ব্যান, ডুপ্লিকেট।'
+btn_start_selling: 📤 বিক্রি শুরু
+btn_my_requests: 📋 আমার অনুরোধ
+sell_my_requests_title: আমার বিক্রি অনুরোধ
+sell_empty_requests: 📭 কোনো অনুরোধ নেই।
+sell_requests_footer: Last 10 requests shown
+sell_country_full: 🚫 এই দেশ এখন গ্রহণ করছে না।
+sell_init_title: বিক্রি — {0}
+sell_you_receive_lbl: আপনি পাবেন
+sell_required_prefix_lbl: প্রয়োজনীয় প্রিফিক্স
+sell_step1_title: ধাপ 1 — সেশন ফাইল তৈরি করুন
+sell_telethon_note: Run this snippet on your computer. It creates my_session.session.
+sell_step2_title: ধাপ 2 — ফাইল আপলোড করুন
+sell_step2_body: 📎 Send the .session file as a document in this chat.
+sell_waiting: ⏳ আপনার ফাইলের অপেক্ষা…
+sell_type_cancel: বাতিল করতে /cancel।
+sell_cancelled_title: বিক্রি বাতিল
+sell_cancelled_body: কোনো অ্যাকাউন্ট জমা হয়নি।
+sell_rate_limit: ⏱ সীমা পূর্ণ। প্রতি {1} ঘণ্টায় সর্বোচ্চ {0}।
+sell_max_pending: ⏳ {0} টি পেন্ডিং আছে।
+sell_wrong_file: ❌ Wrong file type. Please send a .session file.
+sell_file_too_large: ❌ File too large. A valid session file is under 100 KB.
+sell_validating_title: সেশন যাচাই
+sell_validating_body: ⏳ Telegram সংযোগ… 30 সেকেন্ড পর্যন্ত।
+sell_no_channel: ⚠️ প্ল্যাটফর্ম কনফিগার করা নেই।
+sell_download_error: ❌ Could not read your file. Please send the file again, or type /cancel.
+sell_success_title: সেশন জমা হয়েছে! ✅
+sell_request_id_lbl: অনুরোধ ID
+sell_pending_balance_lbl: পেন্ডিং ব্যালেন্স
+sell_status_lbl: স্ট্যাটাস
+sell_awaiting_review: ⏳ পর্যালোচনার অপেক্ষায়
+sell_success_note: Your pending balance will be credited once admin approves your request.
+sell_spam_flag_note: _⚠️ This account has a temporary spam flag. Admin will make the final decision._
+sell_track_hint: Track your request in My Sell Requests.
+sell_error_generic: ❌ অপ্রত্যাশিত ত্রুটি।
+btn_sell_another: 💼 আরেকটি বিক্রি
+btn_prev: ⬅️ পূর্ববর্তী
+btn_next: পরবর্তী ➡️
+btn_view_all: 📋 সব দেখুন
+btn_cancel: ❌ বাতিল
+err_country_not_found: ❌ দেশ পাওয়া যায়নি।
+sell_country_name_lbl: দেশ
+buy_otp_requesting: 📨 Telegram থেকে OTP অনুরোধ…
+buy_otp_prompt: '📱 **ফোন:** `{0}`
+
+
+  এই নম্বরে লগইন কোড পাঠানো হয়েছে।
+
+  OTP এখানে দিন:'
+buy_otp_cancel_hint: _(বাতিল ও ফেরতের জন্য /cancel)_
+buy_otp_invalid: '❌ ভুল OTP। আবার চেষ্টা করুন:'
+buy_otp_expired: ❌ OTP এক্সপায়ার্ড। ফেরত দেওয়া হয়েছে।
+buy_tfa_prompt: '🔐 এই অ্যাকাউন্টে **2FA** সক্রিয়।
+
+
+  2FA পাসওয়ার্ড দিন:'
+buy_tfa_invalid: ❌ ভুল 2FA পাসওয়ার্ড।
+buy_flood_wait: ⏳ Telegram সীমা — **{0} সেকেন্ড** অপেক্ষা করুন।
+buy_auth_checking: 🔍 অ্যাকাউন্ট যাচাই…
+buy_complete_title: অ্যাকাউন্ট প্রস্তুত! 🎉
+buy_logout_instruction: '**সেটিংস → গোপনীয়তা → সক্রিয় সেশন**-এ যান ও অন্যগুলো লগআউট করুন।'
+buy_auth_cancelled_title: কেনাকাটা বাতিল
+buy_auth_cancelled_body: '`${0}` ব্যালেন্স ফেরত।'
+buy_account_banned: ❌ Telegram এই অ্যাকাউন্ট ব্যান করেছে। ফেরত।
+buy_sessions_terminated: ✅ অন্যান্য সব সেশন বন্ধ।
+buy_sessions_partial: ⚠️ কিছু সেশন বন্ধ হয়নি — ম্যানুয়ালি সরান।
+buy_auth_send_code_fail: ❌ OTP নেওয়া গেল না। ফেরত।
+buy_auth_cancel_hint_inline: ফেরতের জন্য বাতিল চাপুন।
+buy_auth_already_active: ⏳ You already have a pending OTP flow. Send the OTP or type /cancel.
+btn_home_deposit: 💰 জমা
+btn_home_withdraw_money: 👤 উত্তোলন
+btn_extra: ✨ অতিরিক্ত
+btn_sessions_menu: 📦 সেশন কিনুন / বিক্রি করুন
+btn_sell_account_start: 🔴 বিক্রি শুরু করুন
+btn_my_sell_record: 📋 আমার বিক্রয় রেকর্ড
+btn_open: 📖 খুলুন
+btn_search_country: 🔍 অনুসন্ধান
+btn_search_again: 🔍 আবার অনুসন্ধান
+registration_disabled_msg: "🚫 **নতুন ব্যবহারকারী নিবন্ধন বর্তমানে বন্ধ রয়েছে।**\n\nঅনুগ্রহ করে কিছু সময় পরে আবার চেষ্টা করুন। যখনই নতুন নিবন্ধন পুনরায় চালু হবে, আপনি বট শুরু করতে পারবেন।\n\nকোনো সমস্যা বা প্রশ্ন থাকলে দয়া করে সাপোর্টে যোগাযোগ করুন।"
+
+feature_disabled_alert: "এই ফিচারটি বর্তমানে বন্ধ আছে।"
+maintenance_mode_msg: "🔧 **প্ল্যাটফর্মে বর্তমানে মেইনটেন্যান্স চলছে।**\n\nনতুন অর্ডার, ডিপোজিট এবং উইথড্র সাময়িকভাবে বন্ধ আছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।\n\nকোনো সন্দেহ বা সমস্যা থাকলে সাপোর্টে যোগাযোগ করুন।"
+deposits_disabled_msg: "🚫 **নতুন ডিপোজিট বর্তমানে বন্ধ আছে।**\n\nকিছুক্ষণ পরে আবার চেষ্টা করুন। ডিপোজিট আবার চালু হলে আপনি নতুন ডিপোজিট করতে পারবেন।\n\nকোনো সন্দেহ বা সমস্যা থাকলে সাপোর্টে যোগাযোগ করুন।"
+withdrawals_disabled_msg: "🚫 **নতুন উইথড্র রিকোয়েস্ট বর্তমানে বন্ধ আছে।**\n\nকিছুক্ষণ পরে আবার চেষ্টা করুন। উইথড্র আবার চালু হলে আপনি উইথড্র রিকোয়েস্ট করতে পারবেন।\n\nকোনো সন্দেহ বা সমস্যা থাকলে সাপোর্টে যোগাযোগ করুন।"
+
+# -- Session selling gate (auto-added) --
+sell_disabled_msg: '🛑 **সেশন বিক্রি বর্তমানে বন্ধ আছে।**
+
+
+  দয়া করে পরে আবার চেষ্টা করুন। কোনো সমস্যা হলে সাপোর্টে যোগাযোগ করুন।'
+sell_rank_locked_msg: '🔒 **সেশন বিক্রি র‍্যাংক-লক করা আছে।**
+
+
+  • ন্যূনতম র‍্যাংক: **{min_rank}** (প্রয়োজন `${required_spend:g}` খরচ)
+
+  • আপনার র‍্যাংক: **{current_rank}** — আপনি খরচ করেছেন `${current_spend:g}`
+
+  • আরও **`${needed_spend:g}`** খরচ করলে আনলক হবে
+
+
+  কোনো প্রশ্ন থাকলে সাপোর্টে যোগাযোগ করুন।'
+
+btn_user_dashboard: "🎛 ইউজার ড্যাশবোর্ড"
+
+# -- Binance Pay (Auto) deposit (auto-added) --
+binance_pay_auto_label: "Binance Pay (Auto)"
+dep_dup_order_title: "অর্ডার আইডি ইতিমধ্যে ব্যবহৃত"
+dep_dup_order_body: "এই Binance অর্ডার আইডি অন্য একটি ডিপোজিটে ব্যবহার করা হয়েছে। প্রতিটি অর্ডার আইডি একবারই ব্যবহার করা যায়।"
+dep_dup_order_hint: "নতুন পেমেন্ট করুন অথবা সাপোর্টে যোগাযোগ করুন।"

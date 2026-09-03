@@ -1,0 +1,185 @@
+{% extends "webapp/base.html" %}
+{% block title %}Buy Account · TG-Fox API{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1 class="page-title">Buy Account</h1>
+  <p class="page-sub">Select a country to purchase a session account</p>
+</section>
+
+<div class="search-wrap">
+  <span class="search-ico">🔍</span>
+  <input type="text" id="cSearch" class="search-input" placeholder="Search country or code…" autocomplete="off">
+</div>
+
+<div class="c-list" id="cList">
+  <div class="rec-empty muted">Loading countries…</div>
+</div>
+
+<!-- OTP delivery panel (hidden until purchase) -->
+<div class="modal-root" id="otpModal" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h3>📩 Delivery</h3>
+      <button class="icon-btn" id="otpClose" aria-label="Close">✕</button>
+    </div>
+    <div class="otp-body">
+      <div class="otp-row"><span class="muted">Country</span><span id="otpCountry">—</span></div>
+      <div class="otp-row"><span class="muted">Phone</span><span id="otpPhone" class="mono">—</span></div>
+      <div class="otp-row"><span class="muted">Paid</span><span id="otpPrice">—</span></div>
+      <div class="otp-row"><span class="muted">Order</span><span id="otpOrder" class="mono">—</span></div>
+      <hr class="sep">
+      <div class="otp-status" id="otpStatus">⏳ Waiting for Telegram code…</div>
+      <div class="otp-code" id="otpCode" hidden></div>
+      <div class="otp-pass" id="otpPass" hidden></div>
+      <div class="muted small" id="otpNote">Do not close — polling every 3s (up to 3 minutes).</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+<style>
+.search-wrap { position:relative; margin-bottom:10px; }
+.search-ico { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:14px; opacity:.6; }
+.search-input { width:100%; padding:12px 14px 12px 38px; background:var(--card); border:1px solid var(--card-border); color:var(--text); border-radius:12px; font-family:var(--font-sans); font-size:14px; outline:none; box-shadow:var(--shadow); }
+.search-input:focus { border-color:var(--accent); }
+.c-list { display:flex; flex-direction:column; gap:8px; }
+.c-card { display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--card); border:1px solid var(--card-border); border-radius:14px; box-shadow:var(--shadow); cursor:pointer; transition:.15s; -webkit-tap-highlight-color:transparent; }
+.c-card:active { transform:scale(.98); }
+.c-card.disabled { opacity:.45; cursor:not-allowed; }
+.c-flag { font-size:24px; line-height:1; flex-shrink:0; }
+.c-body { flex:1; min-width:0; }
+.c-name { font-size:14px; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.c-meta { font-size:11px; color:var(--muted); margin-top:2px; display:flex; gap:6px; align-items:center; }
+.c-chip { padding:1px 6px; border-radius:6px; background:rgba(255,255,255,.06); font-weight:600; font-size:10px; letter-spacing:.02em; text-transform:uppercase; }
+.c-chip.stock { color:#7ed88a; background:rgba(76,175,80,.15); }
+.c-chip.empty { color:var(--muted); }
+.c-chip.disabled { color:var(--danger); background:rgba(255,90,106,.15); }
+.c-price-col { text-align:right; flex-shrink:0; }
+.c-price { font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--accent); }
+.c-price.old { color:var(--muted); font-size:11px; text-decoration:line-through; font-weight:600; font-family:var(--font-sans); }
+.otp-body { display:flex; flex-direction:column; gap:6px; padding:4px 0; }
+.otp-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; font-size:13px; }
+.mono { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; }
+.sep { border:0; border-top:1px solid var(--card-border); margin:8px 0; }
+.otp-status { text-align:center; padding:10px; color:var(--muted); font-size:13px; font-weight:600; }
+.otp-code { text-align:center; padding:16px; font-family:var(--font-display); font-size:34px; font-weight:900; letter-spacing:.15em; color:var(--accent); background:var(--accent-soft); border-radius:12px; margin-top:6px; }
+.otp-pass { text-align:center; padding:8px 10px; margin-top:6px; font-size:12px; background:rgba(155,123,255,.12); color:#c9b4ff; border-radius:10px; word-break:break-all; }
+.otp-pass::before { content:"2FA: "; opacity:.6; font-weight:700; }
+.small { font-size:11px; }
+</style>
+
+{% block scripts %}
+<script>
+(function(){
+  const initData = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initData) || "";
+  const H = { "Content-Type": "application/json", "X-Telegram-Init-Data": initData };
+  const $ = (id)=>document.getElementById(id);
+  const list = $("cList"), search = $("cSearch");
+  const modal = $("otpModal");
+  let ALL = [], POLL = null;
+
+  function fmt(n){ n=Number(n||0); return "$"+(n<0.01?n.toFixed(4):n.toFixed(2)); }
+
+  function render(items){
+    if(!items.length){ list.innerHTML='<div class="rec-empty muted">No countries match.</div>'; return; }
+    list.innerHTML = items.map(c=>{
+      const stockChip = c.disabled ? '<span class="c-chip disabled">Disabled</span>'
+                     : c.is_full ? '<span class="c-chip disabled">Full</span>'
+                     : c.stock>0 ? `<span class="c-chip stock">${c.stock} in stock</span>`
+                     : '<span class="c-chip empty">Out of stock</span>';
+      const dis = (c.disabled || c.is_full || c.stock<=0) ? 'disabled' : '';
+      const price = c.discounted
+        ? `<div class="c-price old">${fmt(c.price)}</div><div class="c-price">${fmt(c.final_price)}</div>`
+        : `<div class="c-price">${fmt(c.price)}</div>`;
+      return `<div class="c-card ${dis}" data-code="${c.code}">
+        <div class="c-flag">${c.flag}</div>
+        <div class="c-body">
+          <div class="c-name">${c.name} <span class="muted" style="font-weight:500">${c.idc||""}</span></div>
+          <div class="c-meta"><span>${c.code}</span>${stockChip}</div>
+        </div>
+        <div class="c-price-col">${price}</div>
+      </div>`;
+    }).join("");
+    list.querySelectorAll(".c-card").forEach(el=>{
+      if(el.classList.contains("disabled")) return;
+      el.addEventListener("click", ()=>confirmBuy(el.dataset.code));
+    });
+  }
+
+  function applyFilter(){
+    const q = (search.value||"").trim().toLowerCase();
+    if(!q){ render(ALL); return; }
+    render(ALL.filter(c=>c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q) || (c.idc||"").includes(q)));
+  }
+
+  async function load(){
+    try{
+      const r = await fetch("/webapp/api/countries", { headers: H });
+      const j = await r.json();
+      ALL = j.countries || [];
+      render(ALL);
+    }catch(e){
+      list.innerHTML='<div class="rec-empty muted">Failed to load. Pull to retry.</div>';
+    }
+  }
+
+  function confirmBuy(code){
+    const c = ALL.find(x=>x.code===code);
+    if(!c) return;
+    if(window.__confirm){
+      window.__confirm(`Buy ${c.name}`, `You will be charged ${fmt(c.final_price)} for a ${c.name} session.`, ()=>doBuy(code));
+      return;
+    }
+    if(confirm(`Buy ${c.name} for ${fmt(c.final_price)}?`)) doBuy(code);
+  }
+
+  async function doBuy(code){
+    try{
+      const r = await fetch("/webapp/api/buy", { method:"POST", headers:H, body: JSON.stringify({country_code: code}) });
+      const j = await r.json();
+      if(!r.ok){ alert(j.detail || j.message || "Purchase failed"); return; }
+      openOtpModal(j);
+      pollOtp(j.order_id);
+      load(); // refresh stock
+    }catch(e){ alert("Network error"); }
+  }
+
+  function openOtpModal(o){
+    modal.hidden = false;
+    $("otpCountry").textContent = o.country;
+    $("otpPhone").textContent = o.phone;
+    $("otpPrice").textContent = fmt(o.price_paid);
+    $("otpOrder").textContent = o.order_id;
+    $("otpStatus").textContent = "⏳ Waiting for Telegram code…";
+    $("otpCode").hidden = true; $("otpPass").hidden = true;
+    $("otpNote").textContent = "Do not close — polling every 3s (up to 3 minutes).";
+  }
+  $("otpClose").addEventListener("click", ()=>{ modal.hidden = true; if(POLL){clearInterval(POLL); POLL=null;} });
+
+  function pollOtp(id){
+    if(POLL) clearInterval(POLL);
+    let tries = 0;
+    POLL = setInterval(async ()=>{
+      tries++;
+      if(tries>65){ clearInterval(POLL); POLL=null; $("otpStatus").textContent="⏱️ Timed out. Please contact support."; return; }
+      try{
+        const r = await fetch(`/webapp/api/order/${encodeURIComponent(id)}/otp`, {headers:H});
+        const j = await r.json();
+        if(r.status===408){ clearInterval(POLL); POLL=null; $("otpStatus").textContent="⏱️ No login detected within 3 minutes."; return; }
+        if(r.status===410){ clearInterval(POLL); POLL=null; $("otpStatus").textContent="🔒 OTP window closed. Please retry."; return; }
+        if(j.otp_status==="ready"){
+          clearInterval(POLL); POLL=null;
+          $("otpStatus").textContent = "✅ Code received";
+          $("otpCode").textContent = j.otp; $("otpCode").hidden = false;
+          if(j.password){ $("otpPass").textContent = j.password; $("otpPass").hidden = false; }
+          $("otpNote").textContent = "Use this code in the Telegram login prompt.";
+        }
+      }catch(e){}
+    }, 3000);
+  }
+
+  search.addEventListener("input", applyFilter);
+  load();
+})();
+</script>
+{% endblock %}

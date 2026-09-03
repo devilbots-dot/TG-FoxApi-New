@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>{% block title %}Admin{% endblock %} — TG-Fox API</title>
+  <link rel="stylesheet" href="/admin/static/admin/css/admin.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<div id="toast-container"></div>
+<div id="connection-toast" class="connection-toast hidden">Offline</div>
+<div class="layout">
+  <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+  <aside class="sidebar" id="sidebar" aria-label="Admin navigation">
+    <div class="sidebar-inner">
+      <div class="sidebar-logo">
+        <div class="brand-mark">TF</div>
+        <div><div class="logo-text">TG FOX</div><div class="logo-sub">Operations Console</div></div>
+      </div>
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <p class="nav-section">Command center</p>
+        <a class="nav-item {% if page == 'dashboard' %}active{% endif %}" href="/admin"><span class="nav-icon">DC</span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item {% if page == 'analytics' %}active{% endif %}" href="/admin/analytics"><span class="nav-icon">AN</span><span class="nav-label">Analytics</span></a>
+        <p class="nav-section">Inventory & orders</p>
+        <a class="nav-item {% if page == 'sessions' %}active{% endif %}" href="/admin/sessions"><span class="nav-icon">AC</span><span class="nav-label">Session Accounts</span></a>
+        <a class="nav-item {% if page == 'bin' %}active{% endif %}" href="/admin/bin"><span class="nav-icon">BI</span><span class="nav-label">BIN Sessions</span></a>
+        <a class="nav-item {% if page == 'countries' %}active{% endif %}" href="/admin/countries"><span class="nav-icon">CO</span><span class="nav-label">Countries & Pricing</span></a>
+        <a class="nav-item {% if page == 'proxies' %}active{% endif %}" href="/admin/proxies"><span class="nav-icon">PX</span><span class="nav-label">Proxies</span></a>
+        <a class="nav-item {% if page == 'orders' %}active{% endif %}" href="/admin/orders"><span class="nav-icon">OR</span><span class="nav-label">Orders</span></a>
+        <p class="nav-section">Payments & sellers</p>
+        <a class="nav-item {% if page == 'payments' %}active{% endif %}" href="/admin/payments"><span class="nav-icon">PY</span><span class="nav-label">Payments</span><span class="nav-badge" id="pay-badge">0</span></a>
+        <a class="nav-item {% if page == 'sell_requests' %}active{% endif %}" href="/admin/sell-requests"><span class="nav-icon">SR</span><span class="nav-label">Sell Requests</span><span class="nav-badge" id="sell-badge">0</span></a>
+        <a class="nav-item {% if page == 'sellers' %}active{% endif %}" href="/admin/sellers"><span class="nav-icon">SL</span><span class="nav-label">Sellers</span></a>
+        <a class="nav-item {% if page == 'user_sell_stock' %}active{% endif %}" href="/admin/user-sell-stock"><span class="nav-icon">US</span><span class="nav-label">Users Sell Stock</span></a>
+        <p class="nav-section">System</p>
+        <a class="nav-item {% if page == 'users' %}active{% endif %}" href="/admin/users"><span class="nav-icon">UR</span><span class="nav-label">Users</span></a>
+        <a class="nav-item {% if page == 'logs' %}active{% endif %}" href="/admin/logs"><span class="nav-icon">LG</span><span class="nav-label">Live Logs</span></a>
+        <a class="nav-item {% if page == 'tasks' %}active{% endif %}" href="/admin/tasks"><span class="nav-icon">TS</span><span class="nav-label">Background Tasks</span></a>
+        <a class="nav-item {% if page == 'backup' %}active{% endif %}" href="/admin/backup"><span class="nav-icon">BK</span><span class="nav-label">Backup & Restore</span></a>
+        <a class="nav-item {% if page == 'sales_feed' %}active{% endif %}" href="/admin/sales-feed"><span class="nav-icon">FD</span><span class="nav-label">Sales Feed</span></a>
+        <a class="nav-item {% if page == 'settings' %}active{% endif %}" href="/admin/settings"><span class="nav-icon">ST</span><span class="nav-label">Settings</span></a>
+      </nav>
+      <div class="sidebar-footer"><p class="sidebar-status"><span></span> Secure admin session</p><form action="/admin/auth/logout" method="post"><button type="submit" class="btn btn-danger btn-sm w-full">Sign out</button></form></div>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar"><button class="btn-icon" type="button" onclick="toggleSidebar()" title="Open navigation" id="menu-btn">Menu</button><div class="topbar-context"><p>ADMIN CONTROL</p><span>{% block topbar_title %}Operations Console{% endblock %}</span></div><div class="topbar-actions"><span class="live-indicator" id="live-indicator" title="Live updates"><span class="live-dot"></span>LIVE</span><span id="clock"></span><button class="btn-icon" onclick="toggleTheme()" id="theme-toggle" title="Toggle theme">Theme</button><a href="/docs" target="_blank" class="btn-icon" title="API Docs">Docs</a></div></header>
+    <main class="content">{% block content %}{% endblock %}</main>
+  </div>
+  <nav class="mobile-nav" id="mobile-nav"><a href="/admin" class="mob-nav-item {% if page == 'dashboard' %}active{% endif %}"><b>DC</b><span>Home</span></a><a href="/admin/orders" class="mob-nav-item {% if page == 'orders' %}active{% endif %}"><b>OR</b><span>Orders</span></a><a href="/admin/payments" class="mob-nav-item {% if page == 'payments' %}active{% endif %}"><b>PY</b><span>Payments</span></a><a href="/admin/users" class="mob-nav-item {% if page == 'users' %}active{% endif %}"><b>UR</b><span>Users</span></a><button class="mob-nav-item" type="button" onclick="toggleSidebar()"><b>+</b><span>More</span></button></nav>
+</div>
+<script src="/admin/static/admin/js/admin.js"></script>
+<script>
+(function(){const el=document.getElementById('clock');function tick(){if(el)el.textContent=new Date().toLocaleTimeString('en-GB')}tick();setInterval(tick,1000)})();
+async function loadBadges(){try{const stats=await apiGET('/admin/api/stats');const payments=stats.payments||{};const sellBadge=document.getElementById('sell-badge');const payBadge=document.getElementById('pay-badge');const pending=(payments.pending_deposits||0)+(payments.pending_withdrawals||0);if(payBadge&&pending>0){payBadge.textContent=pending;payBadge.classList.add('show')}else if(payBadge)payBadge.classList.remove('show');const requests=await apiGET('/admin/api/sell-requests?status=pending&limit=1');if(sellBadge&&requests.total>0){sellBadge.textContent=requests.total;sellBadge.classList.add('show')}else if(sellBadge)sellBadge.classList.remove('show')}catch(e){}}
+document.addEventListener('DOMContentLoaded',loadBadges);
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

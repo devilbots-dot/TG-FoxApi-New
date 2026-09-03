@@ -1,0 +1,448 @@
+start_1: 欢迎！
+start_2: '你好 {0}！👋
+
+
+  欢迎使用 {1}。
+
+
+  我随时准备为您提供帮助。请使用下面的按钮开始。'
+language_changed: ✅ 语言已更改为中文！
+choose_language: 🌐 请选择您的语言：
+back: « 返回
+language_btn: 🇨🇳 中文
+menu_wallet: 💰 钱包
+menu_market: 🛒 市场
+menu_apikey: 🔑 我的API密钥
+menu_profile: 👤 个人资料
+menu_updates: 📢 更新
+menu_support: 💬 支持
+menu_language: 🌐 语言
+menu_back: 🔙 返回
+welcome_caption: '👋 Welcome, {0}!
+
+
+  🦊 **TG-Fox API**
+
+  _顶级全球市场之一，提供 API，助您打造自己的网站或应用。_
+
+
+  💳 **Balance:** `${2}`
+
+  🏆 **Rank:** `{3}`
+
+
+  Use the buttons below to get started 👇'
+home_title: TG-Fox API
+home_welcome: 👋 欢迎回来，{0}！
+home_tagline: '顶级全球市场之一，提供 API，助您打造自己的网站或应用。
+
+
+  使用下方按钮开始 👇'
+btn_profile: 👤 个人资料
+btn_market: 🛒 市场
+btn_updates: 📢 更新
+btn_support: 💬 支持
+btn_language: 🌐 语言
+btn_apikey: 🔑 API密钥
+btn_deposit: 💰 充值
+btn_withdraw: 💸 提现
+btn_refer_earn: 👥 邀请赚钱
+btn_transactions: 📜 交易记录
+btn_back: ⬅️ 返回
+btn_back_profile: ⬅️ 返回资料
+btn_back_market: ⬅️ 返回市场
+btn_back_wallet: 💳 返回钱包
+btn_regen_key: 🔄 重新生成密钥
+btn_deposits: 📥 充值记录
+btn_withdrawals: 📤 提现记录
+btn_purchases: 🛒 购买记录
+btn_all_history: 📋 全部记录
+btn_manage_addr: 🔑 管理地址
+profile_title: 您的个人资料
+wallet_title_section: 钱包
+trade_title: 交易统计
+ref_title_section: 邀请返利
+lbl_user_id: 用户ID
+lbl_username: 用户名
+lbl_rank: 等级
+lbl_member_since: 注册日期
+lbl_balance: 余额
+lbl_total_deposited: 总充值
+lbl_total_spent: 总消费
+lbl_total_earned: 总收入
+lbl_accounts_bought: 购买账号
+lbl_accounts_sold: 出售账号
+lbl_ref_link: 您的链接
+lbl_referred_users: 邀请人数
+lbl_bonus_earned: 获得奖励
+lbl_no_username: 无用户名
+lbl_tap_to_copy: 点击复制
+refer_title: 邀请赚钱
+refer_earn_line: 🎁 **每邀请一位朋友即可获得奖励！**
+refer_link_lbl: 🔗 **您的邀请链接：**
+refer_total_lbl: 👤 **总邀请人数：** `{0}` 人
+refer_bonus_lbl: 💰 **获得奖励：** `${0}`
+refer_tip: '📌 将链接分享给朋友。当他们完成首次
+
+  充值时，您将获得奖励！'
+tx_title: 交易记录
+tx_subtitle: '查看您的完整财务记录。
+
+  选择下方类别 👇'
+tx_dep_title: 充值记录
+tx_wit_title: 提现记录
+tx_pur_title: 购买记录
+tx_all_title: 全部记录
+tx_empty_dep: 📭 暂无充值记录。
+tx_empty_wit: 📭 暂无提现记录。
+tx_empty_pur: 📭 暂无购买记录。
+tx_empty_all: 📭 暂无交易记录。
+apikey_title: 您的API密钥
+apikey_header_fmt: '📌 **请求头格式：**
+
+  `X-Api-Key: tg_{user_id}_{secret}`'
+apikey_docs: 📖 **文档：** `/docs`
+apikey_warn: ⚠️ 请勿将API密钥分享给任何人！
+apikey_regen_title: API密钥已重新生成
+apikey_regen_warn: '⚠️ 旧密钥已失效。
+
+  请更新所有集成。'
+apikey_regen_alert: ✅ 新密钥已生成！
+lang_title: 选择语言
+lang_subtitle: 请选择您偏好的语言：
+lang_changed_alert: ✅ 语言已更新！
+wallet_main_title: 您的钱包
+wallet_addr_section: 提现地址 (USDT)
+wallet_addr_tip: '设置您的提现地址以启用提现。
+
+  充值通过OxaPay自动处理。'
+wallet_manage_title: 提现地址
+wallet_manage_body: "设置您的USDT钱包地址用于提现。\n\n\U0001F4CC **支持的网络：**\n  • **TRC20** — TRON网络上的USDT\n  • **BEP20** — 币安智能链上的USDT\n\n⚠️ 请务必仔细核对地址。\n错误地址 = 资金永久丢失！"
+trc_not_set: 未设置 ⚠️
+bep_not_set: 未设置 ⚠️
+btn_add_trc: ➕ 添加TRC20地址
+btn_add_bep: ➕ 添加BEP20地址
+wallet_deposit_title: 充值
+wallet_deposit_body: '请发送您想充值的金额（**美元**）。
+
+
+  📌 接受的加密货币：
+
+  BTC、ETH、USDT、LTC等
+
+
+  💵 **最低充值：** ${0}
+
+
+  输入 /cancel 取消。'
+wallet_withdraw_title: 提现申请
+wallet_withdraw_body: '📌 **可用网络：** {0}
+
+
+  请发送您想提现的金额（**美元**）。
+
+
+  💵 **最低提现：** ${1}
+
+
+  输入 /cancel 取消。'
+wallet_no_addr_alert: '⚠️ 请先设置提现地址！
+
+  钱包 → 管理地址'
+wallet_select_network: 选择网络
+wallet_select_network_body: 提现 `${0} USDT` 使用哪个网络？
+wallet_confirm_title: 确认提现
+wallet_confirm_body: '💵 **金额：** `${0} USDT`
+
+  🌐 **网络：** `{1}`
+
+  📬 **地址：** `{2}`
+
+
+  回复 **YES** 确认或 /cancel 取消。'
+wallet_confirm_word: 是
+wallet_confirm_prompt: 输入 **YES** 确认提现或 /cancel 取消。
+wallet_success_title: 提现申请已提交！
+wallet_success_body: '🆔 **ID：** `{0}`
+
+  💵 **金额：** `${1} USDT`
+
+  🌐 **网络：** `{2}`
+
+  📬 **地址：** `{3}`
+
+
+  提现正在等待管理员审核。
+
+  处理后资金将发送到您的钱包。'
+wallet_payment_title: 支付链接已准备好
+wallet_payment_body: '💵 **金额：** `${0} USD`
+
+  🔗 **支付链接：**
+
+  {1}
+
+
+  ✅ OxaPay确认后余额将自动到账。
+
+
+  ⏱ **有效期：** 60分钟
+
+  💡 支持BTC、ETH、USDT、LTC等。'
+wallet_insufficient: '❌ **余额不足。**
+
+
+  您的余额：`${0}`
+
+  所需：`${1}`'
+err_invalid_amount: ❌ 请输入有效数字（例如 `10` 或 `25.50`）
+err_min_deposit: ❌ 最低充值为 ${0}。请重试或 /cancel。
+err_min_withdraw: ❌ 最低提现为 ${0}。请重试或 /cancel。
+err_payment_fail: '❌ 生成支付链接失败。
+
+  请稍后重试或联系客服。'
+err_withdraw_fail: '❌ 创建提现记录失败。
+
+  您的余额已退回。请重试。'
+err_unexpected: ❌ 意外错误。请稍后重试。
+err_session_exp: 会话已过期。请重新开始。
+err_no_withdraw_addr: '⚠️ **未设置提现地址。**
+
+
+  请使用 /setwallet 添加TRC20或BEP20 USDT地址。'
+err_invalid_trc20: ❌ TRC20 地址无效。必须以 `T` 开头且为 34 个字符。
+err_invalid_bep20: ❌ BEP20 地址无效。必须以 `0x` 开头且为 42 个字符。
+set_addr_title: 设置{0}地址
+set_addr_body: '请发送您的USDT **{0}** 钱包地址。
+
+
+  示例：{1}
+
+
+  ⚠️ 只发送有效的USDT地址！
+
+  输入 /cancel 取消。'
+addr_saved_title: '{0}地址已保存！'
+addr_saved_body: 您现在可以提现USDT到此地址。
+oxapay_not_configured: '❌ OxaPay未配置。
+
+  请联系管理员开启充值功能。'
+cancel_success: ✅ 已取消。使用 /start 返回主菜单。
+cancel_nothing: 没有可取消的操作。
+banned_msg: 🚫 您已被禁止使用此机器人。
+generating_link: ⏳ 正在生成支付链接…
+processing_withdrawal: ⏳ 正在处理提现…
+dep_choose_title: 选择充值方式
+dep_choose_body: 请选择您偏好的支付方式：
+dep_enter_amount: 请输入您要充值的金额（**美元**）：
+dep_type_cancel: 输入 /cancel 取消。
+dep_select_network: 选择网络
+dep_which_network: 请选择充值网络：
+dep_ready_title: 付款已就绪
+dep_send_title: 发送加密货币
+dep_manual_title: 手动转账
+dep_created_title: 充值已创建
+dep_tap_pay: 点击**立即支付**打开支付页面。
+dep_auto_credit: 支付确认后，余额将自动到账。
+dep_addr_warn: 请通过正确网络发送**精确金额**。网络错误 = 资金丢失。
+dep_manual_note: 在转账备注中注明充值ID，然后将收据截图发送给客服确认。
+dep_back_methods: ⬅️ 返回支付方式
+lbl_min_deposit: 最低充值
+lbl_method: 方式
+lbl_amount: 金额
+lbl_currency: 货币
+lbl_expires: 有效期
+lbl_minutes: 分钟
+lbl_network: 网络
+lbl_address: 发送到此地址
+lbl_ref: 充值ID
+lbl_send_amount: 发送金额
+lbl_send_to: 发送至
+lbl_holder: 账户名称
+btn_pay_now: 💳 立即支付 →
+btn_contact_support: 💬 联系客服
+no_deposit_methods: ❌ 暂无可用充值方式，请联系管理员。
+method_unavailable: ❌ 该方式当前不可用。
+market_title: 市场
+market_balance_lbl: 您的余额
+market_tagline: 'Buy and sell verified Telegram accounts
+
+  with instant OTP delivery.'
+btn_buy_account: 🟢 购买账号
+btn_sell_account: 🔴 出售账号
+buy_title: 购买账号
+buy_no_stock: 🚫 No countries available right now. Check back later!
+buy_page_info: 第 {0}/{1} 页 — {2} 个国家
+buy_hint: 点击国家查看详情 👇
+buy_country_title: 购买账号 — {0}
+buy_country_lbl: 国家
+buy_phone_code_lbl: 电话代码
+buy_price_lbl: 价格
+buy_stock_lbl: 库存
+buy_delivery_lbl: 交付
+buy_delivery_val: 即时OTP
+buy_confirm_hint: Press Buy Now to proceed.
+btn_buy_now: ✅ 立即购买
+buy_no_channel: ⚠️ 未配置会话频道。请联系管理员。
+buy_no_clean_account: ⚠️ 暂无干净账号，请稍后再试。
+buy_purchased_title: 账号已购买！
+buy_paid_lbl: 已支付
+buy_new_balance_lbl: 新余额
+buy_tfa_lbl: 2FA密码
+buy_otp_waiting_title: 等待OTP…
+buy_otp_step1: 1️⃣ 打开Telegram并输入上方号码
+buy_otp_step2: 2️⃣ Request a login OTP
+buy_otp_step3: 3️⃣ 我会自动在这里发送OTP
+buy_otp_timeout_note: _超时：2分钟_
+btn_cancel_otp: ❌ 取消等待
+buy_success_alert: ✅ 已购买！等待OTP…
+buy_error_generic: ❌ 出错了，请重试。
+buy_view_all_title: 全部可用国家
+buy_view_all_empty: 🚫 暂无可用国家。
+otp_received_title: 已收到OTP！🎉
+otp_phone_lbl: 手机
+otp_code_lbl: OTP代码
+otp_enter_instruction: 在Telegram中输入此代码以完成登录。
+otp_sensitive_note: _请勿分享此代码。_
+otp_timeout_title: OTP超时 ⏰
+otp_timeout_body: 'No OTP was received within 2 minutes. Please make sure you entered the phone correctly and requested a login OTP.
+
+
+  Contact support if you need help.'
+otp_cancelled_title: 已取消OTP等待
+otp_cancelled_body: '已取消OTP等待。
+
+
+  ⚠️ 您的购买仍然有效。
+
+  如需帮助请联系客服。'
+otp_error: OTP delivery failed for {0}. Please contact support.
+btn_back_to_market: ⬅️ 返回市场
+sell_title: 出售账号
+sell_no_countries: 🚫 No countries accepting accounts right now. Check back later!
+sell_page_info: 第 {0}/{1} 页 — {2} 个国家
+sell_hint: 选择国家查看价格 👇
+sell_country_title: 出售 — {0}
+sell_country_lbl: 国家
+sell_phone_code_lbl: 电话代码
+sell_we_pay_lbl: 支付
+sell_requirements_title: ✅ 要求
+sell_req_prefix: • Phone number must start with {0}
+sell_req_valid_session: • 会话文件必须有效且已授权
+sell_req_no_spam: • 账号不得被限制、冻结或封禁
+sell_req_no_dupe: • 不得与系统中已存在的重复
+sell_how_title: 📋 流程
+sell_how_step1: 1️⃣ Upload your .session file
+sell_how_step2: 2️⃣ 我们自动验证账号
+sell_how_step3: 3️⃣ Funds go to your Pending Balance
+sell_how_step4: 4️⃣ 管理员审核 → 余额可用
+sell_review_time: ⏱ 审核时间：1–24小时
+sell_why_rejected: 📌 常见拒绝原因：号码错误、会话过期、封禁/垃圾、重复。
+btn_start_selling: 📤 开始出售
+btn_my_requests: 📋 我的申请
+sell_my_requests_title: 我的出售申请
+sell_empty_requests: 📭 还没有申请。
+sell_requests_footer: Last 10 requests shown
+sell_country_full: 🚫 该国家暂不接受账号。
+sell_init_title: 出售 — {0}
+sell_you_receive_lbl: 您将获得
+sell_required_prefix_lbl: 所需前缀
+sell_step1_title: 第 1 步 — 生成会话文件
+sell_telethon_note: Run this snippet on your computer. It creates my_session.session.
+sell_step2_title: 第 2 步 — 上传文件
+sell_step2_body: 📎 Send the .session file as a document in this chat.
+sell_waiting: ⏳ 等待您的文件…
+sell_type_cancel: 输入 /cancel 取消。
+sell_cancelled_title: 已取消出售
+sell_cancelled_body: 未提交账号。您可随时重新开始。
+sell_rate_limit: ⏱ 已达上限。每 {1} 小时最多 {0} 次。
+sell_max_pending: ⏳ 您有 {0} 个待审核申请。
+sell_wrong_file: ❌ Wrong file type. Please send a .session file.
+sell_file_too_large: ❌ File too large. A valid session file is under 100 KB.
+sell_validating_title: 正在验证会话
+sell_validating_body: ⏳ 连接Telegram中… 最多30秒。
+sell_no_channel: ⚠️ 平台未配置。
+sell_download_error: ❌ Could not read your file. Please send the file again, or type /cancel.
+sell_success_title: 会话已提交！✅
+sell_request_id_lbl: 申请ID
+sell_pending_balance_lbl: 待处理余额
+sell_status_lbl: 状态
+sell_awaiting_review: ⏳ 等待审核
+sell_success_note: Your pending balance will be credited once admin approves your request.
+sell_spam_flag_note: _⚠️ This account has a temporary spam flag. Admin will make the final decision._
+sell_track_hint: Track your request in My Sell Requests.
+sell_error_generic: ❌ 意外错误。
+btn_sell_another: 💼 再出售一个
+btn_prev: ⬅️ 上一页
+btn_next: 下一页 ➡️
+btn_view_all: 📋 查看全部
+btn_cancel: ❌ 取消
+err_country_not_found: ❌ 未找到国家。
+sell_country_name_lbl: 国家
+buy_otp_requesting: 📨 正在从Telegram请求OTP…
+buy_otp_prompt: '📱 **手机：** `{0}`
+
+
+  我们已向此号码发送登录码。
+
+  请在此输入OTP：'
+buy_otp_cancel_hint: _(输入 /cancel 取消并全额退款)_
+buy_otp_invalid: ❌ OTP错误。请检查后重试：
+buy_otp_expired: ❌ OTP已过期。购买已退款 — 请重新购买。
+buy_tfa_prompt: '🔐 此账号启用了 **2FA**。
+
+
+  请输入2FA密码：'
+buy_tfa_invalid: ❌ 2FA密码错误。请重试：
+buy_flood_wait: ⏳ Telegram限流 — 请等待 **{0}秒** 后重发OTP。
+buy_auth_checking: 🔍 正在验证账号…
+buy_complete_title: 账号就绪！🎉
+buy_logout_instruction: 前往 **设置 → 隐私 → 活动会话** 并注销其他会话以保护账号。
+buy_auth_cancelled_title: 已取消购买
+buy_auth_cancelled_body: 余额 `${0}` 已退回。
+buy_account_banned: ❌ 该账号已被Telegram封禁。已退款。
+buy_sessions_terminated: ✅ 所有其他会话已自动终止。
+buy_sessions_partial: ⚠️ 部分会话未能终止 — 请手动从设置移除。
+buy_auth_send_code_fail: ❌ 无法请求OTP。已退款。
+buy_auth_cancel_hint_inline: 点击取消以退款。
+buy_auth_already_active: ⏳ You already have a pending OTP flow. Send the OTP or type /cancel.
+btn_home_deposit: 💰 存款
+btn_home_withdraw_money: 👤 提现
+btn_extra: ✨ 额外
+btn_sessions_menu: 📦 出售 / 购买会话
+btn_sell_account_start: 🔴 开始出售
+btn_my_sell_record: 📋 我的出售记录
+btn_open: 📖 打开
+btn_search_country: 🔍 搜索
+btn_search_again: 🔍 再次搜索
+registration_disabled_msg: "🚫 **新用户注册当前已禁用。**\n\n请稍后再试。当新用户注册重新启用时，您将可以启动机器人。\n\n如果您有任何疑问或问题，请联系客服。"
+
+feature_disabled_alert: "此功能当前已关闭。"
+maintenance_mode_msg: "🔧 **平台维护模式当前已开启。**\n\n新的订单、充值和提现已暂时暂停。请稍后再试。\n\n如果你有任何疑问或问题，请联系支持。"
+deposits_disabled_msg: "🚫 **新的充值当前已关闭。**\n\n请稍后再试。充值重新开启后，你将可以创建新的充值。\n\n如果你有任何疑问或问题，请联系支持。"
+withdrawals_disabled_msg: "🚫 **新的提现请求当前已关闭。**\n\n请稍后再试。提现重新开启后，你将可以提交提现请求。\n\n如果你有任何疑问或问题，请联系支持。"
+
+# -- Session selling gate (auto-added) --
+sell_disabled_msg: '🛑 **会话出售当前已停用。**
+
+
+  请稍后再试。如有疑问，请联系客服。'
+sell_rank_locked_msg: '🔒 **会话出售受等级限制。**
+
+
+  • 最低等级：**{min_rank}**（需消费 `${required_spend:g}`）
+
+  • 你的等级：**{current_rank}** — 你已消费 `${current_spend:g}`
+
+  • 再消费 **`${needed_spend:g}`** 即可解锁
+
+
+  如有疑问，请联系客服。'
+
+btn_user_dashboard: "🎛 用户面板"
+
+# -- Binance Pay (Auto) deposit (auto-added) --
+binance_pay_auto_label: "Binance Pay (Auto)"
+dep_dup_order_title: "订单号已被使用"
+dep_dup_order_body: "此 Binance 订单号已用于另一笔充值。每个订单号只能使用一次。"
+dep_dup_order_hint: "请重新付款或联系客服。"

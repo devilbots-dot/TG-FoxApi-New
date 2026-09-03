@@ -1,0 +1,48 @@
+{% extends "admin/base.html" %}
+{% block title %}BIN Sessions{% endblock %}
+{% block topbar_title %}⚠️ BIN Sessions{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><div class="page-title">BIN / Invalid Sessions</div><div class="page-subtitle">Sessions quarantined after permanent validation failures. Retention: 30 days.</div></div>
+  <div class="page-actions"><button class="btn btn-secondary btn-sm" onclick="loadBin()">🔄 Refresh</button><button class="btn btn-success btn-sm" onclick="restoreSelected()">↩ Restore Selected</button><button class="btn btn-danger btn-sm" onclick="deleteSelected()">🗑 Delete Selected</button></div>
+</div>
+<div class="card" style="padding:14px;margin-bottom:16px">
+  <div style="display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:10px;align-items:end">
+    <label class="form-group"><span class="form-label">Country</span><input id="f-country" class="form-control" placeholder="IN"></label>
+    <label class="form-group"><span class="form-label">Issue</span><input id="f-issue" class="form-control" placeholder="frozen / unauthorized"></label>
+    <label class="form-group"><span class="form-label">Search</span><input id="f-q" class="form-control" placeholder="Account ID, phone, reason" onkeydown="if(event.key==='Enter')loadBin()"></label>
+    <label class="form-group"><span class="form-label">Detected from</span><input id="f-from" type="date" class="form-control"></label>
+    <label class="form-group"><span class="form-label">Detected to</span><input id="f-to" type="date" class="form-control"></label>
+    <button class="btn btn-primary" onclick="loadBin()">🔍 Search</button>
+  </div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+  <div class="table-head" style="padding:14px"><span id="bin-count">0 sessions</span><span id="bin-status" class="muted"></span></div>
+  <div id="bin-body"><div class="empty-state">Loading BIN sessions…</div></div>
+  <div id="bin-pagination" style="padding:14px"></div>
+</div>
+<div id="bin-modal" class="modal hidden"><div class="modal-box"><div class="modal-head"><h3>BIN Session Details</h3><button class="btn-icon" onclick="closeModal('bin-modal')">✕</button></div><div id="bin-modal-body"></div></div></div>
+<script>
+let currentPage = 1;
+function esc(v) { const d=document.createElement('div'); d.textContent=v ?? ''; return d.innerHTML; }
+function selectedIds() { return [...document.querySelectorAll('.bin-check:checked')].map(x=>x.value); }
+async function loadBin(page=1) {
+  currentPage=page; const p=new URLSearchParams({page,limit:50});
+  const c=document.getElementById('f-country').value.trim(), i=document.getElementById('f-issue').value.trim(), q=document.getElementById('f-q').value.trim(), from=document.getElementById('f-from').value, to=document.getElementById('f-to').value;
+  if(c)p.set('country',c); if(i)p.set('issue',i); if(q)p.set('q',q); if(from)p.set('date_from',from); if(to)p.set('date_to',to);
+  const body=document.getElementById('bin-body'); body.innerHTML='<div class="empty-state">Loading…</div>';
+  try { const r=await apiGET('/admin/api/bin?'+p); document.getElementById('bin-count').textContent=`${fmtNum(r.total)} sessions`;
+    if(!r.items?.length){body.innerHTML='<div class="empty-state">No BIN sessions found.</div>';document.getElementById('bin-pagination').innerHTML='';return;}
+    body.innerHTML=`<table class="tbl"><thead><tr><th><input type="checkbox" onchange="toggleAll(this)"></th><th>Account</th><th>Country</th><th>Issue</th><th>Detected</th><th>Expires</th><th>Actions</th></tr></thead><tbody>${r.items.map(x=>`<tr><td><input class="bin-check" type="checkbox" value="${esc(x.account_id)}"></td><td><code>${esc(x.account_id)}</code><br><span class="muted">${esc(x.phone||'')}</span></td><td>${esc(x.country_code||'')}</td><td><strong>${esc(x.bin_issue||'invalid_session')}</strong><br><span class="muted">${esc(x.bin_reason||'')}</span></td><td>${esc(x.bin_detected_at||x.bin_moved_at||'')}</td><td>${esc(x.bin_expires_at||'')}</td><td><button class="btn btn-secondary btn-xs" onclick="viewBin('${esc(x.account_id)}')">View</button> <button class="btn btn-success btn-xs" onclick="restoreOne('${esc(x.account_id)}')">Restore</button> <button class="btn btn-danger btn-xs" onclick="deleteOne('${esc(x.account_id)}')">Delete</button></td></tr>`).join('')}</tbody></table>`;
+    renderPagination(document.getElementById('bin-pagination'),r,n=>loadBin(n));
+  } catch(e) { body.innerHTML='<div class="empty-state">Failed to load BIN sessions.</div>'; }
+}
+function toggleAll(el){document.querySelectorAll('.bin-check').forEach(x=>x.checked=el.checked);}
+async function viewBin(id){try{const r=await apiGET('/admin/api/bin/'+encodeURIComponent(id));if(!r.ok)return toast(r.error||'Not found','error');const x=r.item;document.getElementById('bin-modal-body').innerHTML=`<div class="kv-list"><div><b>Account ID</b><code>${esc(x.account_id)}</code></div><div><b>Phone</b><span>${esc(x.phone)}</span></div><div><b>Country</b><span>${esc(x.country_code)} — ${esc(x.country_name)}</span></div><div><b>Issue</b><span>${esc(x.bin_issue)}</span></div><div><b>Reason</b><span>${esc(x.bin_reason)}</span></div><div><b>Detected</b><span>${esc(x.bin_detected_at)}</span></div><div><b>Expires</b><span>${esc(x.bin_expires_at)}</span></div><div><b>Session reference</b><span>${esc(x.session_chat_id)} / ${esc(x.session_msg_id)}</span></div></div>`;document.getElementById('bin-modal').classList.remove('hidden');}catch(e){toast('Failed to load details','error');}}
+async function restoreOne(id){const r=await apiPOST('/admin/api/bin/restore',{account_ids:[id]});if(r.restored) {toast('Restored to inventory','success');loadBin(currentPage);} else toast('Restore failed','error');}
+async function deleteOne(id){confirm('Permanently delete this BIN session?',async()=>{const r=await apiDELETE('/admin/api/bin/'+encodeURIComponent(id));if(r.ok){toast('Deleted','success');loadBin(currentPage);}else toast('Delete failed','error');});}
+async function restoreSelected(){const ids=selectedIds();if(!ids.length)return toast('Select at least one session','error');const r=await apiPOST('/admin/api/bin/restore',{account_ids:ids});toast(`${r.restored||0} restored`,'success');loadBin(currentPage);}
+async function deleteSelected(){const ids=selectedIds();if(!ids.length)return toast('Select at least one session','error');confirm(`Permanently delete ${ids.length} BIN session(s)?`,async()=>{const r=await apiPOST('/admin/api/bin/delete',{account_ids:ids});toast(`${r.deleted||0} deleted`,'success');loadBin(currentPage);});}
+loadBin();
+</script>
+{% endblock %}

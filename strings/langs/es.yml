@@ -1,0 +1,453 @@
+start_1: ¡Bienvenido!
+start_2: '¡Hola {0}! 👋
+
+
+  Bienvenido a {1}.
+
+
+  Estoy listo para ayudarte. Usa los botones de abajo para comenzar.'
+language_changed: ✅ ¡Idioma cambiado a español!
+choose_language: '🌐 Por favor elige tu idioma:'
+back: « Volver
+language_btn: 🇪🇸 Español
+menu_wallet: 💰 Billetera
+menu_market: 🛒 Mercado
+menu_apikey: 🔑 Mi Clave API
+menu_profile: 👤 Perfil
+menu_updates: 📢 Novedades
+menu_support: 💬 Soporte
+menu_language: 🌐 Idioma
+menu_back: 🔙 Volver
+welcome_caption: '👋 Welcome, {0}!
+
+
+  🦊 **TG-Fox API**
+
+  _Uno de los principales mercados globales con proveedor de API para crear tu propio sitio o app._
+
+
+  💳 **Balance:** `${2}`
+
+  🏆 **Rank:** `{3}`
+
+
+  Use the buttons below to get started 👇'
+home_title: TG-Fox API
+home_welcome: 👋 ¡Bienvenido de vuelta, {0}!
+home_tagline: 'Uno de los principales mercados globales con proveedor de API para crear tu propio sitio o app.
+
+
+  Usa los botones de abajo para comenzar 👇'
+btn_profile: 👤 Perfil
+btn_market: 🛒 Mercado
+btn_updates: 📢 Últimas ventas
+btn_support: 💬 Novedades
+btn_language: 🌐 Idioma
+btn_apikey: 🔑 Clave API
+btn_deposit: 💰 Depositar
+btn_withdraw: 💸 Retirar
+btn_refer_earn: 👥 Referir y ganar
+btn_transactions: 📜 Transacciones
+btn_back: ⬅️ Volver
+btn_back_profile: ⬅️ Volver al perfil
+btn_back_market: ⬅️ Volver al mercado
+btn_back_wallet: 💳 Volver a billetera
+btn_regen_key: 🔄 Regenerar clave
+btn_deposits: 📥 Depósitos
+btn_withdrawals: 📤 Retiros
+btn_purchases: 🛒 Compras
+btn_all_history: 📋 Todo el historial
+btn_manage_addr: 🔑 Gestionar direcciones
+profile_title: TU PERFIL
+wallet_title_section: BILLETERA
+trade_title: ESTADÍSTICAS
+ref_title_section: REFERIDOS
+lbl_user_id: ID de usuario
+lbl_username: Usuario
+lbl_rank: Rango
+lbl_member_since: Miembro desde
+lbl_balance: Saldo
+lbl_total_deposited: Total depositado
+lbl_total_spent: Total gastado
+lbl_total_earned: Total ganado
+lbl_accounts_bought: Cuentas compradas
+lbl_accounts_sold: Cuentas vendidas
+lbl_ref_link: Tu enlace
+lbl_referred_users: Referidos
+lbl_bonus_earned: Bonus ganado
+lbl_no_username: Sin usuario
+lbl_tap_to_copy: Toca para copiar
+refer_title: REFERIR Y GANAR
+refer_earn_line: 🎁 **¡Gana recompensas por cada amigo que refieras!**
+refer_link_lbl: 🔗 **Tu enlace de referido:**
+refer_total_lbl: 👤 **Total referidos:** `{0}` usuarios
+refer_bonus_lbl: 💰 **Bonus ganado:** `${0}`
+refer_tip: '📌 Comparte tu enlace con amigos. Ganas un bonus
+
+  cuando realizan su primer depósito!'
+tx_title: HISTORIAL DE TRANSACCIONES
+tx_subtitle: 'Ve tu historial financiero completo.
+
+  Elige una categoría 👇'
+tx_dep_title: HISTORIAL DE DEPÓSITOS
+tx_wit_title: HISTORIAL DE RETIROS
+tx_pur_title: HISTORIAL DE COMPRAS
+tx_all_title: HISTORIAL COMPLETO
+tx_empty_dep: 📭 Sin depósitos aún.
+tx_empty_wit: 📭 Sin retiros aún.
+tx_empty_pur: 📭 Sin compras aún.
+tx_empty_all: 📭 Sin transacciones aún.
+apikey_title: TU CLAVE API
+apikey_header_fmt: '📌 **Formato del encabezado:**
+
+  `X-Api-Key: tg_{user_id}_{secret}`'
+apikey_docs: 📖 **Documentación:** `/docs`
+apikey_warn: ⚠️ ¡Nunca compartas tu clave API con nadie!
+apikey_regen_title: CLAVE API REGENERADA
+apikey_regen_warn: '⚠️ Tu clave anterior ya no es válida.
+
+  Actualiza todas tus integraciones.'
+apikey_regen_alert: ✅ ¡Nueva clave generada!
+lang_title: SELECCIONAR IDIOMA
+lang_subtitle: 'Elige tu idioma preferido:'
+lang_changed_alert: ✅ ¡Idioma actualizado!
+wallet_main_title: TU BILLETERA
+wallet_addr_section: DIRECCIONES DE RETIRO (USDT)
+wallet_addr_tip: 'Configura tus direcciones para habilitar retiros.
+
+  Los depósitos se procesan automáticamente via OxaPay.'
+wallet_manage_title: DIRECCIONES DE RETIRO
+wallet_manage_body: "Configura tus direcciones de billetera USDT para retiros.\n\n\U0001F4CC **Redes soportadas:**\n  • **TRC20** — USDT en red TRON\n  • **BEP20** — USDT en Binance Smart Chain\n\n⚠️ Verifica siempre tu dirección.\n¡Dirección incorrecta = fondos perdidos permanentemente!"
+trc_not_set: No configurado ⚠️
+bep_not_set: No configurado ⚠️
+btn_add_trc: ➕ Agregar dirección TRC20
+btn_add_bep: ➕ Agregar dirección BEP20
+wallet_deposit_title: DEPOSITAR FONDOS
+wallet_deposit_body: 'Envíame el monto **(en USD)** que quieres depositar.
+
+
+  📌 Criptomonedas aceptadas:
+
+  BTC, ETH, USDT, LTC y más
+
+
+  💵 **Depósito mínimo:** ${0}
+
+
+  Escribe /cancel para cancelar.'
+wallet_withdraw_title: SOLICITUD DE RETIRO
+wallet_withdraw_body: '📌 **Redes disponibles:** {0}
+
+
+  Envíame el monto **(en USD)** a retirar.
+
+
+  💵 **Retiro mínimo:** ${1}
+
+
+  Escribe /cancel para cancelar.'
+wallet_no_addr_alert: '⚠️ ¡Primero configura una dirección de retiro!
+
+  Billetera → Gestionar direcciones'
+wallet_select_network: SELECCIONAR RED
+wallet_select_network_body: ¿Qué red para retirar `${0} USDT`?
+wallet_confirm_title: CONFIRMAR RETIRO
+wallet_confirm_body: '💵 **Monto:** `${0} USDT`
+
+  🌐 **Red:** `{1}`
+
+  📬 **Dirección:** `{2}`
+
+
+  Responde **YES** para confirmar o /cancel para cancelar.'
+wallet_confirm_word: SÍ
+wallet_confirm_prompt: Escribe **YES** para confirmar el retiro o /cancel para cancelar.
+wallet_success_title: ¡RETIRO SOLICITADO!
+wallet_success_body: '🆔 **ID:** `{0}`
+
+  💵 **Monto:** `${1} USDT`
+
+  🌐 **Red:** `{2}`
+
+  📬 **Dirección:** `{3}`
+
+
+  Tu retiro está pendiente de aprobación admin.
+
+  Los fondos se enviarán una vez procesado.'
+wallet_payment_title: ENLACE DE PAGO LISTO
+wallet_payment_body: '💵 **Monto:** `${0} USD`
+
+  🔗 **Enlace de pago:**
+
+  {1}
+
+
+  ✅ Tu saldo se acreditará automáticamente
+
+  una vez OxaPay lo confirme.
+
+
+  ⏱ **Expira en:** 60 minutos
+
+  💡 Paga con BTC, ETH, USDT, LTC y más.'
+wallet_insufficient: '❌ **Saldo insuficiente.**
+
+
+  Tu saldo: `${0}`
+
+  Requerido: `${1}`'
+err_invalid_amount: ❌ Por favor ingresa un número válido (ej. `10` o `25.50`)
+err_min_deposit: ❌ El depósito mínimo es ${0}. Intenta de nuevo o /cancel.
+err_min_withdraw: ❌ El retiro mínimo es ${0}. Intenta de nuevo o /cancel.
+err_payment_fail: '❌ Error al generar el enlace de pago.
+
+  Intenta más tarde o contacta soporte.'
+err_withdraw_fail: '❌ Error al crear el registro de retiro.
+
+  Tu saldo fue reembolsado. Intenta de nuevo.'
+err_unexpected: ❌ Error inesperado. Intenta más tarde.
+err_session_exp: Sesión expirada. Comienza de nuevo.
+err_no_withdraw_addr: '⚠️ **Sin dirección de retiro configurada.**
+
+
+  Usa /setwallet para agregar tu dirección TRC20 o BEP20.'
+err_invalid_trc20: ❌ Dirección TRC20 inválida. Debe empezar con `T` y tener 34 caracteres.
+err_invalid_bep20: ❌ Dirección BEP20 inválida. Debe empezar con `0x` y tener 42 caracteres.
+set_addr_title: CONFIGURAR DIRECCIÓN {0}
+set_addr_body: 'Envía tu dirección de billetera USDT **{0}**.
+
+
+  Ejemplo: {1}
+
+
+  ⚠️ ¡Solo envía una dirección USDT válida!
+
+  Escribe /cancel para cancelar.'
+addr_saved_title: ¡DIRECCIÓN {0} GUARDADA!
+addr_saved_body: Ya puedes retirar USDT a esta dirección.
+oxapay_not_configured: '❌ OxaPay no está configurado.
+
+  Contacta al admin para habilitar depósitos.'
+cancel_success: ✅ Cancelado. Usa /start para volver al menú principal.
+cancel_nothing: Nada que cancelar.
+banned_msg: 🚫 Has sido bloqueado de este bot.
+generating_link: ⏳ Generando enlace de pago…
+processing_withdrawal: ⏳ Procesando retiro…
+dep_choose_title: SELECCIONA MÉTODO DE DEPÓSITO
+dep_choose_body: 'Elige tu método de pago preferido:'
+dep_enter_amount: 'Introduce el monto **(en USD)** que deseas depositar:'
+dep_type_cancel: Escribe /cancel para cancelar.
+dep_select_network: SELECCIONA RED
+dep_which_network: ¿Por qué red deseas depositar?
+dep_ready_title: PAGO LISTO
+dep_send_title: ENVIAR CRIPTO
+dep_manual_title: TRANSFERENCIA MANUAL
+dep_created_title: DEPÓSITO CREADO
+dep_tap_pay: Pulsa **Pagar ahora** para abrir la página de pago.
+dep_auto_credit: Tu saldo se acreditará automáticamente una vez confirmado el pago.
+dep_addr_warn: Envía el **monto exacto** a través de la red correcta. Red incorrecta = fondos perdidos.
+dep_manual_note: Incluye el ID de depósito en la nota de transferencia y envía el comprobante al soporte.
+dep_back_methods: ⬅️ Volver a métodos
+lbl_min_deposit: Depósito mínimo
+lbl_method: Método
+lbl_amount: Monto
+lbl_currency: Moneda
+lbl_expires: Expira en
+lbl_minutes: minutos
+lbl_network: Red
+lbl_address: Enviar a esta dirección
+lbl_ref: ID de depósito
+lbl_send_amount: Monto a enviar
+lbl_send_to: Enviar a
+lbl_holder: Nombre de cuenta
+btn_pay_now: 💳 Pagar ahora →
+btn_contact_support: 💬 Contactar soporte
+no_deposit_methods: ❌ No hay métodos de depósito disponibles. Contacta al administrador.
+method_unavailable: ❌ Este método no está disponible actualmente.
+market_title: MERCADO
+market_balance_lbl: Tu saldo
+market_tagline: 'Buy and sell verified Telegram accounts
+
+  with instant OTP delivery.'
+btn_buy_account: 🟢 Comprar cuenta
+btn_sell_account: 🔴 Vender cuenta
+buy_title: COMPRAR CUENTA
+buy_no_stock: 🚫 No countries available right now. Check back later!
+buy_page_info: Página {0}/{1} — {2} países
+buy_hint: Toca un país para ver detalles 👇
+buy_country_title: COMPRAR CUENTA — {0}
+buy_country_lbl: País
+buy_phone_code_lbl: Código telefónico
+buy_price_lbl: Precio
+buy_stock_lbl: Disponible
+buy_delivery_lbl: Entrega
+buy_delivery_val: OTP instantáneo
+buy_confirm_hint: Press Buy Now to proceed.
+btn_buy_now: ✅ Comprar ahora
+buy_no_channel: ⚠️ Canal de sesiones no configurado. Contacta al admin.
+buy_no_clean_account: ⚠️ No hay cuentas limpias ahora. Intenta más tarde.
+buy_purchased_title: ¡CUENTA COMPRADA!
+buy_paid_lbl: Pagado
+buy_new_balance_lbl: Nuevo saldo
+buy_tfa_lbl: Contraseña 2FA
+buy_otp_waiting_title: Esperando OTP…
+buy_otp_step1: 1️⃣ Abre Telegram e ingresa el número de arriba
+buy_otp_step2: 2️⃣ Request a login OTP
+buy_otp_step3: 3️⃣ Te entregaré el OTP aquí automáticamente
+buy_otp_timeout_note: '_Tiempo límite: 2 minutos_'
+btn_cancel_otp: ❌ Cancelar espera
+buy_success_alert: ✅ ¡Comprado! Esperando OTP…
+buy_error_generic: ❌ Algo salió mal. Intenta de nuevo.
+buy_view_all_title: Todos los países disponibles
+buy_view_all_empty: 🚫 No hay países disponibles ahora.
+otp_received_title: ¡OTP RECIBIDO! 🎉
+otp_phone_lbl: Teléfono
+otp_code_lbl: Código OTP
+otp_enter_instruction: Ingresa este código en Telegram para completar el inicio de sesión.
+otp_sensitive_note: _Mantén el código privado — no lo compartas._
+otp_timeout_title: TIEMPO OTP AGOTADO ⏰
+otp_timeout_body: 'No OTP was received within 2 minutes. Please make sure you entered the phone correctly and requested a login OTP.
+
+
+  Contact support if you need help.'
+otp_cancelled_title: ESPERA DE OTP CANCELADA
+otp_cancelled_body: 'La espera del OTP fue cancelada.
+
+
+  ⚠️ Tu compra sigue siendo válida.
+
+  Contacta a soporte si necesitas el OTP.'
+otp_error: OTP delivery failed for {0}. Please contact support.
+btn_back_to_market: ⬅️ Volver al mercado
+sell_title: VENDER CUENTA
+sell_no_countries: 🚫 No countries accepting accounts right now. Check back later!
+sell_page_info: Página {0}/{1} — {2} países
+sell_hint: Elige un país para ver el precio 👇
+sell_country_title: VENDER CUENTA — {0}
+sell_country_lbl: País
+sell_phone_code_lbl: Código telefónico
+sell_we_pay_lbl: Te pagamos
+sell_requirements_title: ✅ Requisitos
+sell_req_prefix: • Phone number must start with {0}
+sell_req_valid_session: • El archivo de sesión debe ser válido y autorizado
+sell_req_no_spam: • La cuenta no debe tener spam, estar congelada ni bloqueada
+sell_req_no_dupe: • No debe estar duplicada en nuestro sistema
+sell_how_title: 📋 Cómo funciona
+sell_how_step1: 1️⃣ Upload your .session file
+sell_how_step2: 2️⃣ Validamos la cuenta automáticamente
+sell_how_step3: 3️⃣ Funds go to your Pending Balance
+sell_how_step4: 4️⃣ Admin revisa → el saldo queda disponible
+sell_review_time: '⏱ Tiempo estimado de revisión: 1–24 horas'
+sell_why_rejected: '📌 Rechazos comunes: número de país incorrecto, sesión expirada, cuenta spam/bloqueada, duplicada.'
+btn_start_selling: 📤 Empezar a vender
+btn_my_requests: 📋 Mis solicitudes
+sell_my_requests_title: MIS SOLICITUDES DE VENTA
+sell_empty_requests: 📭 Aún no tienes solicitudes.
+sell_requests_footer: Last 10 requests shown
+sell_country_full: 🚫 Este país no acepta cuentas ahora.
+sell_init_title: VENDER CUENTA — {0}
+sell_you_receive_lbl: Recibirás
+sell_required_prefix_lbl: Prefijo requerido
+sell_step1_title: Paso 1 — Genera tu archivo de sesión
+sell_telethon_note: Run this snippet on your computer. It creates my_session.session.
+sell_step2_title: Paso 2 — Sube el archivo aquí
+sell_step2_body: 📎 Send the .session file as a document in this chat.
+sell_waiting: ⏳ Esperando tu archivo…
+sell_type_cancel: Escribe /cancel para abortar.
+sell_cancelled_title: VENTA CANCELADA
+sell_cancelled_body: No se envió ninguna cuenta. Puedes empezar de nuevo cuando quieras.
+sell_rate_limit: ⏱ Límite alcanzado. Máx {0} envíos por {1}h. Intenta luego.
+sell_max_pending: ⏳ Tienes {0} solicitudes pendientes. Espera a que sean revisadas.
+sell_wrong_file: ❌ Wrong file type. Please send a .session file.
+sell_file_too_large: ❌ File too large. A valid session file is under 100 KB.
+sell_validating_title: VALIDANDO SESIÓN
+sell_validating_body: ⏳ Conectando con Telegram… espera hasta 30 segundos.
+sell_no_channel: ⚠️ La plataforma no está configurada. Contacta al admin.
+sell_download_error: ❌ Could not read your file. Please send the file again, or type /cancel.
+sell_success_title: ¡SESIÓN ENVIADA! ✅
+sell_request_id_lbl: ID de solicitud
+sell_pending_balance_lbl: Saldo pendiente
+sell_status_lbl: Estado
+sell_awaiting_review: ⏳ En espera de revisión
+sell_success_note: Your pending balance will be credited once admin approves your request.
+sell_spam_flag_note: _⚠️ This account has a temporary spam flag. Admin will make the final decision._
+sell_track_hint: Track your request in My Sell Requests.
+sell_error_generic: ❌ Error inesperado. Intenta o contacta a soporte.
+btn_sell_another: 💼 Vender otra
+btn_prev: ⬅️ Anterior
+btn_next: Siguiente ➡️
+btn_view_all: 📋 Ver todo
+btn_cancel: ❌ Cancelar
+err_country_not_found: ❌ País no encontrado.
+sell_country_name_lbl: País
+buy_otp_requesting: 📨 Solicitando OTP a Telegram…
+buy_otp_prompt: '📱 **Teléfono:** `{0}`
+
+
+  Enviamos un código de acceso a este número.
+
+  Ingresa el OTP aquí:'
+buy_otp_cancel_hint: _(Escribe /cancel para abortar y recibir reembolso)_
+buy_otp_invalid: '❌ OTP incorrecto. Verifica e intenta de nuevo:'
+buy_otp_expired: ❌ El OTP expiró. Tu compra fue reembolsada — intenta comprar de nuevo.
+buy_tfa_prompt: '🔐 Esta cuenta tiene **2FA** activo.
+
+
+  Ingresa la contraseña 2FA:'
+buy_tfa_invalid: '❌ Contraseña 2FA incorrecta. Intenta de nuevo:'
+buy_flood_wait: ⏳ Límite de Telegram — espera **{0} segundos** y reenvía el OTP.
+buy_auth_checking: 🔍 Verificando cuenta…
+buy_complete_title: ¡CUENTA LISTA! 🎉
+buy_logout_instruction: Ve a **Ajustes → Privacidad → Sesiones activas** y cierra las demás sesiones para asegurar la cuenta.
+buy_auth_cancelled_title: COMPRA CANCELADA
+buy_auth_cancelled_body: Tu saldo de `${0}` fue reembolsado.
+buy_account_banned: ❌ Esta cuenta fue baneada por Telegram. Tu compra fue reembolsada.
+buy_sessions_terminated: ✅ Todas las demás sesiones fueron cerradas.
+buy_sessions_partial: ⚠️ Algunas sesiones no se cerraron — quítalas desde Ajustes → Sesiones activas.
+buy_auth_send_code_fail: '❌ No se pudo solicitar OTP. Tu compra fue reembolsada.
+
+
+  Intenta luego o contacta a soporte.'
+buy_auth_cancel_hint_inline: Pulsa Cancelar para abortar y reembolsar.
+buy_auth_already_active: ⏳ You already have a pending OTP flow. Send the OTP or type /cancel.
+btn_home_deposit: 💰 Depositar
+btn_home_withdraw_money: 👤 Retirar
+btn_extra: ✨ Extra
+btn_sessions_menu: 📦 Vender / Comprar Sesiones
+btn_sell_account_start: 🔴 Comenzar a Vender
+btn_my_sell_record: 📋 Mis Ventas
+btn_open: 📖 Abrir
+btn_search_country: 🔍 Buscar
+btn_search_again: 🔍 Buscar de Nuevo
+registration_disabled_msg: "🚫 **El registro de nuevos usuarios está deshabilitado actualmente.**\n\nPor favor, inténtalo de nuevo más tarde. Cuando el registro se habilite nuevamente, podrás iniciar el bot.\n\nSi tienes alguna duda o problema, contacta con soporte."
+
+feature_disabled_alert: "Esta función está desactivada actualmente."
+maintenance_mode_msg: "🔧 **El mantenimiento de la plataforma está activo.**\n\nNuevas órdenes, depósitos y retiros están pausados temporalmente. Inténtalo de nuevo más tarde.\n\nSi tienes alguna duda o problema, contacta con soporte."
+deposits_disabled_msg: "🚫 **Los nuevos depósitos están desactivados actualmente.**\n\nInténtalo de nuevo después de un tiempo. Cuando los depósitos estén habilitados nuevamente, podrás crear un nuevo depósito.\n\nSi tienes alguna duda o problema, contacta con soporte."
+withdrawals_disabled_msg: "🚫 **Las nuevas solicitudes de retiro están desactivadas actualmente.**\n\nInténtalo de nuevo después de un tiempo. Cuando los retiros estén habilitados nuevamente, podrás solicitar un retiro.\n\nSi tienes alguna duda o problema, contacta con soporte."
+
+# -- Session selling gate (auto-added) --
+sell_disabled_msg: '🛑 **La venta de sesiones está deshabilitada actualmente.**
+
+
+  Inténtalo más tarde. Si tienes alguna duda, contacta con soporte.'
+sell_rank_locked_msg: '🔒 **La venta de sesiones está bloqueada por rango.**
+
+
+  • Rango mínimo: **{min_rank}** (requiere `${required_spend:g}` gastados)
+
+  • Tu rango: **{current_rank}** — has gastado `${current_spend:g}`
+
+  • Gasta **`${needed_spend:g}`** más para desbloquear
+
+
+  Si tienes alguna duda, contacta con soporte.'
+
+btn_user_dashboard: "🎛 Panel de Usuario"
+
+# -- Binance Pay (Auto) deposit (auto-added) --
+binance_pay_auto_label: "Binance Pay (Auto)"
+dep_dup_order_title: "ID de orden ya utilizado"
+dep_dup_order_body: "Este ID de orden de Binance ya se utilizó en otro depósito. Cada ID solo puede usarse una vez."
+dep_dup_order_hint: "Realiza un nuevo pago o contacta con soporte."

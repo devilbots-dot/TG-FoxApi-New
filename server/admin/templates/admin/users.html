@@ -1,0 +1,325 @@
+{% extends "admin/base.html" %}
+{% block title %}Users{% endblock %}
+{% block topbar_title %}👥 User Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Users</div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" onclick="exportUsers()">⬇ Export CSV</button>
+    <button class="btn btn-secondary btn-sm" onclick="loadUsers(1)">🔄 Refresh</button>
+  </div>
+</div>
+
+<div class="filters">
+  <input type="text" id="q" class="search-input" placeholder="🔍 User ID, username…" oninput="debounceLoad()">
+  <select id="f-banned" class="filter-select" onchange="loadUsers(1)">
+    <option value="">All Users</option>
+    <option value="false">Active</option>
+    <option value="true">Banned</option>
+  </select>
+  <select id="f-rank" class="filter-select" onchange="loadUsers(1)">
+    <option value="">All Ranks</option>
+    <option value="VIP1">VIP1</option>
+    <option value="VIP2">VIP2</option>
+    <option value="VIP3">VIP3</option>
+    <option value="PREMIUM">PREMIUM</option>
+    <option value="DIAMOND">DIAMOND</option>
+  </select>
+</div>
+
+<div class="table-wrap">
+  <div class="table-header">
+    <span class="table-title">Users</span>
+    <span class="table-count" id="users-count">—</span>
+  </div>
+  <div id="users-body"><div class="loading"><div class="spinner"></div></div></div>
+  <div class="pagination" id="users-pagination"></div>
+</div>
+
+<!-- User Detail Modal -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">👤 User Detail</span>
+      <button class="modal-close" onclick="closeModal('user-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="user-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('user-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Balance Modal -->
+<div class="modal-overlay" id="balance-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">💰 Adjust Balance</span>
+      <button class="modal-close" onclick="closeModal('balance-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Mode</label>
+        <select class="form-control" id="bal-mode">
+          <option value="add">Add to balance</option>
+          <option value="subtract">Subtract from balance</option>
+          <option value="set">Set balance</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount ($)</label>
+        <input type="number" step="0.01" class="form-control" id="bal-amount" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note</label>
+        <input type="text" class="form-control" id="bal-note" placeholder="Reason for adjustment">
+      </div>
+      <input type="hidden" id="bal-user-id">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('balance-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="doBalance()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- Rank Modal -->
+<div class="modal-overlay" id="rank-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">⭐ Change Rank</span>
+      <button class="modal-close" onclick="closeModal('rank-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Rank</label>
+        <select class="form-control" id="rank-val">
+          <option value="VIP1">VIP1</option>
+          <option value="VIP2">VIP2</option>
+          <option value="VIP3">VIP3</option>
+          <option value="PREMIUM">PREMIUM</option>
+          <option value="DIAMOND">DIAMOND</option>
+        </select>
+      </div>
+      <input type="hidden" id="rank-user-id">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('rank-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="doRank()">Set Rank</button>
+    </div>
+  </div>
+</div>
+
+<!-- Ban Modal -->
+<div class="modal-overlay" id="ban-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🚫 Ban User</span>
+      <button class="modal-close" onclick="closeModal('ban-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Reason</label>
+        <input type="text" class="form-control" id="ban-reason" placeholder="Reason for ban">
+      </div>
+      <input type="hidden" id="ban-user-id">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('ban-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="doBan()">🚫 Ban</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notify Modal -->
+<div class="modal-overlay" id="notify-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📨 Send Telegram Message</span>
+      <button class="modal-close" onclick="closeModal('notify-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="text-muted text-small" style="margin-bottom:12px">Send a direct Telegram message to this user from the admin panel. The message is delivered as a bot DM.</p>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-control" id="notify-message" rows="5" placeholder="Type your message here…" style="resize:vertical"></textarea>
+      </div>
+      <div class="form-hint">Supports Telegram Markdown: **bold**, `code`, _italic_.</div>
+      <input type="hidden" id="notify-user-id">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('notify-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="doNotify()">📨 Send Message</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let _page = 1, _debounce;
+
+function rankBadge(r) {
+  const map = { VIP1:'gray', VIP2:'blue', VIP3:'purple', PREMIUM:'yellow', DIAMOND:'cyan' };
+  return `<span class="badge badge-${map[r]||'gray'}">${r}</span>`;
+}
+
+async function loadUsers(page = _page) {
+  _page = page;
+  const tbody = document.getElementById('users-body');
+  const q = document.getElementById('q').value;
+  const banned = document.getElementById('f-banned').value;
+  const rank = document.getElementById('f-rank').value;
+  showLoading(tbody);
+  try {
+    const params = new URLSearchParams({ page, limit: 50 });
+    if (q) params.set('q', q);
+    if (banned) params.set('banned', banned);
+    if (rank) params.set('rank', rank);
+    const data = await apiGET('/admin/api/users?' + params);
+    document.getElementById('users-count').textContent = fmtNum(data.total) + ' users';
+    if (!data.items.length) { showEmpty(tbody, 'No users found.'); document.getElementById('users-pagination').innerHTML=''; return; }
+
+    tbody.innerHTML = `<table class="tbl">
+      <thead><tr><th>User ID</th><th>Name</th><th>Balance</th><th>Rank</th><th>Buys</th><th>Deposit</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+      <tbody>${data.items.map(u => `<tr>
+        <td class="text-mono">${u.user_id}</td>
+        <td>${u.full_name || '—'} ${u.username ? '<br><span class="text-muted text-small">@' + u.username + '</span>' : ''}</td>
+        <td>${fmtMoney(u.balance)}</td>
+        <td>${rankBadge(u.rank)}</td>
+        <td>${u.total_account_buy || 0}</td>
+        <td>${fmtMoney(u.total_deposit)}</td>
+        <td>${u.is_banned ? '<span class="badge badge-red">🚫 Banned</span>' : '<span class="badge badge-green">✓ Active</span>'}</td>
+        <td>${fmtDateShort(u.joined_at)}</td>
+        <td><div class="tbl-actions">
+          <button class="btn btn-secondary btn-xs" onclick="viewUser(${u.user_id})" title="View detail">👁</button>
+          <button class="btn btn-blue btn-xs" style="background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.2)" onclick="openBalance(${u.user_id})" title="Adjust balance">💰</button>
+          <button class="btn btn-warning btn-xs" onclick="openRank(${u.user_id},'${u.rank}')" title="Change rank">⭐</button>
+          <button class="btn btn-secondary btn-xs" onclick="openNotify(${u.user_id})" title="Send message">📨</button>
+          ${u.is_banned
+            ? `<button class="btn btn-success btn-xs" onclick="unbanUser(${u.user_id})">✓ Unban</button>`
+            : `<button class="btn btn-danger btn-xs" onclick="openBan(${u.user_id})" title="Ban user">🚫</button>`}
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+    renderPagination(document.getElementById('users-pagination'), data, n => loadUsers(n));
+  } catch(e) { showEmpty(tbody, 'Failed to load.'); }
+}
+
+async function viewUser(id) {
+  const modal = document.getElementById('user-modal-body');
+  modal.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  openModal('user-modal');
+  try {
+    const data = await apiGET(`/admin/api/users/${id}`);
+    const u = data.user;
+    modal.innerHTML = `
+      <div class="kv-list mb-3">
+        <div class="kv-row"><span class="kv-key">User ID</span><span class="kv-val text-mono">${u.user_id}</span></div>
+        <div class="kv-row"><span class="kv-key">Full Name</span><span class="kv-val">${u.full_name || '—'}</span></div>
+        <div class="kv-row"><span class="kv-key">Username</span><span class="kv-val">${u.username ? '@' + u.username : '—'}</span></div>
+        <div class="kv-row"><span class="kv-key">Balance</span><span class="kv-val">${fmtMoney(u.balance)}</span></div>
+        <div class="kv-row"><span class="kv-key">Rank</span><span class="kv-val">${u.rank}</span></div>
+        <div class="kv-row"><span class="kv-key">Total Deposit</span><span class="kv-val">${fmtMoney(u.total_deposit)}</span></div>
+        <div class="kv-row"><span class="kv-key">Total Spend</span><span class="kv-val">${fmtMoney(u.total_spend)}</span></div>
+        <div class="kv-row"><span class="kv-key">Accounts Bought</span><span class="kv-val">${u.total_account_buy || 0}</span></div>
+        <div class="kv-row"><span class="kv-key">Referrals</span><span class="kv-val">${u.referral_count || 0}</span></div>
+        <div class="kv-row"><span class="kv-key">Language</span><span class="kv-val">${u.language || 'en'}</span></div>
+        <div class="kv-row"><span class="kv-key">API Access</span><span class="kv-val">${u.api_access ? '✓ Enabled' : '✕ Disabled'}</span></div>
+        <div class="kv-row"><span class="kv-key">Joined</span><span class="kv-val">${fmtDate(u.joined_at)}</span></div>
+      </div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px">Recent Transactions</div>
+      <table class="tbl mb-3">
+        <thead><tr><th>Type</th><th>Amount</th><th>Note</th><th>Date</th></tr></thead>
+        <tbody>${(data.transactions || []).map(t => `<tr>
+          <td>${statusBadge(t.type)}</td>
+          <td>${fmtMoney(t.amount)}</td>
+          <td class="text-muted">${t.note || '—'}</td>
+          <td>${fmtDateShort(t.created_at)}</td>
+        </tr>`).join('') || '<tr><td colspan="4" class="text-muted" style="padding:12px">No transactions</td></tr>'}</tbody>
+      </table>
+    `;
+  } catch(e) { modal.innerHTML = '<div class="empty"><div class="empty-text">Failed to load user detail</div></div>'; }
+}
+
+function openBalance(id) { document.getElementById('bal-user-id').value = id; document.getElementById('bal-amount').value=''; document.getElementById('bal-note').value=''; openModal('balance-modal'); }
+function openRank(id, cur) { document.getElementById('rank-user-id').value = id; document.getElementById('rank-val').value = cur; openModal('rank-modal'); }
+function openBan(id) { document.getElementById('ban-user-id').value = id; document.getElementById('ban-reason').value=''; openModal('ban-modal'); }
+function openNotify(id) { document.getElementById('notify-user-id').value = id; document.getElementById('notify-message').value=''; openModal('notify-modal'); }
+
+async function doBalance() {
+  const id = document.getElementById('bal-user-id').value;
+  const mode = document.getElementById('bal-mode').value;
+  let amount = parseFloat(document.getElementById('bal-amount').value);
+  const note = document.getElementById('bal-note').value;
+  if (isNaN(amount)) { toast('Enter valid amount', 'error'); return; }
+  if (mode === 'subtract') amount = -amount;
+  const r = await apiPOST(`/admin/api/users/${id}/balance`, {mode: mode === 'set' ? 'set' : 'add', amount, note});
+  if (r.ok) { toast('Balance updated', 'success'); closeModal('balance-modal'); loadUsers(); }
+  else toast(r.detail || 'Failed', 'error');
+}
+
+async function doRank() {
+  const id = document.getElementById('rank-user-id').value;
+  const rank = document.getElementById('rank-val').value;
+  const r = await apiPOST(`/admin/api/users/${id}/rank`, {rank});
+  if (r.ok) { toast('Rank updated', 'success'); closeModal('rank-modal'); loadUsers(); }
+  else toast(r.detail || 'Failed', 'error');
+}
+
+async function doBan() {
+  const id = document.getElementById('ban-user-id').value;
+  const reason = document.getElementById('ban-reason').value;
+  const r = await apiPOST(`/admin/api/users/${id}/ban`, {reason});
+  if (r.ok) { toast('User banned', 'success'); closeModal('ban-modal'); loadUsers(); }
+  else toast(r.detail || 'Failed', 'error');
+}
+
+async function unbanUser(id) {
+  confirm(`Unban user ${id}?`, async () => {
+    const r = await apiPOST(`/admin/api/users/${id}/unban`);
+    if (r.ok) { toast('User unbanned', 'success'); loadUsers(); }
+    else toast('Failed', 'error');
+  });
+}
+
+async function doNotify() {
+  const id = document.getElementById('notify-user-id').value;
+  const message = document.getElementById('notify-message').value.trim();
+  if (!message) { toast('Message cannot be empty', 'error'); return; }
+  const btn = document.querySelector('#notify-modal .modal-footer .btn-primary');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const r = await apiPOST(`/admin/api/users/${id}/notify`, { message });
+    if (r.ok) {
+      toast('Message sent successfully', 'success');
+      closeModal('notify-modal');
+    } else {
+      toast(r.detail || 'Failed to send message', 'error');
+    }
+  } catch(e) { toast('Request failed', 'error'); }
+  finally { btn.disabled = false; btn.textContent = '📨 Send Message'; }
+}
+
+function debounceLoad() { clearTimeout(_debounce); _debounce = setTimeout(() => loadUsers(1), 400); }
+
+async function exportUsers() {
+  const q = document.getElementById('q').value;
+  const banned = document.getElementById('f-banned').value;
+  const rank = document.getElementById('f-rank').value;
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  if (banned) params.set('banned', banned);
+  if (rank) params.set('rank', rank);
+  const res = await fetch('/admin/api/users/export?' + params, { credentials: 'same-origin' });
+  if (!res.ok) { toast('Export failed', 'error'); return; }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'users.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  toast('Users exported', 'success');
+}
+
+document.addEventListener('DOMContentLoaded', () => loadUsers(1));
+</script>
+{% endblock %}

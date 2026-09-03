@@ -1,0 +1,362 @@
+{% extends "admin/base.html" %}
+{% block title %}Proxies{% endblock %}
+{% block topbar_title %}🔗 Proxy Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Proxies</div>
+  <div class="page-actions">
+    <button class="btn btn-primary btn-sm" onclick="openModal('add-proxy-modal')">+ Add Proxy</button>
+    <button class="btn btn-success btn-sm" onclick="openUniversalModal()">🌐 Set Universal Proxy</button>
+    <button class="btn btn-secondary btn-sm" onclick="loadProxies()">🔄 Refresh</button>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <div class="table-header">
+    <span class="table-title">Proxies</span>
+    <span class="table-count" id="proxy-count">—</span>
+  </div>
+  <div id="proxy-body"><div class="loading"><div class="spinner"></div></div></div>
+</div>
+
+<!-- Add Proxy Modal -->
+<div class="modal-overlay" id="add-proxy-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">+ Add Proxy</span>
+      <button class="modal-close" onclick="closeModal('add-proxy-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Host / IP</label>
+          <input type="text" class="form-control" id="px-host" placeholder="192.168.1.1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Port</label>
+          <input type="number" class="form-control" id="px-port" placeholder="1080">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-control" id="px-type">
+            <option value="socks5">SOCKS5</option>
+            <option value="http">HTTP</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Country Code (* = global)</label>
+          <input type="text" class="form-control" id="px-country" placeholder="IN or *" value="*">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Username (optional)</label>
+          <input type="text" class="form-control" id="px-user" placeholder="">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password (optional)</label>
+          <input type="password" class="form-control" id="px-pass" placeholder="">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('add-proxy-modal')">Cancel</button>
+      <button class="btn btn-primary" id="add-proxy-btn" onclick="addProxy()">Test & Add Proxy</button>
+    </div>
+  </div>
+</div>
+
+<!-- Universal Proxy Modal -->
+<div class="modal-overlay" id="universal-proxy-modal">
+  <div class="modal" style="max-width: 720px;">
+    <div class="modal-header">
+      <span class="modal-title">🌐 Set Universal Proxy</span>
+      <button class="modal-close" onclick="closeModal('universal-proxy-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info" style="margin-bottom:12px;font-size:13px;">
+        Same host / port / password ke saath multiple countries ke liye proxies add karein.
+        Username ke end me jo <code>_XX</code> country suffix hai (jaise <code>..._GH</code>),
+        selected country ke code (<code>IN</code>, <code>US</code>, etc.) se auto-replace ho jayega.
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Host / IP</label>
+          <input type="text" class="form-control" id="uni-host" placeholder="proxy.example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Port</label>
+          <input type="number" class="form-control" id="uni-port" placeholder="1080">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-control" id="uni-type">
+            <option value="socks5">SOCKS5</option>
+            <option value="http">HTTP</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" id="uni-pass">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username Template</label>
+        <input type="text" class="form-control text-mono" id="uni-user"
+               placeholder="Y0QyotSMCx10_custom_zone_GH"
+               oninput="renderUniPreview()">
+        <div class="form-help" style="font-size:12px;color:var(--muted,#888);margin-top:4px;">
+          Trailing <code>_XX</code> replace hoga. Agar suffix na ho to <code>_&lt;CC&gt;</code> append hoga.
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:10px;">
+        <label class="form-label" style="display:flex;align-items:center;gap:10px;">
+          <span>Select Countries</span>
+          <input type="text" class="form-control" id="uni-country-search"
+                 placeholder="Search…" style="flex:1;max-width:200px;height:28px;font-size:12px;"
+                 oninput="filterUniCountries()">
+          <button type="button" class="btn btn-secondary btn-xs" onclick="toggleAllUniCountries(true)">Select All</button>
+          <button type="button" class="btn btn-secondary btn-xs" onclick="toggleAllUniCountries(false)">Clear</button>
+          <span class="badge badge-purple" id="uni-selected-count">0 selected</span>
+        </label>
+        <div id="uni-country-list"
+             style="max-height:260px;overflow:auto;border:1px solid var(--border,#333);border-radius:6px;padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:10px;">
+        <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="uni-skip-test">
+          <span>Skip connection test (faster, but no validation)</span>
+        </label>
+      </div>
+
+      <div id="uni-preview" style="margin-top:10px;font-size:12px;color:var(--muted,#888);"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('universal-proxy-modal')">Cancel</button>
+      <button class="btn btn-success" id="uni-submit-btn" onclick="submitUniversal()">Test & Add for Selected Countries</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadProxies() {
+  const tbody = document.getElementById('proxy-body');
+  showLoading(tbody);
+  try {
+    const data = await apiGET('/admin/api/proxies');
+    const items = data.items || [];
+    document.getElementById('proxy-count').textContent = items.length + ' proxies';
+    if (!items.length) { showEmpty(tbody, 'No proxies configured.', 'Add a proxy to get started.'); return; }
+
+    tbody.innerHTML = `<table class="tbl">
+      <thead><tr><th>Proxy ID</th><th>Country</th><th>Type</th><th>Host:Port</th><th>Auth</th><th>Fails</th><th>Status</th><th>Added</th><th>Actions</th></tr></thead>
+      <tbody>${items.map(p => `<tr>
+        <td class="text-mono text-small">${p.proxy_id}</td>
+        <td>${p.country_code === '*' ? '🌐 Global' : p.country_code}</td>
+        <td><span class="badge badge-purple">${p.type?.toUpperCase()}</span></td>
+        <td class="text-mono">${p.host}:${p.port}</td>
+        <td>${p.username ? '🔐 Set' : '<span class="text-muted">None</span>'}</td>
+        <td>${p.fail_count > 0 ? `<span class="badge badge-red">${p.fail_count}</span>` : '<span class="badge badge-green">0</span>'}</td>
+        <td>${p.is_active ? '<span class="badge badge-green">● Active</span>' : '<span class="badge badge-gray">○ Inactive</span>'}</td>
+        <td>${fmtDateShort(p.added_at)}</td>
+        <td><div class="tbl-actions">
+          <button class="btn btn-secondary btn-xs" id="test-${p.proxy_id}" onclick="testProxy('${p.proxy_id}')">🔍 Test</button>
+          <button class="btn btn-${p.is_active ? 'warning' : 'success'} btn-xs" onclick="toggleProxy('${p.proxy_id}',${!p.is_active})">${p.is_active ? '⊘ Disable' : '✓ Enable'}</button>
+          <button class="btn btn-danger btn-xs" onclick="deleteProxy('${p.proxy_id}')">🗑</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  } catch(e) { showEmpty(tbody, 'Failed to load proxies.'); }
+}
+
+async function addProxy() {
+  const btn = document.getElementById('add-proxy-btn');
+  const body = {
+    host: document.getElementById('px-host').value,
+    port: parseInt(document.getElementById('px-port').value),
+    type: document.getElementById('px-type').value,
+    country_code: document.getElementById('px-country').value.toUpperCase() || '*',
+    username: document.getElementById('px-user').value,
+    password: document.getElementById('px-pass').value,
+  };
+  if (!body.host || !body.port) { toast('Host and port required', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Testing…';
+  try {
+    const r = await apiPOST('/admin/api/proxies', body);
+    if (r.ok) {
+      toast(`Proxy added: ${r.proxy_id} (${r.latency_ms}ms)`, 'success');
+      closeModal('add-proxy-modal');
+      loadProxies();
+    } else {
+      toast(r.detail || 'Failed', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Test & Add Proxy';
+    }
+  } catch(e) {
+    toast('Failed', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Test & Add Proxy';
+  }
+}
+
+async function testProxy(id) {
+  const btn = document.getElementById('test-' + id);
+  if (btn) btn.textContent = '⏳…';
+  const r = await apiPOST(`/admin/api/proxies/${id}/test`);
+  if (btn) btn.textContent = '🔍 Test';
+  if (r.ok) toast(`✅ Proxy OK — ${r.latency_ms}ms`, 'success');
+  else toast(`❌ Proxy failed: ${r.detail}`, 'error');
+}
+
+async function toggleProxy(id, val) {
+  const r = await apiPATCH(`/admin/api/proxies/${id}/toggle`, {is_active: val});
+  if (r.ok) { toast(val ? 'Proxy enabled' : 'Proxy disabled', 'success'); loadProxies(); }
+  else toast('Failed', 'error');
+}
+
+async function deleteProxy(id) {
+  confirm('Delete this proxy?', async () => {
+    const r = await apiDELETE(`/admin/api/proxies/${id}`);
+    if (r.ok) { toast('Proxy deleted', 'success'); loadProxies(); }
+    else toast('Failed', 'error');
+  });
+}
+
+// ── Universal Proxy ──────────────────────────────────────────────────────────
+let _uniCountries = [];
+
+async function openUniversalModal() {
+  openModal('universal-proxy-modal');
+  const listEl = document.getElementById('uni-country-list');
+  listEl.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const data = await apiGET('/admin/api/countries');
+    _uniCountries = (data.items || data.countries || data || []).map(c => ({
+      code: (c.code || c.country_code || '').toUpperCase(),
+      name: c.name || c.country_name || c.code || '',
+    })).filter(c => c.code && c.code !== '*');
+    _uniCountries.sort((a, b) => a.code.localeCompare(b.code));
+    renderUniCountryList();
+  } catch (e) {
+    listEl.innerHTML = '<div class="text-muted">Failed to load countries</div>';
+  }
+  updateUniSelectedCount();
+  renderUniPreview();
+}
+
+function renderUniCountryList() {
+  const listEl = document.getElementById('uni-country-list');
+  const q = (document.getElementById('uni-country-search')?.value || '').toLowerCase().trim();
+  const shown = _uniCountries.filter(c =>
+    !q || c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
+  );
+  if (!shown.length) { listEl.innerHTML = '<div class="text-muted">No countries match.</div>'; return; }
+  listEl.innerHTML = shown.map(c => `
+    <label style="display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:13px;">
+      <input type="checkbox" class="uni-cc" value="${c.code}" onchange="updateUniSelectedCount()">
+      <span class="text-mono" style="font-weight:600;">${c.code}</span>
+      <span class="text-muted" style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.name}</span>
+    </label>
+  `).join('');
+}
+
+function filterUniCountries() {
+  // preserve checked state across re-render
+  const checked = new Set(getUniSelectedCodes());
+  renderUniCountryList();
+  document.querySelectorAll('.uni-cc').forEach(cb => { if (checked.has(cb.value)) cb.checked = true; });
+  updateUniSelectedCount();
+}
+
+function toggleAllUniCountries(val) {
+  document.querySelectorAll('.uni-cc').forEach(cb => { cb.checked = val; });
+  updateUniSelectedCount();
+}
+
+function getUniSelectedCodes() {
+  return Array.from(document.querySelectorAll('.uni-cc:checked')).map(cb => cb.value);
+}
+
+function updateUniSelectedCount() {
+  const n = getUniSelectedCodes().length;
+  const el = document.getElementById('uni-selected-count');
+  if (el) el.textContent = n + ' selected';
+  renderUniPreview();
+}
+
+function rewriteUsername(user, cc) {
+  if (!user) return user;
+  if (/_[A-Za-z]{2}$/.test(user)) return user.replace(/_[A-Za-z]{2}$/, '_' + cc);
+  return user + '_' + cc;
+}
+
+function renderUniPreview() {
+  const user = document.getElementById('uni-user')?.value || '';
+  const codes = getUniSelectedCodes().slice(0, 3);
+  const el = document.getElementById('uni-preview');
+  if (!el) return;
+  if (!user || !codes.length) { el.innerHTML = ''; return; }
+  const rows = codes.map(cc => `<div class="text-mono">${cc} → ${rewriteUsername(user, cc)}</div>`).join('');
+  const more = getUniSelectedCodes().length > 3 ? `<div class="text-muted">…and ${getUniSelectedCodes().length - 3} more</div>` : '';
+  el.innerHTML = `<div style="border-left:3px solid var(--primary,#4f8);padding-left:8px;">Preview:${rows}${more}</div>`;
+}
+
+async function submitUniversal() {
+  const btn = document.getElementById('uni-submit-btn');
+  const body = {
+    host: document.getElementById('uni-host').value.trim(),
+    port: parseInt(document.getElementById('uni-port').value),
+    type: document.getElementById('uni-type').value,
+    username: document.getElementById('uni-user').value,
+    password: document.getElementById('uni-pass').value,
+    country_codes: getUniSelectedCodes(),
+    skip_test: document.getElementById('uni-skip-test').checked,
+  };
+  if (!body.host || !body.port) { toast('Host and port required', 'error'); return; }
+  if (!body.country_codes.length) { toast('Select at least one country', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = `Processing ${body.country_codes.length}…`;
+  try {
+    const r = await apiPOST('/admin/api/proxies/bulk-universal', body);
+    if (r.ok) {
+      toast(`✅ Added: ${r.added} / ${r.total} · Failed: ${r.failed}`, r.failed ? 'warning' : 'success');
+      // Show failed details if any
+      if (r.failed && Array.isArray(r.results)) {
+        const fails = r.results.filter(x => !x.ok);
+        if (fails.length) {
+          console.warn('Universal proxy failures:', fails);
+          const msg = fails.slice(0, 5).map(f => `${f.country_code}: ${f.detail || 'failed'}`).join('\n');
+          setTimeout(() => alert('Failed countries:\n' + msg + (fails.length > 5 ? `\n…+${fails.length - 5} more` : '')), 400);
+        }
+      }
+      closeModal('universal-proxy-modal');
+      loadProxies();
+    } else {
+      toast(r.detail || 'Failed', 'error');
+    }
+  } catch(e) {
+    toast('Failed', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Test & Add for Selected Countries';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadProxies);
+</script>
+{% endblock %}

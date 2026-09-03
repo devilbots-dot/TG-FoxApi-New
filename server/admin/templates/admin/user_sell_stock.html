@@ -1,0 +1,435 @@
+{% extends "admin/base.html" %}
+{% block title %}Users Sell Stock{% endblock %}
+{% block topbar_title %}📥 Users Sell Stock{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Users Sell Stock
+    <span style="font-size:13px;font-weight:400;color:var(--muted,#888);margin-left:10px">Sessions received from sellers — pending Sell Inventory</span>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" onclick="loadStock(1)">🔄 Refresh</button>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="filters" style="flex-wrap:wrap;gap:8px;margin-bottom:14px">
+  <input type="number" id="f-uid" class="filter-select" placeholder="User ID" style="width:140px">
+  <input type="text"   id="f-sell" class="filter-select" placeholder="Sell ID" style="width:160px">
+  <input type="text"   id="f-stock" class="filter-select" placeholder="Stock ID" style="width:160px">
+  <select id="f-country" class="filter-select" style="width:160px">
+    <option value="">All Countries</option>
+  </select>
+  <select id="f-pay" class="filter-select">
+    <option value="">All Payment</option>
+    <option value="paid">✅ Paid (Released)</option>
+    <option value="pending">⏳ Pending (On Hold)</option>
+    <option value="rejected">❌ Rejected</option>
+  </select>
+  <select id="f-sess" class="filter-select">
+    <option value="">All Session Status</option>
+    <option value="clean">✅ Clean</option>
+    <option value="temporary_spam">⚠️ Temp Spam</option>
+    <option value="permanent_spam">🚫 Perm Spam</option>
+    <option value="frozen">🧊 Frozen</option>
+    <option value="restricted">🔒 Restricted</option>
+    <option value="dead">💀 Dead</option>
+    <option value="unknown">❓ Unknown</option>
+  </select>
+  <select id="f-transferred" class="filter-select">
+    <option value="0">Not Transferred</option>
+    <option value="1">Transferred</option>
+    <option value="">All</option>
+  </select>
+  <button class="btn btn-primary btn-sm" onclick="loadStock(1)">🔍 Filter</button>
+</div>
+
+<!-- Bulk Action Bar -->
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+  <label style="font-size:13px;color:var(--muted)">
+    <input type="checkbox" id="sel-all" onchange="toggleSelectAll(this.checked)"> Select all visible
+  </label>
+  <button class="btn btn-secondary btn-sm" onclick="checkStatus(false)">🔍 Check Status (selected)</button>
+  <button class="btn btn-secondary btn-sm" onclick="checkStatus(true)">🔍 Check Status (all filters)</button>
+  <button class="btn btn-success btn-sm"   onclick="bulkApprove(false, false)">✅ Approve (selected)</button>
+  <button class="btn btn-success btn-sm"   onclick="bulkApprove(true, false)">✅ Approve (all filters)</button>
+  <button class="btn btn-danger btn-sm"    onclick="bulkReject(false)">❌ Reject (selected)</button>
+  <button class="btn btn-secondary btn-sm" onclick="transferToInventory(false)">📤 Send to Inventory (selected)</button>
+  <button class="btn btn-secondary btn-sm" onclick="transferToInventory(true)">📤 Send to Inventory (all filters)</button>
+</div>
+
+<!-- Progress bar (hidden by default) -->
+<div id="progress-bar-wrap" style="display:none;margin-bottom:12px">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--muted)" id="progress-msg">Working…</div>
+</div>
+
+<!-- Table -->
+<div class="table-wrap">
+  <div class="table-header">
+    <span class="table-title">Users Sell Stock</span>
+    <span class="table-count" id="uss-count">—</span>
+  </div>
+  <div id="uss-body"><div class="loading"><div class="spinner"></div></div></div>
+  <div class="pagination" id="uss-pagination"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let _page = 1;
+let _selectedIds = new Set();
+
+/* ── Badge helpers ── */
+const PAY_BADGE = {
+  paid:    '<span class="badge badge-green">✅ Paid</span>',
+  pending: '<span class="badge badge-yellow">⏳ On Hold</span>',
+  rejected:'<span class="badge badge-red">❌ Rejected</span>',
+  unpaid:  '<span class="badge badge-red">❌ Unpaid</span>',
+};
+const SESS_BADGE = {
+  clean:          '<span class="badge badge-green">✅ Clean</span>',
+  temporary_spam: '<span class="badge badge-yellow">⚠️ Temp Spam</span>',
+  permanent_spam: '<span class="badge badge-red">🚫 Perm Spam</span>',
+  frozen:         '<span class="badge badge-red">🧊 Frozen</span>',
+  restricted:     '<span class="badge badge-yellow">🔒 Restricted</span>',
+  dead:           '<span class="badge" style="background:#6b7280">💀 Dead</span>',
+  unknown:        '<span class="badge badge-secondary">❓ Unknown</span>',
+};
+
+function payBadge(s)  { return PAY_BADGE[s]  || `<span class="badge">${s||'—'}</span>`; }
+function sessBadge(s) { return SESS_BADGE[s] || `<span class="badge">${s||'—'}</span>`; }
+
+/* ── Load country dropdown once ── */
+(async function loadCountries() {
+  try {
+    const data = await apiGET('/admin/api/countries');
+    const sel  = document.getElementById('f-country');
+    (data.items || data.countries || []).forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.code || c.country_code;
+      opt.textContent = `${c.country_name || c.name} (${c.code || c.country_code})`;
+      sel.appendChild(opt);
+    });
+  } catch(e) { /* ignore */ }
+})();
+
+/* ── Main load function ── */
+async function loadStock(page = _page) {
+  _page = page;
+  _selectedIds.clear();
+  document.getElementById('sel-all').checked = false;
+
+  const tbody = document.getElementById('uss-body');
+  showLoading(tbody);
+
+  const params = new URLSearchParams({ page, limit: 50 });
+  const uid     = document.getElementById('f-uid').value.trim();
+  const sell    = document.getElementById('f-sell').value.trim();
+  const stock   = document.getElementById('f-stock').value.trim();
+  const country = document.getElementById('f-country').value;
+  const pay     = document.getElementById('f-pay').value;
+  const sess    = document.getElementById('f-sess').value;
+  const trans   = document.getElementById('f-transferred').value;
+
+  if (uid)     params.set('user_id', uid);
+  if (sell)    params.set('sell_id', sell);
+  if (stock)   params.set('stock_id', stock);
+  if (country) params.set('country', country);
+  if (pay)     params.set('payment_status', pay);
+  if (sess)    params.set('session_status', sess);
+  if (trans !== '') params.set('transferred', trans);
+
+  try {
+    const data = await apiGET('/admin/api/user-sell-stock?' + params);
+
+    // Guard against 500/422 responses (apiJSON returns error body without throwing)
+    if (!data || !Array.isArray(data.items)) {
+      const detail = data && (data.detail || data.message) ? `: ${data.detail || data.message}` : '';
+      showEmpty(tbody, `Failed to load records${detail}. Please check server logs.`);
+      document.getElementById('uss-pagination').innerHTML = '';
+      return;
+    }
+
+    const items = data.items;
+    document.getElementById('uss-count').textContent = fmtNum(data.total) + ' records';
+
+    if (!items.length) {
+      showEmpty(tbody, 'No records found for the selected filters.');
+      document.getElementById('uss-pagination').innerHTML = '';
+      return;
+    }
+
+    tbody.innerHTML = `<table class="tbl" style="font-size:12px">
+      <thead><tr>
+        <th style="width:32px"><input type="checkbox" onchange="toggleSelectAll(this.checked)"></th>
+        <th>Stock ID</th>
+        <th>Sell ID</th>
+        <th>User ID</th>
+        <th>Country</th>
+        <th>Phone</th>
+        <th>Buy Date</th>
+        <th>2FA</th>
+        <th>Payment</th>
+        <th>Session Status</th>
+        <th>Transferred</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody>${items.map(r => `<tr id="row-${r.stock_id}">
+        <td><input type="checkbox" class="row-check" value="${r.stock_id}"
+            onchange="onRowCheck(this)" ${_selectedIds.has(r.stock_id) ? 'checked' : ''}></td>
+        <td class="text-mono text-small" style="white-space:nowrap">${r.stock_id}</td>
+        <td class="text-mono text-small" style="white-space:nowrap">
+          <a href="/admin/sell-requests" style="color:var(--primary,#7c3aed);text-decoration:none">${r.sell_id||'—'}</a>
+        </td>
+        <td>
+          <a href="/admin/sellers?uid=${r.user_id}" style="color:var(--primary,#7c3aed);text-decoration:none;font-weight:600">${r.user_id}</a>
+          ${r.username ? `<div style="font-size:10px;color:var(--muted)">@${r.username}</div>` : ''}
+        </td>
+        <td>${r.country_name || r.country_code || '—'}</td>
+        <td class="text-mono">${r.phone||'—'}</td>
+        <td style="white-space:nowrap">${fmtDate(r.received_at)}</td>
+        <td style="text-align:center">${r.has_2fa ? '🔐' : '—'}</td>
+        <td>${payBadge(r.payment_status)}</td>
+        <td id="sess-${r.stock_id}">${sessBadge(r.session_status)}</td>
+        <td>${r.transferred
+          ? `<span class="badge badge-green">✅ Done</span><div style="font-size:10px;color:var(--muted)">${fmtDate(r.transferred_at)}</div>`
+          : '<span class="badge badge-secondary">Pending</span>'}</td>
+        <td>
+          <div class="tbl-actions">
+            ${!r.transferred ? `
+            <button class="btn btn-secondary btn-xs" onclick="checkOneStatus('${r.stock_id}')" title="Check session status">🔍</button>
+            ${r.payment_status !== 'paid' ? `
+              <button class="btn btn-success btn-xs" onclick="approveOne('${r.stock_id}')" title="Verify & Approve sell request">✅</button>
+              <button class="btn btn-danger  btn-xs" onclick="rejectOne('${r.stock_id}')"  title="Reject sell request">❌</button>
+            ` : `
+              <button class="btn btn-success btn-xs" onclick="transferOne('${r.stock_id}')" title="Send to Sell Inventory">📤</button>
+            `}
+            ` : ''}
+            <a class="btn btn-secondary btn-xs" href="/admin/sellers?uid=${r.user_id}" title="Seller profile">👤</a>
+          </div>
+        </td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+
+    renderPagination(document.getElementById('uss-pagination'), {...data, limit: 50}, n => loadStock(n));
+  } catch(e) {
+    showEmpty(tbody, 'Failed to load records. ' + e.message);
+  }
+}
+
+/* ── Selection helpers ── */
+function onRowCheck(cb) {
+  if (cb.checked) _selectedIds.add(cb.value);
+  else _selectedIds.delete(cb.value);
+}
+
+function toggleSelectAll(checked) {
+  document.querySelectorAll('.row-check').forEach(cb => {
+    cb.checked = checked;
+    if (checked) _selectedIds.add(cb.value);
+    else _selectedIds.delete(cb.value);
+  });
+}
+
+/* ── Check single session status ── */
+async function checkOneStatus(stockId) {
+  setProgress(`Checking session status for ${stockId}…`);
+  try {
+    const res = await apiPOST('/admin/api/user-sell-stock/check-status', { stock_ids: [stockId] });
+    if (res.results && res.results[0]) {
+      const r = res.results[0];
+      const el = document.getElementById(`sess-${stockId}`);
+      if (el) el.innerHTML = sessBadge(r.status);
+      toast(`Status: ${r.status}`, r.status === 'clean' ? 'success' : 'warning');
+    }
+  } catch(e) { toast('Check failed: ' + e.message, 'error'); }
+  finally { clearProgress(); }
+}
+
+/* ── Bulk check status ── */
+async function checkStatus(allFilters) {
+  const body = buildActionBody(allFilters);
+  const count = allFilters ? 'all filtered' : `${_selectedIds.size} selected`;
+  if (!allFilters && _selectedIds.size === 0) { toast('Select at least one record', 'warning'); return; }
+  setProgress(`Checking session status for ${count} sessions… (this may take a while)`);
+  try {
+    const res = await apiPOST('/admin/api/user-sell-stock/check-status', body);
+    // Update badges in current table view
+    (res.results || []).forEach(r => {
+      const el = document.getElementById(`sess-${r.stock_id}`);
+      if (el) el.innerHTML = sessBadge(r.status);
+    });
+    toast(`Checked ${res.checked} session(s)`, 'success');
+  } catch(e) { toast('Status check failed: ' + e.message, 'error'); }
+  finally { clearProgress(); }
+}
+
+/* ── Transfer single ── */
+function transferOne(stockId) {
+  confirm(`Transfer stock ${stockId} to Sell Inventory?`, async () => {
+    setProgress(`Transferring ${stockId}…`);
+    try {
+      const res = await apiPOST('/admin/api/user-sell-stock/transfer', { stock_ids: [stockId] });
+      if (res.transferred > 0) {
+        toast('Transferred successfully', 'success');
+        loadStock();
+      } else {
+        const err = (res.results && res.results[0] && res.results[0].error) || 'Unknown error';
+        toast('Transfer failed: ' + err, 'error');
+      }
+    } catch(e) { toast('Transfer failed: ' + e.message, 'error'); }
+    finally { clearProgress(); }
+  });
+}
+
+/* ── Bulk transfer ── */
+function transferToInventory(allFilters) {
+  const body = buildActionBody(allFilters);
+  const count = allFilters ? 'all filtered' : `${_selectedIds.size} selected`;
+  if (!allFilters && _selectedIds.size === 0) { toast('Select at least one record', 'warning'); return; }
+  confirm(`Transfer ${count} session(s) to Sell Inventory? This cannot be undone.`, async () => {
+    setProgress(`Transferring ${count} session(s) to Sell Inventory…`);
+    try {
+      const res = await apiPOST('/admin/api/user-sell-stock/transfer', body);
+      toast(`Transferred ${res.transferred}, failed ${res.failed}`, res.failed === 0 ? 'success' : 'warning');
+      loadStock();
+    } catch(e) { toast('Transfer failed: ' + e.message, 'error'); }
+    finally { clearProgress(); }
+  });
+}
+
+/* ── Approve / Reject (single row) ── */
+function approveOne(stockId) {
+  confirm(`Verify session & approve sell request for ${stockId}?\n\n(Verification runs first — hard failures are skipped.)`, async () => {
+    setProgress(`Verifying & approving ${stockId}…`);
+    try {
+      const res = await apiPOST('/admin/api/user-sell-stock/approve',
+        { stock_ids: [stockId], auto_transfer: false });
+      if (res.approved > 0) {
+        toast(`Approved 1 • Transferred ${res.transferred || 0}`, 'success');
+        loadStock();
+      } else {
+        const r0 = (res.results && res.results[0]) || {};
+        if (r0.reason === 'verification_failed') {
+          clearProgress();
+          confirm(`Verification failed:\n${(r0.verifier_reasons||[]).join('\n')}\n\nForce approve anyway?`, async () => {
+            setProgress(`Force-approving ${stockId}…`);
+            try {
+              const res2 = await apiPOST('/admin/api/user-sell-stock/approve',
+                { stock_ids: [stockId], auto_transfer: false, force: true });
+              toast(`Force-approved ${res2.approved} • Transferred ${res2.transferred||0}`,
+                    res2.approved > 0 ? 'success' : 'error');
+            } catch(e) { toast('Force approve failed: ' + e.message, 'error'); }
+            finally { clearProgress(); loadStock(); }
+          });
+          return;
+        }
+        toast('Approval skipped: ' + (r0.reason || 'unknown'), 'warning');
+        loadStock();
+      }
+    } catch(e) { toast('Approve failed: ' + e.message, 'error'); }
+    finally { clearProgress(); }
+  });
+}
+
+async function rejectOne(stockId) {
+  const reason = prompt('Reject reason (shown to seller):', 'Failed admin review');
+  if (reason === null) return;
+  setProgress(`Rejecting ${stockId}…`);
+  try {
+    const res = await apiPOST('/admin/api/user-sell-stock/reject',
+      { stock_ids: [stockId], note: reason || 'Rejected by admin' });
+    toast(res.rejected > 0 ? 'Rejected' : 'Skipped: ' + ((res.results&&res.results[0]&&res.results[0].reason)||'unknown'),
+          res.rejected > 0 ? 'success' : 'warning');
+    loadStock();
+  } catch(e) { toast('Reject failed: ' + e.message, 'error'); }
+  finally { clearProgress(); }
+}
+
+/* ── Bulk approve / reject ── */
+function bulkApprove(allFilters, force) {
+  const body = buildActionBody(allFilters);
+  body.auto_transfer = false;
+  body.force = !!force;
+  const count = allFilters ? 'all filtered' : `${_selectedIds.size} selected`;
+  if (!allFilters && _selectedIds.size === 0) { toast('Select at least one record', 'warning'); return; }
+  confirm(`Verify & approve ${count} sell request(s)?\n\nEach seller receives ONE consolidated message listing all their approved accounts.\n\nHard-failed verifications will be skipped (retry with Force to override).`, async () => {
+    setProgress(`Verifying & approving ${count}… (may take a while)`);
+    try {
+      const res = await apiPOST('/admin/api/user-sell-stock/approve', body);
+      toast(`Approved ${res.approved} • Skipped ${res.skipped} • Transferred ${res.transferred||0} • ${res.users_notified||0} sellers notified`,
+            res.approved > 0 ? 'success' : 'warning');
+      const failedVerif = (res.results||[]).filter(r => r && r.reason === 'verification_failed');
+      if (failedVerif.length && !force) {
+        clearProgress();
+        confirm(`${failedVerif.length} record(s) failed verification. Force-approve them now?`, async () => {
+          setProgress(`Force-approving ${failedVerif.length}…`);
+          try {
+            const res2 = await apiPOST('/admin/api/user-sell-stock/approve', {
+              stock_ids: failedVerif.map(r => r.stock_id),
+              auto_transfer: false, force: true,
+            });
+            toast(`Force-approved ${res2.approved} • Transferred ${res2.transferred||0}`,
+                  res2.approved > 0 ? 'success' : 'warning');
+          } catch(e) { toast('Force approve failed: ' + e.message, 'error'); }
+          finally { clearProgress(); loadStock(); }
+        });
+        return;
+      }
+      loadStock();
+    } catch(e) { toast('Approve failed: ' + e.message, 'error'); }
+    finally { clearProgress(); }
+  });
+}
+
+async function bulkReject(allFilters) {
+  const body = buildActionBody(allFilters);
+  const count = allFilters ? 'all filtered' : `${_selectedIds.size} selected`;
+  if (!allFilters && _selectedIds.size === 0) { toast('Select at least one record', 'warning'); return; }
+  const reason = prompt(`Reject ${count} sell request(s). Reason (shown to sellers):`, 'Failed admin review');
+  if (reason === null) return;
+  body.note = reason || 'Rejected by admin';
+  setProgress(`Rejecting ${count}…`);
+  try {
+    const res = await apiPOST('/admin/api/user-sell-stock/reject', body);
+    toast(`Rejected ${res.rejected} • Skipped ${res.skipped} • ${res.users_notified||0} sellers notified`,
+          res.rejected > 0 ? 'success' : 'warning');
+    loadStock();
+  } catch(e) { toast('Reject failed: ' + e.message, 'error'); }
+  finally { clearProgress(); }
+}
+
+/* ── Helpers ── */
+function buildActionBody(allFilters) {
+  if (allFilters) {
+    return {
+      user_id:               parseInt(document.getElementById('f-uid').value) || null,
+      sell_id:               document.getElementById('f-sell').value.trim() || null,
+      country:               document.getElementById('f-country').value || null,
+      payment_status:        document.getElementById('f-pay').value || null,
+      session_status_filter: document.getElementById('f-sess').value || null,
+    };
+  }
+  return { stock_ids: [..._selectedIds] };
+}
+
+function setProgress(msg) {
+  document.getElementById('progress-bar-wrap').style.display = 'block';
+  document.getElementById('progress-msg').textContent = msg;
+}
+function clearProgress() {
+  document.getElementById('progress-bar-wrap').style.display = 'none';
+}
+
+/* ── Enter key in filter inputs ── */
+document.addEventListener('DOMContentLoaded', () => {
+  ['f-uid','f-sell','f-stock'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') loadStock(1); });
+  });
+  ['f-country','f-pay','f-sess','f-transferred'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => loadStock(1));
+  });
+  loadStock(1);
+});
+</script>
+{% endblock %}

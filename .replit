@@ -1,0 +1,45 @@
+modules = ["python-3.12", "web", "nodejs-20"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+packages = ["cargo", "libiconv", "libuv", "libxcrypt", "libyaml", "openssl", "pkg-config", "rustc"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python3 -m server"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[userenv]
+
+[userenv.shared]
+API_PORT = "5000"
+DEPOSIT_STARS_PER_USD = "50"
+WITHDRAWAL_FEE_FIXED = "0.5"
+WITHDRAWAL_FEE_PERCENT = "1.5"
+WITHDRAWAL_GATEWAY = "auto"
+WITHDRAWAL_MIN_AMOUNT = "2.0"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

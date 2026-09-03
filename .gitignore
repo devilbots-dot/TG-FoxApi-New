@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pythonlibs/
+
+# Env
+.env
+
+# Logs
+log.txt
+*.log
+
+# Pyrogram sessions
+*.session
+*.session-journal
+
+# Archive
+zipFile.zip
+
+# Replit cache
+.cache/

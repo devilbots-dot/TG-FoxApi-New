@@ -1,0 +1,500 @@
+{% extends "admin/base.html" %}
+{% block title %}Countries{% endblock %}
+{% block topbar_title %}🌍 Countries & Pricing{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Countries & Pricing</div>
+  <div class="page-actions">
+    <button class="btn btn-danger btn-sm" onclick="openHideStockModal()">🙈 Hide Real Stock (bulk)</button>
+    <button class="btn btn-warning btn-sm" onclick="openBulkEditModal()" id="bulk-edit-btn" disabled>✎ Bulk Edit (<span id="bulk-count">0</span>)</button>
+    <button class="btn btn-primary btn-sm" onclick="openAddModal()">+ Add Country</button>
+    <button class="btn btn-secondary btn-sm" onclick="loadCountries()">🔄 Refresh</button>
+  </div>
+</div>
+
+<!-- Legend -->
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;font-size:12px;color:var(--muted,#888)">
+  <span>🟢 <b>Buy Price</b> = user pays us when buying</span>
+  <span style="color:var(--muted,#888)">|</span>
+  <span>🔴 <b>Sell Price</b> = we pay user when they sell</span>
+  <span style="color:var(--muted,#888)">|</span>
+  <span>📦 <b>Verified Stock</b> = the current unsold-account count. Buyer availability always follows real inventory and the country buy-disable status.</span>
+</div>
+
+<div class="table-wrap">
+  <div class="table-header">
+    <span class="table-title">Countries</span>
+    <span class="table-count" id="country-count">—</span>
+  </div>
+  <div id="country-body"><div class="loading"><div class="spinner"></div></div></div>
+</div>
+
+<!-- ── Add / Edit Modal ───────────────────────────────────────────────── -->
+<div class="modal-overlay" id="country-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="country-modal-title">Add Country</span>
+      <button class="modal-close" onclick="closeModal('country-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">ISO Code (e.g. IN)</label>
+          <input type="text" class="form-control" id="c-code" maxlength="3" placeholder="IN" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Dial Code (e.g. +91)</label>
+          <input type="text" class="form-control" id="c-idc" placeholder="+91">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Display Name (with emoji)</label>
+        <input type="text" class="form-control" id="c-name" placeholder="India 🇮🇳">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">🟢 Buy Price — User Pays ($)</label>
+          <input type="number" step="0.01" min="0" class="form-control" id="c-price" placeholder="0.80">
+        </div>
+        <div class="form-group">
+          <label class="form-label">🔴 Sell Price — We Pay ($)</label>
+          <input type="number" step="0.01" min="0" class="form-control" id="c-sell-price" placeholder="0.40">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Display Rank (lower = higher)</label>
+          <input type="number" class="form-control" id="c-rank" placeholder="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">📦 Fake Stock (shown when Stock Mode = fake)</label>
+          <input type="number" min="0" class="form-control" id="c-fake-stock" placeholder="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">⏱ Termination Delay (hours after sold before session logout/terminate)</label>
+          <input type="number" min="0" class="form-control" id="c-term-delay" placeholder="24">
+        </div>
+      </div>
+      <div style="display:flex;gap:20px;margin-top:10px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px">
+          <input type="checkbox" id="c-disable"> ⏸ Temp Disable Buy
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px">
+          <input type="checkbox" id="c-full"> 🈵 Mark Sell Full
+        </label>
+      </div>
+
+      <!-- ── Spam acceptance config ─────────────────────────────────── -->
+      <div style="margin-top:16px;padding:12px;background:var(--bg3,#1a1a2e);border-radius:8px;border:1px solid var(--border,#333)">
+        <div style="font-size:12px;font-weight:700;color:var(--muted,#888);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">
+          🛡 Spam Acceptance (per-country)
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px">
+            <input type="checkbox" id="c-accept-clean" checked> ✅ Accept Clean
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px">
+            <input type="checkbox" id="c-accept-temp-spam" checked> ⚠️ Accept Temp Spam
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px">
+            <input type="checkbox" id="c-accept-perm-spam"> 🚫 Accept Perm Spam
+          </label>
+        </div>
+        <div style="font-size:11px;color:var(--muted,#888);margin-bottom:10px">
+          Per-spam prices below override the global pricing engine. Leave at 0 to use the global multiplier × base sell price.
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">✅ Clean Price ($)</label>
+            <input type="number" step="0.01" min="0" class="form-control" id="c-price-clean" placeholder="0 = global">
+          </div>
+          <div class="form-group">
+            <label class="form-label">⚠️ Temp Spam Price ($)</label>
+            <input type="number" step="0.01" min="0" class="form-control" id="c-price-temp-spam" placeholder="0 = global">
+          </div>
+          <div class="form-group">
+            <label class="form-label">🚫 Perm Spam Price ($)</label>
+            <input type="number" step="0.01" min="0" class="form-control" id="c-price-perm-spam" placeholder="0 = global">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('country-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCountry()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Buy Price Modal ───────────────────────────────────────────────── -->
+<div class="modal-overlay" id="buy-price-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🟢 Buy Price — User Pays Us</span>
+      <button class="modal-close" onclick="closeModal('buy-price-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted,#888);margin-bottom:12px" id="buy-price-sub"></p>
+      <div class="form-group">
+        <label class="form-label">Buy Price ($)</label>
+        <input type="number" step="0.01" min="0" class="form-control" id="buy-price-val">
+      </div>
+      <input type="hidden" id="buy-price-code">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('buy-price-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="doSetBuyPrice()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Sell Price Modal ──────────────────────────────────────────────── -->
+<div class="modal-overlay" id="sell-price-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🔴 Sell Price — We Pay User</span>
+      <button class="modal-close" onclick="closeModal('sell-price-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted,#888);margin-bottom:12px" id="sell-price-sub"></p>
+      <div class="form-group">
+        <label class="form-label">Sell Price ($)</label>
+        <input type="number" step="0.01" min="0" class="form-control" id="sell-price-val">
+      </div>
+      <input type="hidden" id="sell-price-code">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('sell-price-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="doSetSellPrice()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Bulk Hide Real Stock Modal ────────────────────────────────────── -->
+<div class="modal-overlay" id="hide-stock-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🙈 Hide Real Stock — All Countries</span>
+      <button class="modal-close" onclick="closeModal('hide-stock-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted,#888);margin-bottom:12px">
+        Switches every country to <b>Fake mode with Fake Stock = 0</b> (buyers see 0 stock),
+        <b>except</b> the countries you pick below. Real inventory is never changed or deleted.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Keep these countries untouched (comma-separated ISO codes, e.g. IN, US)</label>
+        <input type="text" class="form-control" id="hide-stock-keep" placeholder="IN">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('hide-stock-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="doHideStock()">Apply</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── Bulk Edit Modal ─────────────────────────── -->
+<div class="modal-overlay" id="bulk-edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">✎ Bulk Edit — <span id="bulk-edit-count">0</span> countries</span>
+      <button class="modal-close" onclick="closeModal('bulk-edit-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--muted,#888);margin-bottom:12px">
+        Leave a field <b>blank / unchecked-changed</b> to keep it as-is. Only checked fields are applied.
+      </p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label"><input type="checkbox" id="be-price-on"> 🟢 Buy Price ($)</label>
+          <input type="number" step="0.01" min="0" class="form-control" id="be-price">
+        </div>
+        <div class="form-group">
+          <label class="form-label"><input type="checkbox" id="be-sell-price-on"> 🔴 Sell Price ($)</label>
+          <input type="number" step="0.01" min="0" class="form-control" id="be-sell-price">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label"><input type="checkbox" id="be-term-delay-on"> ⏱ Termination Delay (h)</label>
+          <input type="number" min="0" class="form-control" id="be-term-delay" placeholder="24">
+        </div>
+        <div class="form-group">
+          <label class="form-label"><input type="checkbox" id="be-fake-stock-on"> 📦 Fake Stock</label>
+          <input type="number" min="0" class="form-control" id="be-fake-stock">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label"><input type="checkbox" id="be-stock-mode-on"> Stock Mode</label>
+          <select class="form-control" id="be-stock-mode">
+            <option value="real">Real</option>
+            <option value="fake">Fake</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">&nbsp;</label>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;padding-top:8px">
+            <label style="display:flex;gap:6px;align-items:center;font-size:13px">
+              <input type="checkbox" id="be-disable-on"> ⏸ Temp Disable Buy
+              <select id="be-disable" style="margin-left:4px"><option value="true">On</option><option value="false">Off</option></select>
+            </label>
+            <label style="display:flex;gap:6px;align-items:center;font-size:13px">
+              <input type="checkbox" id="be-full-on"> 🈵 Mark Sell Full
+              <select id="be-full" style="margin-left:4px"><option value="true">On</option><option value="false">Off</option></select>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('bulk-edit-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="doBulkEdit()">Apply to selected</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function toggleCountryStockMode(code, current) {
+  const next = current === 'fake' ? 'real' : 'fake';
+  const r = await apiPATCH(`/admin/api/countries/${code}/stock-mode`, {stock_mode: next});
+  if (r.ok) { toast(`${code} stock mode → ${r.stock_mode}`, 'success'); loadCountries(); }
+  else toast(r.detail || 'Failed', 'error');
+}
+
+function openHideStockModal() {
+  document.getElementById('hide-stock-keep').value = '';
+  openModal('hide-stock-modal');
+}
+
+async function doHideStock() {
+  const raw = document.getElementById('hide-stock-keep').value;
+  const keep = raw.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+  if (!keep.length) { toast('Enter at least one country code to keep untouched', 'error'); return; }
+  confirm(
+    `Switch EVERY country except ${keep.join(', ')} to Fake mode with Fake Stock = 0? Real inventory is unchanged.`,
+    async () => {
+      const r = await apiPOST('/admin/api/countries/hide-real-stock', {keep_codes: keep});
+      if (r.ok) { toast(`${r.affected} countries switched to hidden/fake; ${r.kept.join(', ')} kept untouched`, 'success'); closeModal('hide-stock-modal'); loadCountries(); }
+      else toast(r.detail || 'Failed', 'error');
+    }
+  );
+}
+
+async function loadCountries() {
+  const tbody = document.getElementById('country-body');  showLoading(tbody);
+  try {
+    const data = await apiGET('/admin/api/countries');
+    const items = data.items || [];
+    document.getElementById('country-count').textContent = items.length + ' countries';
+    if (!items.length) { showEmpty(tbody, 'No countries configured.'); return; }
+
+    tbody.innerHTML = `<table class="tbl">
+      <thead><tr>
+        <th style="width:32px"><input type="checkbox" id="sel-all" onclick="toggleSelectAll(this)"></th>
+        <th>Rank</th>
+        <th>Country</th>
+        <th>Code · IDC</th>
+        <th>🟢 Buy Price</th>
+        <th>🔴 Sell Price</th>
+        <th>📦 Real / Fake Stock</th>
+        <th>⏱ Delay (h)</th>
+        <th>Stock Mode</th>
+        <th>Buy</th>
+        <th>Sell</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody>${items.map(c => `
+        <tr>
+          <td><input type="checkbox" class="row-sel" value="${c.code}" onclick="updateBulkCount()"></td>
+          <td>${c.country_rank}</td>
+          <td>${c.country_name}</td>
+          <td class="text-mono">${c.code} · ${c.idc || '—'}</td>
+          <td style="font-weight:800;color:#16a34a">${fmtMoney(c.price)}</td>
+          <td style="font-weight:800;color:#7c3aed">${fmtMoney(c.sell_price)}</td>
+          <td class="text-mono">${c.real_stock ?? 0} / ${c.fake_stock ?? 0}</td>
+          <td class="text-mono">${c.termination_delay_hours ?? 24}h</td>
+          <td><button class="btn btn-xs ${c.stock_mode === 'fake' ? 'btn-warning' : 'btn-secondary'}" onclick="toggleCountryStockMode('${c.code}', '${c.stock_mode || 'real'}')">${c.stock_mode === 'fake' ? '📦 Fake — click for Real' : '📦 Real — click for Fake'}</button></td>
+          <td>${c.temp_disable ? '<span class="badge badge-red">Disabled</span>' : '<span class="badge badge-green">Active</span>'}</td>
+          <td>${c.is_full ? '<span class="badge badge-yellow">Full</span>' : '<span class="badge badge-green">Open</span>'}</td>
+          <td><div class="tbl-actions">
+            <button class="btn btn-secondary btn-xs" onclick="openEdit(${JSON.stringify(c).replace(/"/g,'&quot;')})">✏ Edit</button>
+            <button class="btn btn-danger btn-xs" onclick="deleteCountry('${c.code}')">🗑 Delete</button>
+          </div></td>
+        </tr>
+      `).join('')}</tbody>
+    </table>`;
+  } catch(e) { showEmpty(tbody, 'Failed to load countries.'); }
+}
+
+// ── Add / Edit ─────────────────────────────────────────────────────────
+async function openAddModal() {
+  document.getElementById('country-modal-title').textContent = 'Add Country';
+  ['c-code','c-idc','c-name','c-price','c-sell-price','c-fake-stock'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('c-term-delay').value = 24;
+  const nextRank = await apiGET('/admin/api/countries/next-rank');
+  document.getElementById('c-rank').value = nextRank.next_rank || 1;
+  document.getElementById('c-disable').checked = false;
+  document.getElementById('c-full').checked    = false;
+  document.getElementById('country-modal').dataset.stockMode = 'real';
+  openModal('country-modal');
+}
+
+function openEdit(c) {
+  document.getElementById('country-modal-title').textContent = 'Edit Country';
+  document.getElementById('c-code').value          = c.code;
+  document.getElementById('c-idc').value           = c.idc || '';
+  document.getElementById('c-name').value          = c.country_name;
+  document.getElementById('c-price').value         = c.price || 0;
+  document.getElementById('c-sell-price').value    = c.sell_price || 0;
+  document.getElementById('c-rank').value          = c.country_rank;
+  document.getElementById('c-fake-stock').value    = c.fake_stock || 0;
+  document.getElementById('c-term-delay').value    = (c.termination_delay_hours ?? 24);
+  document.getElementById('c-disable').checked     = c.temp_disable;
+  document.getElementById('c-full').checked        = c.is_full;
+  // spam acceptance defaults: accept_clean=true, accept_temp_spam=true, accept_perm_spam=false
+  document.getElementById('c-accept-clean').checked     = c.accept_clean     !== false;
+  document.getElementById('c-accept-temp-spam').checked = c.accept_temp_spam !== false;
+  document.getElementById('c-accept-perm-spam').checked = !!c.accept_perm_spam;
+  document.getElementById('c-price-clean').value     = c.price_clean     || 0;
+  document.getElementById('c-price-temp-spam').value = c.price_temp_spam || 0;
+  document.getElementById('c-price-perm-spam').value = c.price_perm_spam || 0;
+  document.getElementById('country-modal').dataset.stockMode = c.stock_mode || 'real';
+  openModal('country-modal');
+}
+
+async function saveCountry() {
+  const body = {
+    code:               document.getElementById('c-code').value.toUpperCase(),
+    idc:                document.getElementById('c-idc').value,
+    country_name:       document.getElementById('c-name').value,
+    price:              parseFloat(document.getElementById('c-price').value) || 0,
+    sell_price:         parseFloat(document.getElementById('c-sell-price').value) || 0,
+    country_rank:       parseInt(document.getElementById('c-rank').value) || 1,
+    fake_stock:         parseInt(document.getElementById('c-fake-stock').value) || 0,
+    stock_mode:         document.getElementById('country-modal').dataset.stockMode || 'real',
+    temp_disable:       document.getElementById('c-disable').checked,
+    is_full:            document.getElementById('c-full').checked,
+    accept_clean:       document.getElementById('c-accept-clean').checked,
+    accept_temp_spam:   document.getElementById('c-accept-temp-spam').checked,
+    accept_perm_spam:   document.getElementById('c-accept-perm-spam').checked,
+    price_clean:        parseFloat(document.getElementById('c-price-clean').value) || 0,
+    price_temp_spam:    parseFloat(document.getElementById('c-price-temp-spam').value) || 0,
+    price_perm_spam:    parseFloat(document.getElementById('c-price-perm-spam').value) || 0,
+    termination_delay_hours: parseInt(document.getElementById('c-term-delay').value) || 24,
+  };
+  if (!body.code || !body.country_name) { toast('Code and name required', 'error'); return; }
+  const r = await apiPOST('/admin/api/countries', body);
+  if (r.ok) { toast('Country saved', 'success'); closeModal('country-modal'); loadCountries(); }
+  else toast(r.detail || 'Failed', 'error');
+}
+
+// ── Buy Price ─────────────────────────────────────────────────────────
+function openBuyPrice(code, name, cur) {
+  document.getElementById('buy-price-sub').textContent = `${name} — User pays this to BUY from us. Keep HIGHER than Sell Price.`;
+  document.getElementById('buy-price-code').value = code;
+  document.getElementById('buy-price-val').value  = cur;
+  openModal('buy-price-modal');
+}
+async function doSetBuyPrice() {
+  const code  = document.getElementById('buy-price-code').value;
+  const price = parseFloat(document.getElementById('buy-price-val').value);
+  if (isNaN(price) || price < 0) { toast('Enter a valid price', 'error'); return; }
+  const r = await apiPATCH(`/admin/api/countries/${code}/price`, {price});
+  if (r.ok) { toast(`${code} buy price → $${price.toFixed(2)}`, 'success'); closeModal('buy-price-modal'); loadCountries(); }
+  else toast('Failed', 'error');
+}
+
+// ── Sell Price ─────────────────────────────────────────────────────────
+function openSellPrice(code, name, cur) {
+  document.getElementById('sell-price-sub').textContent = `${name} — We pay this when user SELLs to us. Keep LOWER than Buy Price.`;
+  document.getElementById('sell-price-code').value = code;
+  document.getElementById('sell-price-val').value  = cur;
+  openModal('sell-price-modal');
+}
+async function doSetSellPrice() {
+  const code       = document.getElementById('sell-price-code').value;
+  const sell_price = parseFloat(document.getElementById('sell-price-val').value);
+  if (isNaN(sell_price) || sell_price < 0) { toast('Enter a valid price', 'error'); return; }
+  const r = await apiPATCH(`/admin/api/countries/${code}/sell-price`, {sell_price});
+  if (r.ok) { toast(`${code} sell price → $${sell_price.toFixed(2)}`, 'success'); closeModal('sell-price-modal'); loadCountries(); }
+  else toast('Failed', 'error');
+}
+
+// ── Toggle Buy / Sell ──────────────────────────────────────────────
+async function toggleDisable(code, val) {
+  const r = await apiPATCH(`/admin/api/countries/${code}/toggle-disable`, {temp_disable: val});
+  if (r.ok) { toast(val ? `${code} Buy disabled` : `${code} Buy enabled`, 'success'); loadCountries(); }
+  else toast('Failed', 'error');
+}
+async function toggleFull(code, val) {
+  const r = await apiPATCH(`/admin/api/countries/${code}/toggle-full`, {is_full: val});
+  if (r.ok) { toast(val ? `${code} Sell marked full` : `${code} Sell opened`, 'success'); loadCountries(); }
+  else toast('Failed', 'error');
+}
+
+// ── Delete ─────────────────────────────────────────────────────────────
+async function deleteCountry(code) {
+  confirm(`Delete country ${code}? This cannot be undone.`, async () => {
+    const r = await apiDELETE(`/admin/api/countries/${code}`);
+    if (r.ok) { toast('Country deleted', 'success'); loadCountries(); }
+    else toast('Failed', 'error');
+  });
+}
+
+
+// ── Bulk selection ─────────────────────────────────────
+function getSelectedCodes() {
+  return Array.from(document.querySelectorAll('.row-sel:checked')).map(el => el.value);
+}
+function updateBulkCount() {
+  const n = getSelectedCodes().length;
+  document.getElementById('bulk-count').textContent = n;
+  document.getElementById('bulk-edit-btn').disabled = n === 0;
+}
+function toggleSelectAll(cb) {
+  document.querySelectorAll('.row-sel').forEach(el => el.checked = cb.checked);
+  updateBulkCount();
+}
+function openBulkEditModal() {
+  const codes = getSelectedCodes();
+  if (!codes.length) { toast('Select at least one country', 'error'); return; }
+  document.getElementById('bulk-edit-count').textContent = codes.length;
+  ['be-price-on','be-sell-price-on','be-term-delay-on','be-fake-stock-on','be-stock-mode-on','be-disable-on','be-full-on']
+    .forEach(id => document.getElementById(id).checked = false);
+  ['be-price','be-sell-price','be-term-delay','be-fake-stock'].forEach(id => document.getElementById(id).value = '');
+  openModal('bulk-edit-modal');
+}
+async function doBulkEdit() {
+  const codes = getSelectedCodes();
+  if (!codes.length) { toast('No countries selected', 'error'); return; }
+  const fields = {};
+  if (document.getElementById('be-price-on').checked)       fields.price       = parseFloat(document.getElementById('be-price').value) || 0;
+  if (document.getElementById('be-sell-price-on').checked)  fields.sell_price  = parseFloat(document.getElementById('be-sell-price').value) || 0;
+  if (document.getElementById('be-term-delay-on').checked)  fields.termination_delay_hours = parseInt(document.getElementById('be-term-delay').value) || 0;
+  if (document.getElementById('be-fake-stock-on').checked)  fields.fake_stock = parseInt(document.getElementById('be-fake-stock').value) || 0;
+  if (document.getElementById('be-stock-mode-on').checked)  fields.stock_mode = document.getElementById('be-stock-mode').value;
+  if (document.getElementById('be-disable-on').checked)     fields.temp_disable = document.getElementById('be-disable').value === 'true';
+  if (document.getElementById('be-full-on').checked)        fields.is_full     = document.getElementById('be-full').value === 'true';
+  if (!Object.keys(fields).length) { toast('Enable at least one field to change', 'error'); return; }
+  confirm(`Apply ${Object.keys(fields).length} field change(s) to ${codes.length} countries?`, async () => {
+    const r = await apiPOST('/admin/api/countries/bulk-edit', {codes, fields});
+    if (r.ok) { toast(`Updated ${r.affected} countries`, 'success'); closeModal('bulk-edit-modal'); loadCountries(); }
+    else toast(r.detail || 'Failed', 'error');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadCountries);
+</script>
+{% endblock %}

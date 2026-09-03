@@ -1,0 +1,167 @@
+{% extends "admin/base.html" %}
+{% block title %}Sellers{% endblock %}
+{% block topbar_title %}🧑‍💼 Sellers{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Seller Search & Profile</div>
+</div>
+
+<!-- Search bar -->
+<div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap">
+  <div class="form-group" style="margin:0;flex:0 0 260px">
+    <label class="form-label">Telegram User ID</label>
+    <input type="number" class="form-control" id="uid-input" placeholder="123456789" style="width:260px">
+  </div>
+  <button class="btn btn-primary" onclick="loadProfile()">🔍 Look Up</button>
+</div>
+
+<!-- Profile card — shown after search -->
+<div id="profile-area" style="display:none">
+
+  <!-- User summary card -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px" id="stat-cards"></div>
+
+  <!-- Breakdown row -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px" id="breakdown-row"></div>
+
+  <!-- Recent requests table -->
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-title">Recent Sell Requests (last 30)</span>
+      <span class="table-count" id="req-count">—</span>
+    </div>
+    <div id="req-body"></div>
+  </div>
+</div>
+
+<div id="not-found" style="display:none;color:var(--muted,#888);padding:32px;text-align:center;font-size:14px">
+  No seller found with this ID, or they have no sell history.
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Pre-fill from URL query param ?uid=...
+(function(){
+  const uid = new URLSearchParams(location.search).get('uid');
+  if (uid) { document.getElementById('uid-input').value = uid; loadProfile(); }
+})();
+
+const SPAM_BADGES = {
+  clean:          '<span class="badge badge-green">✅ Clean</span>',
+  temporary_spam: '<span class="badge badge-yellow">⚠️ Temp</span>',
+  permanent_spam: '<span class="badge badge-red">🚫 Perm</span>',
+  frozen:         '<span class="badge badge-red">🧊 Frozen</span>',
+  unknown:        '<span class="badge">?</span>',
+};
+
+function spamBadge(s) { return SPAM_BADGES[s] || `<span class="badge">${s||'—'}</span>`; }
+
+function statCard(icon, label, value, color='') {
+  return `<div style="background:var(--bg2,#141426);border:1px solid var(--border,#333);border-radius:10px;padding:16px">
+    <div style="font-size:22px">${icon}</div>
+    <div style="font-size:22px;font-weight:800;color:${color||'var(--text1,#fff)'};margin:4px 0">${value}</div>
+    <div style="font-size:11px;color:var(--muted,#888);text-transform:uppercase;letter-spacing:.5px">${label}</div>
+  </div>`;
+}
+
+function breakdownCard(title, data) {
+  const rows = Object.entries(data).map(([k,v]) =>
+    `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border,#222);font-size:12px">
+      <span>${k}</span><b>${v}</b>
+    </div>`
+  ).join('');
+  return `<div style="background:var(--bg2,#141426);border:1px solid var(--border,#333);border-radius:10px;padding:14px">
+    <div style="font-size:11px;font-weight:700;color:var(--muted,#888);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">${title}</div>
+    ${rows || '<span style="font-size:12px;color:var(--muted,#888)">—</span>'}
+  </div>`;
+}
+
+async function loadProfile() {
+  const uid = parseInt(document.getElementById('uid-input').value);
+  if (!uid) { toast('Enter a valid user ID', 'error'); return; }
+
+  // Update URL without reload
+  const url = new URL(location.href);
+  url.searchParams.set('uid', uid);
+  history.replaceState(null, '', url);
+
+  document.getElementById('profile-area').style.display = 'none';
+  document.getElementById('not-found').style.display    = 'none';
+
+  let data;
+  try {
+    data = await apiGET(`/admin/api/sellers/${uid}/profile`);
+  } catch(e) {
+    toast('Failed to load seller profile', 'error');
+    return;
+  }
+
+  if (!data || data.total === 0 && !data.user_doc) {
+    document.getElementById('not-found').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('profile-area').style.display = 'block';
+
+  // ── Stat cards ──
+  const ud = data.user_doc || {};
+  document.getElementById('stat-cards').innerHTML = [
+    statCard('📤', 'Total Submissions', data.total),
+    statCard('⏳', 'Pending',  data.pending,  'var(--yellow,#ca8a04)'),
+    statCard('✅', 'Paid',     data.paid,     'var(--green,#16a34a)'),
+    statCard('❌', 'Rejected', data.rejected, 'var(--red,#dc2626)'),
+    statCard('💵', 'Total Earned',   `$${(data.total_earned||0).toFixed(2)}`,  'var(--green,#16a34a)'),
+    statCard('⏳', 'Pending Balance', `$${(data.total_pending||0).toFixed(2)}`, 'var(--yellow,#ca8a04)'),
+    statCard('💰', 'Wallet Balance',  ud.balance != null ? `$${(ud.balance||0).toFixed(2)}` : '—', ''),
+    statCard(ud.is_banned ? '🚫' : '✅', 'Account',
+      ud.is_banned ? 'Banned' : (ud.is_sudo ? 'Sudo' : 'Normal'),
+      ud.is_banned ? 'var(--red,#dc2626)' : ''),
+  ].join('');
+
+  // ── Breakdown cards ──
+  document.getElementById('breakdown-row').innerHTML = [
+    breakdownCard('🛡 Spam Breakdown',     data.spam_breakdown     || {}),
+    breakdownCard('🌍 Country Breakdown',  data.country_breakdown  || {}),
+    breakdownCard('📁 Sell Type Breakdown', data.sell_type_breakdown || {}),
+  ].join('');
+
+  // ── Recent requests ──
+  document.getElementById('req-count').textContent = `${data.recent.length} shown`;
+  const items = data.recent;
+  if (!items.length) {
+    document.getElementById('req-body').innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted,#888)">No requests found.</div>';
+    return;
+  }
+
+  document.getElementById('req-body').innerHTML = `<table class="tbl" style="font-size:12px">
+    <thead><tr>
+      <th>Request ID</th><th>Phone</th><th>Country</th><th>Type</th>
+      <th>Spam</th><th>2FA</th><th>Offer</th><th>Final</th>
+      <th>Status</th><th>Submitted</th><th>Note</th>
+    </tr></thead>
+    <tbody>${items.map(r => `<tr>
+      <td class="text-mono text-small" style="white-space:nowrap">${r.request_id}</td>
+      <td class="text-mono">${r.phone || '—'}</td>
+      <td>${r.country_name || r.code || '—'}</td>
+      <td><span class="badge ${r.sell_type === 'session' ? 'badge-cyan' : 'badge-secondary'}">${r.sell_type === 'session' ? '📁' : '📱'} ${r.sell_type || 'account'}</span></td>
+      <td>${spamBadge(r.spam_status)}</td>
+      <td style="text-align:center">${r.has_2fa ? '🔐' : '—'}</td>
+      <td>${fmtMoney(r.offer_price)}</td>
+      <td>${r.final_price != null ? fmtMoney(r.final_price) : '—'}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td style="white-space:nowrap">${fmtDate(r.submitted_at)}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(r.admin_note||'').replace(/"/g,'&quot;')}">${r.admin_note || '—'}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// Allow pressing Enter in the search box
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('uid-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadProfile();
+  });
+});
+</script>
+{% endblock %}

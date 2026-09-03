@@ -1,0 +1,165 @@
+{% extends "admin/base.html" %}
+{% block title %}Backup & Restore{% endblock %}
+{% block topbar_title %}🗄️ Backup & Restore{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Backup & Restore</div>
+</div>
+
+<div class="backup-intro">
+  Export everything — settings, catalogs, users, orders, accounts, transactions and more — to a JSON file, or restore from one.
+  Passwords and the session secret are never exported. The backup may contain bot tokens and database URIs, so keep it private.
+</div>
+
+<div class="backup-cards">
+  <!-- Export -->
+  <div class="backup-card">
+    <div class="backup-icon export-icon">⬇️</div>
+    <div class="backup-info">
+      <div class="backup-title">Export</div>
+      <div class="backup-subtitle">Download a full backup of your database</div>
+    </div>
+    <button class="btn btn-primary" id="export-btn" onclick="exportBackup()">
+      <span id="export-text">Download backup</span>
+    </button>
+  </div>
+
+  <!-- Import -->
+  <div class="backup-card">
+    <div class="backup-icon import-icon">⬆️</div>
+    <div class="backup-info">
+      <div class="backup-title">Import</div>
+      <div class="backup-subtitle">Restore all data from a backup file</div>
+    </div>
+    <button class="btn btn-success" onclick="openImportModal()">
+      Restore from file
+    </button>
+  </div>
+</div>
+
+<div class="backup-warning">
+  <strong>⚠️ Warning:</strong> Restoring replaces your current catalogs, accounts, orders, wallet records and environment overrides. The change is destructive and cannot be undone automatically.
+</div>
+
+<!-- Import Modal -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Restore from Backup</span>
+      <button class="modal-close" onclick="closeModal('import-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Select backup JSON file</label>
+        <input type="file" id="backup-file" class="form-control" accept="application/json,.json">
+      </div>
+      <div class="backup-warning" style="margin-top:0">
+        This will wipe and replace all backed-up collections. Make sure you have exported a current backup first.
+      </div>
+      <div id="restore-progress" style="display:none;margin-top:14px">
+        <div class="loading"><div class="spinner"></div><div>Restoring… please wait</div></div>
+      </div>
+      <div id="restore-result" style="margin-top:14px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('import-modal')">Cancel</button>
+      <button class="btn btn-success" id="restore-confirm-btn" onclick="confirmRestore()">Restore Now</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function exportBackup() {
+  const btn = document.getElementById('export-btn');
+  const txt = document.getElementById('export-text');
+  btn.disabled = true;
+  txt.textContent = 'Preparing…';
+  try {
+    const res = await fetch('/admin/api/backup/export', { credentials: 'same-origin' });
+    if (!res.ok) throw new Error('Export failed');
+    const blob = await res.blob();
+    const filename = res.headers.get('Content-Disposition')?.match(/filename="?([^"]+)"?/)?.[1] || 'backup.json';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast('Backup downloaded', 'success');
+  } catch(e) {
+    toast('Export failed', 'error');
+  } finally {
+    btn.disabled = false;
+    txt.textContent = 'Download backup';
+  }
+}
+
+function openImportModal() {
+  document.getElementById('backup-file').value = '';
+  document.getElementById('restore-progress').style.display = 'none';
+  document.getElementById('restore-result').innerHTML = '';
+  document.getElementById('restore-confirm-btn').disabled = false;
+  openModal('import-modal');
+}
+
+async function confirmRestore() {
+  const fileInput = document.getElementById('backup-file');
+  if (!fileInput.files || !fileInput.files[0]) {
+    toast('Please select a backup file', 'warning');
+    return;
+  }
+  const file = fileInput.files[0];
+  if (!file.name.toLowerCase().endsWith('.json')) {
+    toast('Only .json backup files are allowed', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('restore-confirm-btn');
+  const progress = document.getElementById('restore-progress');
+  const result = document.getElementById('restore-result');
+  btn.disabled = true;
+  progress.style.display = 'block';
+  result.innerHTML = '';
+
+  try {
+    await loadCsrf();
+    const form = new FormData();
+    form.append('file', file);
+    const res = await fetch('/admin/api/backup/restore', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'X-CSRF-Token': _csrfToken },
+      body: form,
+    });
+    const data = await res.json();
+    if (data.ok) {
+      const rows = Object.entries(data.restored || {})
+        .map(([k, v]) => `<div class="kv-row"><span class="kv-key">${k}</span><span class="kv-val">${v} docs</span></div>`)
+        .join('');
+      result.innerHTML = `<div class="badge badge-green" style="margin-bottom:8px">✓ Restore successful</div><div class="kv-list">${rows}</div>`
+        + (data.restart_required ? '<div class="form-hint" style="margin-top:10px;color:var(--yellow)">⚠️ Restart the server from System Settings to apply restored environment overrides.</div>' : '');
+      toast('Backup restored successfully', 'success');
+    } else {
+      result.innerHTML = `<div class="badge badge-red">✕ Restore failed</div><div class="form-hint" style="margin-top:6px">${escapeHtml(data.error || 'Unknown error')}</div>`;
+      toast(data.error || 'Restore failed', 'error');
+      btn.disabled = false;
+    }
+  } catch(e) {
+    result.innerHTML = `<div class="badge badge-red">✕ Restore failed</div><div class="form-hint" style="margin-top:6px">${escapeHtml(e.message)}</div>`;
+    toast('Restore failed', 'error');
+    btn.disabled = false;
+  } finally {
+    progress.style.display = 'none';
+  }
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,453 @@
+start_1: Hoş geldiniz!
+start_2: 'Merhaba {0}! 👋
+
+
+  {1}''e hoş geldiniz.
+
+
+  Size yardımcı olmaya hazırım. Başlamak için aşağıdaki düğmeleri kullanın.'
+language_changed: ✅ Dil Türkçe olarak değiştirildi!
+choose_language: '🌐 Lütfen dilinizi seçin:'
+back: « Geri
+language_btn: 🇹🇷 Türkçe
+menu_wallet: 💰 Cüzdan
+menu_market: 🛒 Market
+menu_apikey: 🔑 API Anahtarım
+menu_profile: 👤 Profil
+menu_updates: 📢 Duyurular
+menu_support: 💬 Destek
+menu_language: 🌐 Dil
+menu_back: 🔙 Geri
+welcome_caption: '👋 Welcome, {0}!
+
+
+  🦊 **TG-Fox API**
+
+  _Kendi web sitenizi veya uygulamanızı yapmak için API sağlayıcılı önde gelen küresel pazarlardan biri._
+
+
+  💳 **Balance:** `${2}`
+
+  🏆 **Rank:** `{3}`
+
+
+  Use the buttons below to get started 👇'
+home_title: TG-Fox API
+home_welcome: 👋 Tekrar hoş geldiniz, {0}!
+home_tagline: 'Kendi web sitenizi veya uygulamanızı yapmak için API sağlayıcılı önde gelen küresel pazarlardan biri.
+
+
+  Başlamak için aşağıdaki düğmeleri kullanın 👇'
+btn_profile: 👤 Profil
+btn_market: 🛒 Market
+btn_updates: 📢 Duyurular
+btn_support: 💬 Destek
+btn_language: 🌐 Dil
+btn_apikey: 🔑 API Anahtarı
+btn_deposit: 💰 Yatır
+btn_withdraw: 💸 Çek
+btn_refer_earn: 👥 Davet & Kazan
+btn_transactions: 📜 İşlemler
+btn_back: ⬅️ Geri
+btn_back_profile: ⬅️ Profile Dön
+btn_back_market: ⬅️ Markete Dön
+btn_back_wallet: 💳 Cüzdana Dön
+btn_regen_key: 🔄 Anahtarı Yenile
+btn_deposits: 📥 Yatırmalar
+btn_withdrawals: 📤 Çekimler
+btn_purchases: 🛒 Satın Almalar
+btn_all_history: 📋 Tüm Geçmiş
+btn_manage_addr: 🔑 Adres Yönetimi
+profile_title: PROFİLİNİZ
+wallet_title_section: CÜZDAN
+trade_title: TİCARET İSTATİSTİKLERİ
+ref_title_section: REFERANSLAR
+lbl_user_id: Kullanıcı ID
+lbl_username: Kullanıcı Adı
+lbl_rank: Rütbe
+lbl_member_since: Üyelik Tarihi
+lbl_balance: Bakiye
+lbl_total_deposited: Toplam Yatırılan
+lbl_total_spent: Toplam Harcanan
+lbl_total_earned: Toplam Kazanılan
+lbl_accounts_bought: Satın Alınan Hesap
+lbl_accounts_sold: Satılan Hesap
+lbl_ref_link: Bağlantınız
+lbl_referred_users: Davet Edilenler
+lbl_bonus_earned: Kazanılan Bonus
+lbl_no_username: Kullanıcı Adı Yok
+lbl_tap_to_copy: Kopyalamak için tıklayın
+refer_title: DAVET & KAZAN
+refer_earn_line: 🎁 **Her davet ettiğiniz arkadaş için ödül kazanın!**
+refer_link_lbl: 🔗 **Referans bağlantınız:**
+refer_total_lbl: 👤 **Toplam davet:** `{0}` kullanıcı
+refer_bonus_lbl: 💰 **Kazanılan bonus:** `${0}`
+refer_tip: '📌 Bağlantınızı arkadaşlarınızla paylaşın. İlk
+
+  depozitlerinde siz bonus kazanırsınız!'
+tx_title: İŞLEM GEÇMİŞİ
+tx_subtitle: 'Finansal geçmişinizi görüntüleyin.
+
+  Aşağıdan kategori seçin 👇'
+tx_dep_title: YATIRMA GEÇMİŞİ
+tx_wit_title: ÇEKİM GEÇMİŞİ
+tx_pur_title: SATIN ALMA GEÇMİŞİ
+tx_all_title: TÜM GEÇMİŞ
+tx_empty_dep: 📭 Henüz yatırma yok.
+tx_empty_wit: 📭 Henüz çekim yok.
+tx_empty_pur: 📭 Henüz satın alma yok.
+tx_empty_all: 📭 Henüz işlem yok.
+apikey_title: API ANAHTARINIZ
+apikey_header_fmt: '📌 **Başlık formatı:**
+
+  `X-Api-Key: tg_{user_id}_{secret}`'
+apikey_docs: 📖 **Belgeler:** `/docs`
+apikey_warn: ⚠️ API anahtarınızı kimseyle paylaşmayın!
+apikey_regen_title: API ANAHTARI YENİLENDİ
+apikey_regen_warn: '⚠️ Eski anahtarınız artık geçersiz.
+
+  Tüm entegrasyonlarınızı güncelleyin.'
+apikey_regen_alert: ✅ Yeni anahtar oluşturuldu!
+lang_title: DİL SEÇİMİ
+lang_subtitle: 'Tercih ettiğiniz dili seçin:'
+lang_changed_alert: ✅ Dil güncellendi!
+wallet_main_title: CÜZDANINIZ
+wallet_addr_section: ÇEKİM ADRESLERİ (USDT)
+wallet_addr_tip: 'Çekim işlemleri için adreslerinizi ayarlayın.
+
+  Depozitler OxaPay üzerinden otomatik işlenir.'
+wallet_manage_title: ÇEKİM ADRESLERİ
+wallet_manage_body: "Çekim için USDT cüzdan adreslerinizi ayarlayın.\n\n\U0001F4CC **Desteklenen ağlar:**\n  • **TRC20** — TRON ağında USDT\n  • **BEP20** — Binance Smart Chain USDT\n\n⚠️ Adresinizi her zaman kontrol edin.\nYanlış adres = kalıcı kayıp!"
+trc_not_set: Ayarlanmadı ⚠️
+bep_not_set: Ayarlanmadı ⚠️
+btn_add_trc: ➕ TRC20 Adres Ekle
+btn_add_bep: ➕ BEP20 Adres Ekle
+wallet_deposit_title: PARA YATIRMA
+wallet_deposit_body: 'Yatırmak istediğiniz tutarı **(USD cinsinden)** gönderin.
+
+
+  📌 Kabul edilen kripto paralar:
+
+  BTC, ETH, USDT, LTC ve daha fazlası
+
+
+  💵 **Minimum yatırma:** ${0}
+
+
+  İptal etmek için: /cancel'
+wallet_withdraw_title: ÇEKİM TALEBİ
+wallet_withdraw_body: '📌 **Mevcut ağlar:** {0}
+
+
+  Çekmek istediğiniz tutarı **(USD cinsinden)** gönderin.
+
+
+  💵 **Minimum çekim:** ${1}
+
+
+  İptal etmek için: /cancel'
+wallet_no_addr_alert: '⚠️ Önce çekim adresi ekleyin!
+
+  Cüzdan → Adres Yönetimi'
+wallet_select_network: AĞ SEÇİMİ
+wallet_select_network_body: '`${0} USDT` çekimi için hangi ağ?'
+wallet_confirm_title: ÇEKİMİ ONAYLA
+wallet_confirm_body: '💵 **Tutar:** `${0} USDT`
+
+  🌐 **Ağ:** `{1}`
+
+  📬 **Adres:** `{2}`
+
+
+  Onaylamak için **YES** yazın veya /cancel.'
+wallet_confirm_word: EVET
+wallet_confirm_prompt: Onaylamak için **YES** yazın veya /cancel.
+wallet_success_title: ÇEKİM TALEBİ ALINDI!
+wallet_success_body: '🆔 **ID:** `{0}`
+
+  💵 **Tutar:** `${1} USDT`
+
+  🌐 **Ağ:** `{2}`
+
+  📬 **Adres:** `{3}`
+
+
+  Çekiminiz admin onayı bekliyor.
+
+  İşlendikten sonra cüzdanınıza gönderilecek.'
+wallet_payment_title: ÖDEME BAĞLANTISI HAZIR
+wallet_payment_body: '💵 **Tutar:** `${0} USD`
+
+  🔗 **Ödeme Bağlantısı:**
+
+  {1}
+
+
+  ✅ OxaPay onayladıktan sonra bakiyeniz
+
+  otomatik olarak yüklenecek.
+
+
+  ⏱ **Süre:** 60 dakika
+
+  💡 BTC, ETH, USDT, LTC ve daha fazlasıyla ödeyin.'
+wallet_insufficient: '❌ **Yetersiz bakiye.**
+
+
+  Bakiyeniz: `${0}`
+
+  Gerekli: `${1}`'
+err_invalid_amount: ❌ Geçerli bir sayı girin (örn. `10` veya `25.50`)
+err_min_deposit: ❌ Minimum yatırma ${0}. Tekrar deneyin veya /cancel.
+err_min_withdraw: ❌ Minimum çekim ${0}. Tekrar deneyin veya /cancel.
+err_payment_fail: '❌ Ödeme bağlantısı oluşturulamadı.
+
+  Lütfen daha sonra tekrar deneyin veya destek alın.'
+err_withdraw_fail: '❌ Çekim kaydı oluşturulamadı.
+
+  Bakiyeniz iade edildi. Lütfen tekrar deneyin.'
+err_unexpected: ❌ Beklenmedik hata. Lütfen daha sonra tekrar deneyin.
+err_session_exp: Oturum süresi doldu. Yeniden başlayın.
+err_no_withdraw_addr: '⚠️ **Çekim adresi ayarlanmadı.**
+
+
+  TRC20 veya BEP20 USDT adresinizi eklemek için /setwallet kullanın.'
+err_invalid_trc20: ❌ Geçersiz TRC20 adresi. `T` ile başlamalı ve 34 karakter olmalı.
+err_invalid_bep20: ❌ Geçersiz BEP20 adresi. `0x` ile başlamalı ve 42 karakter olmalı.
+set_addr_title: '{0} ADRESİ AYARLA'
+set_addr_body: 'USDT **{0}** cüzdan adresinizi gönderin.
+
+
+  Örnek: {1}
+
+
+  ⚠️ Yalnızca geçerli USDT adresi gönderin!
+
+  İptal etmek için: /cancel'
+addr_saved_title: '{0} ADRESİ KAYDEDİLDİ!'
+addr_saved_body: Artık bu adrese USDT çekebilirsiniz.
+oxapay_not_configured: '❌ OxaPay yapılandırılmamış.
+
+  Depozit etkinleştirmek için admin ile iletişime geçin.'
+cancel_success: ✅ İptal edildi. Ana menüye dönmek için /start kullanın.
+cancel_nothing: İptal edilecek bir şey yok.
+banned_msg: 🚫 Bu botu kullanmaktan engellendiniz.
+generating_link: ⏳ Ödeme bağlantısı oluşturuluyor…
+processing_withdrawal: ⏳ Çekim işleniyor…
+dep_choose_title: PARA YATIRMA YÖNTEMİ SEÇİN
+dep_choose_body: 'Tercih ettiğiniz ödeme yöntemini seçin:'
+dep_enter_amount: 'Yatırmak istediğiniz miktarı **(USD cinsinden)** girin:'
+dep_type_cancel: İptal için /cancel yazın.
+dep_select_network: AĞ SEÇİN
+dep_which_network: Hangi ağ üzerinden yatırmak istiyorsunuz?
+dep_ready_title: ÖDEME HAZIR
+dep_send_title: KRİPTO GÖNDER
+dep_manual_title: MANUEL TRANSFER
+dep_created_title: YATIRIM OLUŞTURULDU
+dep_tap_pay: Ödeme sayfasına gitmek için **Şimdi Öde**'ye dokunun.
+dep_auto_credit: Ödeme onaylandıktan sonra bakiyeniz otomatik olarak yüklenir.
+dep_addr_warn: '**Tam tutarı** doğru ağ üzerinden gönderin. Yanlış ağ = kayıp para.'
+dep_manual_note: Transfer notuna Yatırım ID'sini ekleyin, ardından makbuzu desteğe gönderin.
+dep_back_methods: ⬅️ Yöntemlere Dön
+lbl_min_deposit: Minimum yatırım
+lbl_method: Yöntem
+lbl_amount: Tutar
+lbl_currency: Para Birimi
+lbl_expires: Süre dolumu
+lbl_minutes: dakika
+lbl_network: Ağ
+lbl_address: Bu adrese gönder
+lbl_ref: Yatırım ID
+lbl_send_amount: Gönderilecek Tutar
+lbl_send_to: Alıcı
+lbl_holder: Hesap Adı
+btn_pay_now: 💳 Şimdi Öde →
+btn_contact_support: 💬 Destek ile İletişim
+no_deposit_methods: ❌ Kullanılabilir para yatırma yöntemi yok. Yöneticiye başvurun.
+method_unavailable: ❌ Bu yöntem şu anda kullanılamıyor.
+market_title: PAZAR
+market_balance_lbl: Bakiyeniz
+market_tagline: 'Buy and sell verified Telegram accounts
+
+  with instant OTP delivery.'
+btn_buy_account: 🟢 Hesap Al
+btn_sell_account: 🔴 Hesap Sat
+buy_title: HESAP ALIMI
+buy_no_stock: 🚫 No countries available right now. Check back later!
+buy_page_info: Sayfa {0}/{1} — {2} ülke
+buy_hint: Detay için bir ülke seçin 👇
+buy_country_title: HESAP ALIMI — {0}
+buy_country_lbl: Ülke
+buy_phone_code_lbl: Telefon Kodu
+buy_price_lbl: Fiyat
+buy_stock_lbl: Mevcut
+buy_delivery_lbl: Teslimat
+buy_delivery_val: Anlık OTP
+buy_confirm_hint: Press Buy Now to proceed.
+btn_buy_now: ✅ Şimdi Al
+buy_no_channel: ⚠️ Oturum kanalı ayarlı değil. Yöneticiye ulaşın.
+buy_no_clean_account: ⚠️ Şu an temiz hesap yok. Sonra deneyin.
+buy_purchased_title: HESAP SATIN ALINDI!
+buy_paid_lbl: Ödenen
+buy_new_balance_lbl: Yeni Bakiye
+buy_tfa_lbl: 2FA Şifresi
+buy_otp_waiting_title: OTP bekleniyor…
+buy_otp_step1: 1️⃣ Telegram'ı açın ve yukarıdaki numarayı girin
+buy_otp_step2: 2️⃣ Request a login OTP
+buy_otp_step3: 3️⃣ OTP'yi buraya otomatik ileteceğim
+buy_otp_timeout_note: '_Zaman aşımı: 2 dakika_'
+btn_cancel_otp: ❌ OTP Beklemeyi İptal
+buy_success_alert: ✅ Satın alındı! OTP bekleniyor…
+buy_error_generic: ❌ Bir şeyler ters gitti. Tekrar deneyin.
+buy_view_all_title: Mevcut Tüm Ülkeler
+buy_view_all_empty: 🚫 Şu an ülke yok.
+otp_received_title: OTP ALINDI! 🎉
+otp_phone_lbl: Telefon
+otp_code_lbl: OTP Kodu
+otp_enter_instruction: Girişi tamamlamak için bu kodu Telegram'a girin.
+otp_sensitive_note: _Kodu kimseyle paylaşmayın._
+otp_timeout_title: OTP ZAMAN AŞIMI ⏰
+otp_timeout_body: 'No OTP was received within 2 minutes. Please make sure you entered the phone correctly and requested a login OTP.
+
+
+  Contact support if you need help.'
+otp_cancelled_title: OTP BEKLEME İPTAL
+otp_cancelled_body: 'OTP bekleme iptal edildi.
+
+
+  ⚠️ Satın almanız hâlâ geçerli.
+
+  Gerekirse destek ile iletişime geçin.'
+otp_error: OTP delivery failed for {0}. Please contact support.
+btn_back_to_market: ⬅️ Pazara Dön
+sell_title: HESAP SATIŞI
+sell_no_countries: 🚫 No countries accepting accounts right now. Check back later!
+sell_page_info: Sayfa {0}/{1} — {2} ülke
+sell_hint: Fiyatı görmek için ülke seçin 👇
+sell_country_title: SATIŞ — {0}
+sell_country_lbl: Ülke
+sell_phone_code_lbl: Telefon Kodu
+sell_we_pay_lbl: Ödediğimiz
+sell_requirements_title: ✅ Gereksinimler
+sell_req_prefix: • Phone number must start with {0}
+sell_req_valid_session: • Oturum dosyası geçerli ve yetkili olmalı
+sell_req_no_spam: • Hesap spam-kısıtlı, donuk veya banlı olmamalı
+sell_req_no_dupe: • Sistemde tekrar eden olmamalı
+sell_how_title: 📋 Nasıl Çalışır
+sell_how_step1: 1️⃣ Upload your .session file
+sell_how_step2: 2️⃣ Hesabı otomatik doğrularız
+sell_how_step3: 3️⃣ Funds go to your Pending Balance
+sell_how_step4: 4️⃣ Yönetici onaylar → bakiye kullanılabilir olur
+sell_review_time: '⏱ Tahmini inceleme: 1–24 saat'
+sell_why_rejected: '📌 Sık red nedenleri: yanlış ülke numarası, süresi dolmuş oturum, spam/banlı hesap, tekrar.'
+btn_start_selling: 📤 Satışa Başla
+btn_my_requests: 📋 Taleplerim
+sell_my_requests_title: SATIŞ TALEPLERİM
+sell_empty_requests: 📭 Henüz talebiniz yok.
+sell_requests_footer: Last 10 requests shown
+sell_country_full: 🚫 Bu ülke şu an hesap kabul etmiyor.
+sell_init_title: SATIŞ — {0}
+sell_you_receive_lbl: Alacağınız
+sell_required_prefix_lbl: Gerekli önek
+sell_step1_title: Adım 1 — Oturum dosyasını oluşturun
+sell_telethon_note: Run this snippet on your computer. It creates my_session.session.
+sell_step2_title: Adım 2 — Dosyayı buraya yükleyin
+sell_step2_body: 📎 Send the .session file as a document in this chat.
+sell_waiting: ⏳ Dosyanız bekleniyor…
+sell_type_cancel: İptal için /cancel yazın.
+sell_cancelled_title: SATIŞ İPTAL
+sell_cancelled_body: Hesap gönderilmedi. İstediğiniz zaman baştan başlayabilirsiniz.
+sell_rate_limit: ⏱ Sınıra ulaşıldı. Max {0} gönderim / {1}s.
+sell_max_pending: ⏳ {0} bekleyen talebiniz var. Önce onların incelenmesini bekleyin.
+sell_wrong_file: ❌ Wrong file type. Please send a .session file.
+sell_file_too_large: ❌ File too large. A valid session file is under 100 KB.
+sell_validating_title: OTURUM DOĞRULANIYOR
+sell_validating_body: ⏳ Telegram'a bağlanılıyor… 30sn kadar bekleyin.
+sell_no_channel: ⚠️ Platform yapılandırılmamış. Yöneticiye ulaşın.
+sell_download_error: ❌ Could not read your file. Please send the file again, or type /cancel.
+sell_success_title: OTURUM GÖNDERİLDİ! ✅
+sell_request_id_lbl: Talep ID
+sell_pending_balance_lbl: Bekleyen Bakiye
+sell_status_lbl: Durum
+sell_awaiting_review: ⏳ İnceleme bekleniyor
+sell_success_note: Your pending balance will be credited once admin approves your request.
+sell_spam_flag_note: _⚠️ This account has a temporary spam flag. Admin will make the final decision._
+sell_track_hint: Track your request in My Sell Requests.
+sell_error_generic: ❌ Beklenmeyen hata. Tekrar deneyin veya destek isteyin.
+btn_sell_another: 💼 Bir Daha Sat
+btn_prev: ⬅️ Önceki
+btn_next: Sonraki ➡️
+btn_view_all: 📋 Tümü
+btn_cancel: ❌ İptal
+err_country_not_found: ❌ Ülke bulunamadı.
+sell_country_name_lbl: Ülke
+buy_otp_requesting: 📨 Telegram'dan OTP isteniyor…
+buy_otp_prompt: '📱 **Telefon:** `{0}`
+
+
+  Bu numaraya giriş kodu gönderildi.
+
+  OTP''yi buraya girin:'
+buy_otp_cancel_hint: _(İptal ve tam iade için /cancel yazın)_
+buy_otp_invalid: '❌ Yanlış OTP. Kontrol edip tekrar deneyin:'
+buy_otp_expired: ❌ OTP süresi doldu. İade yapıldı — tekrar deneyin.
+buy_tfa_prompt: '🔐 Hesapta **2FA** açık.
+
+
+  2FA şifresini girin:'
+buy_tfa_invalid: '❌ Yanlış 2FA şifresi. Tekrar deneyin:'
+buy_flood_wait: ⏳ Telegram sınırı — **{0} saniye** bekleyip OTP'yi tekrar gönderin.
+buy_auth_checking: 🔍 Hesap doğrulanıyor…
+buy_complete_title: HESAP HAZIR! 🎉
+buy_logout_instruction: '**Ayarlar → Gizlilik → Aktif Oturumlar**''a gidip diğer oturumları kapatın.'
+buy_auth_cancelled_title: SATIN ALMA İPTAL
+buy_auth_cancelled_body: '`${0}` bakiyeniz iade edildi.'
+buy_account_banned: ❌ Bu hesap Telegram tarafından banlandı. İade yapıldı.
+buy_sessions_terminated: ✅ Diğer tüm oturumlar kapatıldı.
+buy_sessions_partial: ⚠️ Bazı oturumlar kapatılamadı — Ayarlar → Aktif Oturumlar'dan manuel kaldırın.
+buy_auth_send_code_fail: '❌ Telegram''dan OTP istenemedi. İade yapıldı.
+
+
+  Sonra deneyin veya destek isteyin.'
+buy_auth_cancel_hint_inline: İade için İptal'e basın.
+buy_auth_already_active: ⏳ You already have a pending OTP flow. Send the OTP or type /cancel.
+btn_home_deposit: 💰 Yatır
+btn_home_withdraw_money: 👤 Çek
+btn_extra: ✨ Ekstra
+btn_sessions_menu: 📦 Oturum Sat / Al
+btn_sell_account_start: 🔴 Satışa Başla
+btn_my_sell_record: 📋 Satışlarım
+btn_open: 📖 Aç
+btn_search_country: 🔍 Ara
+btn_search_again: 🔍 Tekrar Ara
+registration_disabled_msg: "🚫 **Yeni kullanıcı kaydı şu anda devre dışı.**\n\nLütfen bir süre sonra tekrar deneyin. Yeni kullanıcı kaydı tekrar açıldığında botu başlatabileceksiniz.\n\nHerhangi bir sorunuz veya sorunuz varsa lütfen destekle iletişime geçin."
+
+feature_disabled_alert: "Bu özellik şu anda devre dışı."
+maintenance_mode_msg: "🔧 **Platform bakımı şu anda aktif.**\n\nYeni siparişler, yatırımlar ve çekimler geçici olarak duraklatıldı. Lütfen daha sonra tekrar deneyin.\n\nHerhangi bir sorununuz varsa destek ile iletişime geçin."
+deposits_disabled_msg: "🚫 **Yeni yatırımlar şu anda devre dışı.**\n\nLütfen bir süre sonra tekrar deneyin. Yatırımlar tekrar açıldığında yeni yatırım oluşturabilirsiniz.\n\nHerhangi bir sorununuz varsa destek ile iletişime geçin."
+withdrawals_disabled_msg: "🚫 **Yeni çekim talepleri şu anda devre dışı.**\n\nLütfen bir süre sonra tekrar deneyin. Çekimler tekrar açıldığında çekim talebi oluşturabilirsiniz.\n\nHerhangi bir sorununuz varsa destek ile iletişime geçin."
+
+# -- Session selling gate (auto-added) --
+sell_disabled_msg: '🛑 **Oturum satışı şu anda devre dışı.**
+
+
+  Lütfen daha sonra tekrar deneyin. Sorunuz varsa destek ile iletişime geçin.'
+sell_rank_locked_msg: '🔒 **Oturum satışı rütbe kilitli.**
+
+
+  • Minimum rütbe: **{min_rank}** (`${required_spend:g}` harcanmalı)
+
+  • Rütbeniz: **{current_rank}** — harcamanız `${current_spend:g}`
+
+  • Kilidi açmak için **`${needed_spend:g}`** daha harcayın
+
+
+  Sorunuz varsa destek ile iletişime geçin.'
+
+btn_user_dashboard: "🎛 Kullanıcı Paneli"
+
+# -- Binance Pay (Auto) deposit (auto-added) --
+binance_pay_auto_label: "Binance Pay (Auto)"
+dep_dup_order_title: "Sipariş Kimliği Zaten Kullanıldı"
+dep_dup_order_body: "Bu Binance Sipariş Kimliği başka bir yatırma işleminde kullanıldı. Her kimlik yalnızca bir kez kullanılabilir."
+dep_dup_order_hint: "Lütfen yeni bir ödeme yapın veya destek ile iletişime geçin."

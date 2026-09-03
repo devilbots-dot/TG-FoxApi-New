@@ -1,0 +1,377 @@
+{% extends "admin/base.html" %}
+{% block title %}Sell Requests{% endblock %}
+{% block topbar_title %}📤 Sell Requests{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">User Sell Requests</div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" onclick="loadRequests(1)">🔄 Refresh</button>
+  </div>
+</div>
+
+<div class="filters">
+  <select id="f-status" class="filter-select" onchange="loadRequests(1)">
+    <option value="pending">Pending</option>
+    <option value="">All</option>
+    <option value="paid">Paid</option>
+    <option value="rejected">Rejected</option>
+  </select>
+  <select id="f-lifecycle" class="filter-select" onchange="loadRequests(1)">
+    <option value="">All Lifecycle</option>
+    <option value="pending_termination">⏳ Pending Termination</option>
+    <option value="completed">✅ Termination Done</option>
+    <option value="payment_released">💰 Payment Released</option>
+  </select>
+</div>
+
+<div class="table-wrap">
+  <div class="table-header">
+    <span class="table-title">Sell Requests</span>
+    <span class="table-count" id="sr-count">—</span>
+  </div>
+  <div id="sr-body"><div class="loading"><div class="spinner"></div></div></div>
+  <div class="pagination" id="sr-pagination"></div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal-overlay" id="approve-modal">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-header">
+      <span class="modal-title">✅ Approve Sell Request</span>
+      <button class="modal-close" onclick="closeModal('approve-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="approve-summary" style="background:var(--bg3,#1a1a2e);border-radius:8px;padding:12px;margin-bottom:14px;font-size:13px;line-height:1.7"></div>
+      <div class="form-group">
+        <label class="form-label">Final Price ($)</label>
+        <input type="number" step="0.0001" min="0.0001" class="form-control" id="approve-price" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Admin Note</label>
+        <input type="text" class="form-control" id="approve-note" placeholder="Optional note">
+      </div>
+      <input type="hidden" id="approve-req-id">
+
+      <!-- Session Validation Area -->
+      <div id="validation-area" style="margin-top:14px">
+        <div id="validation-idle" style="font-size:12px;color:var(--muted,#888);padding:8px;border:1px dashed var(--border,#333);border-radius:6px">
+          🔍 Session integrity will be verified before approval. Click <b>Validate &amp; Approve</b> to continue.
+        </div>
+        <div id="validation-loading" style="display:none;align-items:center;gap:10px;font-size:12px;padding:8px">
+          <span style="display:inline-block;width:16px;height:16px;border:2px solid var(--primary,#6c63ff);border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite"></span>
+          Connecting to Telegram and verifying session… this may take up to 30s.
+        </div>
+        <div id="validation-result" style="display:none;font-size:12px;padding:10px;border:1px solid var(--border,#333);border-radius:6px;background:var(--bg3,#1a1a2e)"></div>
+        <div id="force-warning" style="display:none;margin-top:8px;padding:8px 10px;border-radius:6px;background:rgba(220,53,69,.1);border:1px solid rgba(220,53,69,.3);font-size:11px;color:#ff6b6b">
+          ⚠️ <b>Force Approve</b> bypasses session verification. The seller will be paid even though integrity checks failed.
+          This action is audit-logged. Only proceed if you have manually verified the session is valid.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" style="gap:8px;flex-wrap:wrap">
+      <button class="btn btn-secondary" onclick="closeModal('approve-modal')">Cancel</button>
+      <button id="validate-btn" class="btn btn-primary" onclick="doValidateAndApprove()">🔍 Validate &amp; Approve</button>
+      <button id="confirm-approve-btn" class="btn btn-success" style="display:none" onclick="doApproveConfirm()">✓ Approve</button>
+      <button id="force-approve-btn" class="btn btn-danger" style="display:none" onclick="doForceApprove()">⚠️ Force Approve</button>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="reject-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">✕ Reject Sell Request</span>
+      <button class="modal-close" onclick="closeModal('reject-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Rejection Reason <span style="color:var(--red)">*</span></label>
+        <input type="text" class="form-control" id="reject-note" placeholder="e.g. Spam account, banned number…">
+      </div>
+      <input type="hidden" id="reject-req-id">
+      <div class="form-hint" style="color:var(--yellow)">
+        ⚠️ Pending balance reversed and user notified via Telegram.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('reject-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="doReject()">✕ Reject</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let _page = 1;
+
+const LIFECYCLE_LABELS = {
+  pending:             '<span class="badge badge-yellow">Awaiting Termination</span>',
+  pending_termination: '<span class="badge badge-yellow">⏳ Pending Termination</span>',
+  completed:           '<span class="badge badge-cyan">✅ Terminated</span>',
+  payment_released:    '<span class="badge badge-green">💰 Payment Released</span>',
+};
+
+const SPAM_LABELS = {
+  clean:          '<span class="badge badge-green">✅ Clean</span>',
+  temporary_spam: '<span class="badge badge-yellow">⚠️ Temp Spam</span>',
+  permanent_spam: '<span class="badge badge-red">🚫 Perm Spam</span>',
+  frozen:         '<span class="badge badge-red">🧊 Frozen</span>',
+  unknown:        '<span class="badge badge-secondary">? Unknown</span>',
+};
+
+function spamLabel(s) { return SPAM_LABELS[s] || `<span class="badge">${s||'—'}</span>`; }
+
+async function loadRequests(page = _page) {
+  _page = page;
+  const tbody = document.getElementById('sr-body');
+  const status    = document.getElementById('f-status').value;
+  const lifecycle = document.getElementById('f-lifecycle').value;
+  showLoading(tbody);
+  try {
+    const params = new URLSearchParams({ page, limit: 50 });
+    if (status)    params.set('status', status);
+    if (lifecycle) params.set('lifecycle_status', lifecycle);
+    const data = await apiGET('/admin/api/sell-requests?' + params);
+    document.getElementById('sr-count').textContent = fmtNum(data.total) + ' requests';
+    if (!data.items.length) {
+      showEmpty(tbody, 'No sell requests found.');
+      document.getElementById('sr-pagination').innerHTML = '';
+      return;
+    }
+
+    tbody.innerHTML = `<table class="tbl" style="font-size:12px">
+      <thead><tr>
+        <th>Request ID</th>
+        <th>Seller</th>
+        <th>Phone</th>
+        <th>Country</th>
+        <th>Type</th>
+        <th>Spam</th>
+        <th>2FA</th>
+        <th>Offer</th>
+        <th>Final</th>
+        <th>Status</th>
+        <th>Lifecycle</th>
+        <th>Submitted</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody>${data.items.map(r => `<tr>
+        <td class="text-mono text-small" style="white-space:nowrap">${r.request_id}</td>
+        <td>
+          <a href="/admin/sellers?uid=${r.user_id}" style="color:var(--primary,#7c3aed);text-decoration:none;font-weight:600" title="Seller profile">
+            ${r.user_id}
+          </a>
+          ${r.username ? `<div style="font-size:10px;color:var(--muted,#888)">@${r.username}</div>` : ''}
+          ${r.first_name ? `<div style="font-size:10px;color:var(--muted,#888)">${r.first_name}</div>` : ''}
+        </td>
+        <td class="text-mono" style="white-space:nowrap">${r.phone || '—'}</td>
+        <td>${r.country_name || r.code || '—'}</td>
+        <td><span class="badge ${r.sell_type === 'session' ? 'badge-cyan' : 'badge-secondary'}">${r.sell_type === 'session' ? '📁 Session' : '📱 Account'}</span></td>
+        <td>${spamLabel(r.spam_status)}</td>
+        <td style="text-align:center">${r.has_2fa ? '🔐' : '—'}</td>
+        <td>${fmtMoney(r.offer_price)}</td>
+        <td>${r.final_price != null ? fmtMoney(r.final_price) : '—'}</td>
+        <td>${statusBadge(r.status)}</td>
+        <td style="white-space:nowrap">${LIFECYCLE_LABELS[r.lifecycle_status] || r.lifecycle_status || '—'}</td>
+        <td style="white-space:nowrap">${fmtDate(r.submitted_at)}</td>
+        <td><div class="tbl-actions">
+          ${r.status === 'pending' ? `
+            <button class="btn btn-success btn-xs" onclick="openApprove(${JSON.stringify(r).replace(/"/g,'&quot;')})">✓</button>
+            <button class="btn btn-danger btn-xs" onclick="openReject('${r.request_id}')">✕</button>
+          ` : ''}
+          <a class="btn btn-secondary btn-xs" href="/admin/sellers?uid=${r.user_id}">👤</a>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+    renderPagination(document.getElementById('sr-pagination'), data, n => loadRequests(n));
+  } catch(e) { showEmpty(tbody, 'Failed to load sell requests.'); }
+}
+
+const CHECK_LABELS = {
+  session_ref:        'Session reference stored',
+  session_download:   'File downloadable from channel',
+  session_extract:    'Session bytes readable',
+  session_authorized: 'Session still authorized',
+  other_sessions:     'No other active sessions',
+  spam_status:        'Spam / restriction status',
+};
+
+let _approveReqId = null, _approvePrice = 0, _approveNote = '', _validationResult = null;
+
+function _resetValidationUI() {
+  document.getElementById('validation-idle').style.display    = 'block';
+  document.getElementById('validation-loading').style.display = 'none';
+  document.getElementById('validation-result').style.display  = 'none';
+  document.getElementById('force-warning').style.display      = 'none';
+  const vb = document.getElementById('validate-btn');
+  const cb = document.getElementById('confirm-approve-btn');
+  const fb = document.getElementById('force-approve-btn');
+  vb.style.display = ''; vb.disabled = false;
+  cb.style.display = 'none';
+  fb.style.display = 'none';
+  _validationResult = null;
+}
+
+function openApprove(r) {
+  document.getElementById('approve-req-id').value = r.request_id;
+  document.getElementById('approve-price').value  = r.offer_price;
+  document.getElementById('approve-note').value   = '';
+  document.getElementById('approve-summary').innerHTML = `
+    <b>${r.request_id}</b><br>
+    📱 ${r.phone} &nbsp;|&nbsp; 🌍 ${r.country_name || r.code || '—'} &nbsp;|&nbsp; ${spamLabel(r.spam_status)} &nbsp;|&nbsp; 2FA: ${r.has_2fa ? '🔐 Yes' : '—'}<br>
+    👤 User: <b>${r.user_id}</b>${r.username ? ` (@${r.username})` : ''}
+  `;
+  _resetValidationUI();
+  openModal('approve-modal');
+}
+
+function openReject(id) {
+  document.getElementById('reject-req-id').value = id;
+  document.getElementById('reject-note').value = '';
+  openModal('reject-modal');
+}
+
+function _renderValidationResult(res) {
+  const el = document.getElementById('validation-result');
+  let html = '';
+
+  if (res.verified) {
+    html += `<div style="color:var(--green,#2ecc71);font-weight:700;margin-bottom:8px">✅ All session checks passed — safe to approve.</div>`;
+  } else if (res.inconclusive) {
+    html += `<div style="color:var(--yellow,#f39c12);font-weight:700;margin-bottom:8px">⚠️ Verification inconclusive (network issue). Checks below may be incomplete.</div>`;
+  } else {
+    html += `<div style="color:var(--red,#e74c3c);font-weight:700;margin-bottom:8px">❌ Session verification FAILED — see issues below.</div>`;
+  }
+
+  const checks = res.checks || {};
+  for (const [name, check] of Object.entries(checks)) {
+    const icon = check.passed ? '✅' : (check.inconclusive ? '🌐' : '❌');
+    const label = CHECK_LABELS[name] || name;
+    html += `<div style="margin-bottom:5px">${icon} <b style="font-size:11px">${label}</b>`;
+    if (check.spam_status) {
+      const sc = {'clean':'var(--green,#2ecc71)','temporary_spam':'var(--yellow,#f39c12)','permanent_spam':'var(--red,#e74c3c)','frozen':'var(--red,#e74c3c)'}[check.spam_status] || 'inherit';
+      html += ` <span style="font-size:10px;color:${sc}">(${check.spam_status.replace('_',' ')})</span>`;
+    }
+    if (check.count !== undefined) {
+      html += ` <span style="font-size:10px;color:var(--muted,#888)">(${check.count} session${check.count !== 1 ? 's' : ''} active)</span>`;
+    }
+    if (!check.passed && check.reason) {
+      const shortReason = check.reason.replace(/\n+/g,' ').substring(0, 220);
+      html += `<div style="font-size:10px;color:var(--muted,#888);margin-left:18px;margin-top:2px">${shortReason}</div>`;
+    }
+    html += `</div>`;
+  }
+
+  if (res.warnings && res.warnings.length) {
+    html += `<div style="margin-top:8px;font-size:11px;color:var(--yellow,#f39c12);font-weight:600">⚠️ Warnings (non-blocking):</div>`;
+    res.warnings.forEach(w => {
+      html += `<div style="font-size:10px;color:var(--muted,#888);margin-left:10px">• ${w.substring(0,180)}</div>`;
+    });
+  }
+
+  el.innerHTML = html;
+}
+
+async function doValidateAndApprove() {
+  const id    = document.getElementById('approve-req-id').value;
+  const price = parseFloat(document.getElementById('approve-price').value);
+  if (!price || price <= 0) { toast('Enter a valid price before validating', 'error'); return; }
+
+  _approveReqId = id;
+  _approvePrice = price;
+  _approveNote  = document.getElementById('approve-note').value;
+
+  // Show loading
+  document.getElementById('validation-idle').style.display    = 'none';
+  document.getElementById('validation-loading').style.display = 'flex';
+  document.getElementById('validate-btn').disabled = true;
+
+  try {
+    const res = await apiGET(`/admin/api/sell-requests/${id}/validate`);
+    _validationResult = res;
+
+    document.getElementById('validation-loading').style.display = 'none';
+    document.getElementById('validation-result').style.display  = 'block';
+    _renderValidationResult(res);
+
+    if (res.verified || res.inconclusive) {
+      // Show normal confirm button
+      document.getElementById('confirm-approve-btn').style.display = '';
+    } else {
+      // Show force-approve button + warning
+      document.getElementById('force-approve-btn').style.display = '';
+      document.getElementById('force-warning').style.display     = 'block';
+    }
+  } catch(e) {
+    document.getElementById('validation-loading').style.display = 'none';
+    document.getElementById('validation-idle').style.display    = 'block';
+    document.getElementById('validate-btn').disabled = false;
+    toast('Validation request failed: ' + (e.message || e), 'error');
+  }
+}
+
+async function doApproveConfirm() {
+  // Normal approve — validation passed (or was inconclusive but admin chose to proceed)
+  const r = await apiPOST(`/admin/api/sell-requests/${_approveReqId}/approve`, {
+    final_price: _approvePrice,
+    note:  document.getElementById('approve-note').value || _approveNote,
+    force: false,
+  });
+  if (r.ok) {
+    toast('Approved — balance credited, account added to stock, user notified', 'success');
+    closeModal('approve-modal');
+    loadRequests();
+  } else {
+    toast(r.detail || 'Failed to approve', 'error');
+  }
+}
+
+async function doForceApprove() {
+  const reasons = (_validationResult?.reasons || []).join('; ') || 'see admin panel';
+  if (!confirm(
+    `⚠️ FORCE APPROVE\n\nSession verification FAILED:\n${reasons}\n\n` +
+    `You are overriding the safety check. This action is audit-logged.\n\n` +
+    `Are you sure you want to force-approve despite these failures?`
+  )) return;
+
+  const baseNote = document.getElementById('approve-note').value || _approveNote || '';
+  const forceNote = (baseNote ? baseNote + ' | ' : '') + `Force approved — verification failures: ${reasons}`;
+
+  const r = await apiPOST(`/admin/api/sell-requests/${_approveReqId}/approve`, {
+    final_price: _approvePrice,
+    note:  forceNote,
+    force: true,
+  });
+  if (r.ok) {
+    toast('Force approved — balance credited (validation bypassed)', 'warning');
+    closeModal('approve-modal');
+    loadRequests();
+  } else {
+    toast(r.detail || 'Failed', 'error');
+  }
+}
+
+async function doReject() {
+  const id   = document.getElementById('reject-req-id').value;
+  const note = document.getElementById('reject-note').value;
+  if (!note.trim()) { toast('Rejection reason is required', 'error'); return; }
+  const r = await apiPOST(`/admin/api/sell-requests/${id}/reject`, { note });
+  if (r.ok) {
+    toast('Request rejected — user notified', 'success');
+    closeModal('reject-modal');
+    loadRequests();
+  } else {
+    toast(r.detail || 'Failed to reject', 'error');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => loadRequests(1));
+</script>
+{% endblock %}

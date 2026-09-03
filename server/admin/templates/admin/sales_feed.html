@@ -1,0 +1,110 @@
+{% extends "admin/base.html" %}
+{% block title %}Sales Feed{% endblock %}
+{% block topbar_title %}📡 Real Sales Feed{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Real Sales Feed</div>
+  <div class="page-actions"><button class="btn btn-secondary btn-sm" onclick="refreshFeedPanel()">🔄 Refresh</button></div>
+</div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-header"><span class="card-title">📡 Completed Purchases Only</span><span class="badge" id="feed-status-badge">Loading…</span></div>
+    <div class="card-body">
+      <p style="color:var(--text3);font-size:13px;margin-bottom:16px">Real purchases are published after completion. Optional fake activity is isolated from orders, balances, stock, and analytics.</p>
+      <div id="feed-load-note" class="hidden" role="status" aria-live="polite" style="margin:0 0 16px;padding:12px 14px;border:1px solid var(--danger-border);border-radius:12px;background:var(--danger-bg);color:var(--danger-text)"></div>
+      <div class="form-row" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px">
+        <div style="padding:13px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface-soft)"><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.08em">Delivery state</div><strong id="feed-summary-state" style="display:block;margin-top:5px">Loading…</strong></div>
+        <div style="padding:13px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface-soft)"><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.08em">Destination</div><strong id="feed-summary-destination" style="display:block;margin-top:5px">Checking…</strong></div>
+        <div style="padding:13px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface-soft)"><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.08em">Publish delay</div><strong id="feed-summary-delay" style="display:block;margin-top:5px">—</strong></div>
+      </div>
+      <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="form-group"><label class="form-label">Sales Feed</label><div class="toggle-row"><label class="toggle"><input type="checkbox" id="sales_feed_enabled" onchange="markDirty()"><span class="toggle-slider"></span></label><span class="toggle-label" id="feed-enabled-label">Disabled</span></div></div>
+      <div class="form-group"><label class="form-label">Silent Mode</label><div class="toggle-row"><label class="toggle"><input type="checkbox" id="sales_feed_silent" onchange="markDirty()"><span class="toggle-slider"></span></label><span class="toggle-label">No notification sound</span></div></div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px"><label class="form-label">Destination Chat ID</label><input type="text" class="form-control" id="sales_feed_chat_id" placeholder="-1001234567890" oninput="markDirty()"></div>
+    <div class="form-group" style="margin-bottom:20px"><label class="form-label">Notification Delay (seconds)</label><input type="number" class="form-control" id="sales_feed_delay_seconds" min="0" max="300" style="max-width:160px" oninput="markDirty()"></div>
+    <div style="display:flex;gap:10px"><button class="btn btn-primary" id="save-feed-btn" onclick="saveSettings()">💾 Save Settings</button><button class="btn btn-secondary" onclick="testFeed()">📨 Send Test Notification</button></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-header"><span class="card-title">🎭 Fake Sales Activity</span><span class="badge badge-muted" id="fake-status-badge">Loading…</span></div>
+    <div class="card-body">
+      <div style="padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-soft);margin-bottom:16px;font-size:13px;color:var(--text2)">
+        Fake sales are cosmetic feed messages only. They never create real orders or affect inventory, balances, or analytics.
+      </div>
+      <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="form-group"><label class="form-label">Fake Sales</label><div class="toggle-row"><label class="toggle"><input type="checkbox" id="fake_sales_enabled" onchange="markDirty()"><span class="toggle-slider"></span></label><span class="toggle-label" id="fake-enabled-label">Disabled</span></div></div>
+        <div class="form-group"><label class="form-label">Randomization Level (1–10)</label><div style="display:flex;align-items:center;gap:10px"><input type="range" id="fake_sales_randomization_level" min="1" max="10" step="1" style="flex:1" oninput="document.getElementById('rand-label').textContent=this.value;markDirty()"><span id="rand-label" style="min-width:24px;text-align:center;font-weight:600">5</span></div></div>
+      </div>
+      <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="form-group"><label class="form-label">Min Interval (seconds)</label><input type="number" class="form-control" id="fake_sales_interval_min" min="30" placeholder="300" oninput="markDirty()"></div>
+        <div class="form-group"><label class="form-label">Max Interval (seconds)</label><input type="number" class="form-control" id="fake_sales_interval_max" min="30" placeholder="900" oninput="markDirty()"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:16px"><label class="form-label">Product Pool</label><div style="display:flex;gap:16px"><label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pool_account" onchange="markDirty()"> Account (OTP Delivery)</label><label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pool_session" onchange="markDirty()"> Session File</label></div></div>
+      <div style="display:flex;gap:10px"><button class="btn btn-secondary" onclick="sendFakePreview()">🎭 Send Preview Fake Sale</button></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-header"><span class="card-title">🧾 Recent Completed Purchases</span><span class="badge badge-muted" id="feed-activity-count">Loading…</span></div>
+    <div class="card-body" id="feed-activity-body"><div class="empty-state">Loading real completed purchases…</div></div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let dirty = false;
+function markDirty(){ dirty = true; document.getElementById('save-feed-btn').textContent='💾 Save Settings *'; }
+function setBadge(enabled){ const b=document.getElementById('feed-status-badge'); b.textContent=enabled?'Enabled':'Disabled'; b.className='badge '+(enabled?'badge-success':'badge-muted'); }
+function setFakeBadge(enabled){ const b=document.getElementById('fake-status-badge'); b.textContent=enabled?'Running':'Stopped'; b.className='badge '+(enabled?'badge-success':'badge-muted'); }
+function setLoadNote(message=''){ const n=document.getElementById('feed-load-note'); n.textContent=message; n.classList.toggle('hidden',!message); }
+function setSummary(d){ document.getElementById('feed-summary-state').textContent=d.sales_feed_enabled?'Enabled — completed purchases only':'Disabled'; document.getElementById('feed-summary-destination').textContent=d.sales_feed_chat_id?'Configured':'Required before delivery'; document.getElementById('feed-summary-delay').textContent=`${Number(d.sales_feed_delay_seconds)||0}s`; }
+function esc(v){ const d=document.createElement('div'); d.textContent=v ?? ''; return d.innerHTML; }
+function money(v){ return `$${Number(v||0).toFixed(2)}`; }
+function formatCompletedAt(v){ if(!v) return '—'; const d=new Date(v); return Number.isNaN(d.valueOf()) ? '—' : d.toLocaleString(); }
+async function loadSettings(){
+  setLoadNote('');
+  try {
+    const d=await apiGET('/admin/api/sales-feed/settings');
+    if(!d || d.success===false || d.status===false) throw new Error(d?.message||'Could not load Sales Feed settings.');
+    document.getElementById('sales_feed_enabled').checked=!!d.sales_feed_enabled;
+    document.getElementById('sales_feed_silent').checked=!!d.sales_feed_silent;
+    document.getElementById('sales_feed_chat_id').value=d.sales_feed_chat_id||'';
+    document.getElementById('sales_feed_delay_seconds').value=d.sales_feed_delay_seconds||0;
+    document.getElementById('fake_sales_enabled').checked=!!d.fake_sales_enabled;
+    document.getElementById('fake_sales_interval_min').value=d.fake_sales_interval_min||300;
+    document.getElementById('fake_sales_interval_max').value=d.fake_sales_interval_max||900;
+    document.getElementById('fake_sales_randomization_level').value=d.fake_sales_randomization_level||5;
+    document.getElementById('rand-label').textContent=d.fake_sales_randomization_level||5;
+    const pool=d.fake_sales_product_pool||['account','session'];
+    document.getElementById('pool_account').checked=pool.includes('account');
+    document.getElementById('pool_session').checked=pool.includes('session');
+    document.getElementById('feed-enabled-label').textContent=d.sales_feed_enabled?'Enabled':'Disabled';
+    document.getElementById('fake-enabled-label').textContent=d.fake_sales_enabled?'Enabled':'Disabled';
+    setBadge(!!d.sales_feed_enabled); setSummary(d); dirty=false;
+    setFakeBadge(!!d.fake_sales_enabled);
+    document.getElementById('save-feed-btn').textContent='💾 Save Settings';
+  } catch(e) { setBadge(false); setLoadNote('Sales Feed settings are temporarily unavailable. Use Refresh to try again; no delivery setting is estimated.'); document.getElementById('feed-summary-state').textContent='Unavailable'; document.getElementById('feed-summary-destination').textContent='Unavailable'; document.getElementById('feed-summary-delay').textContent='—'; }
+}
+async function loadRecentActivity(){
+  const body=document.getElementById('feed-activity-body'); const count=document.getElementById('feed-activity-count');
+  body.innerHTML='<div class="empty-state">Loading real completed purchases…</div>'; count.textContent='Loading…';
+  try {
+    const d=await apiGET('/admin/api/sales-feed/recent');
+    if(!d || d.success===false || d.status===false || !Array.isArray(d.items)) throw new Error('Could not load completed purchases.');
+    count.textContent=`${d.items.length} recent`;
+    if(!d.items.length){ body.innerHTML='<div class="empty-state">No completed purchases are available to display yet. Only real completed orders appear here.</div>'; return; }
+    body.innerHTML=`<table class="tbl"><thead><tr><th>Order</th><th>Buyer</th><th>Amount</th><th>Fee</th><th>Completed</th></tr></thead><tbody>${d.items.map(x=>`<tr><td><code>${esc(x.order_id)}</code></td><td>${esc(x.buyer_id)}</td><td>${money(x.amount)}</td><td>${money(x.fee)}</td><td>${esc(formatCompletedAt(x.completed_at))}</td></tr>`).join('')}</tbody></table>`;
+  } catch(e) { count.textContent='Unavailable'; body.innerHTML='<div class="empty-state">Completed purchase activity is temporarily unavailable. Use Refresh to try again.</div>'; }
+}
+function refreshFeedPanel(){ loadSettings(); loadRecentActivity(); }
+async function saveSettings(){
+  const pool=[]; if(document.getElementById('pool_account').checked) pool.push('account'); if(document.getElementById('pool_session').checked) pool.push('session');
+  if(!pool.length){ pool.push('account','session'); document.getElementById('pool_account').checked=true; document.getElementById('pool_session').checked=true; }
+  const payload={sales_feed_enabled:document.getElementById('sales_feed_enabled').checked,sales_feed_silent:document.getElementById('sales_feed_silent').checked,sales_feed_chat_id:document.getElementById('sales_feed_chat_id').value.trim(),sales_feed_delay_seconds:parseInt(document.getElementById('sales_feed_delay_seconds').value)||0,fake_sales_enabled:document.getElementById('fake_sales_enabled').checked,fake_sales_interval_min:parseInt(document.getElementById('fake_sales_interval_min').value)||300,fake_sales_interval_max:parseInt(document.getElementById('fake_sales_interval_max').value)||900,fake_sales_randomization_level:parseInt(document.getElementById('fake_sales_randomization_level').value)||5,fake_sales_product_pool:pool};
+  const r=await apiPOST('/admin/api/sales-feed/settings',payload); if(!r?.ok){toast(r?.error||'Could not save Sales Feed settings.','error');return;} toast('Sales Feed settings saved.','success'); await loadSettings();
+}
+async function testFeed(){ if(!window.confirm('Send a real test notification to the configured Sales Feed destination?')) return; const r=await apiPOST('/admin/api/sales-feed/test',{}); toast(r?.message||r?.error||(r?.ok?'Test notification sent.':'Test failed.'),r?.ok?'success':'error'); }
+async function sendFakePreview(){ if(!window.confirm('Send one isolated fake sale preview to the configured destination?')) return; const r=await apiPOST('/admin/api/sales-feed/fake-preview',{}); toast(r?.message||r?.error||(r?.ok?'Fake preview sent.':'Preview failed.'),r?.ok?'success':'error'); }
+refreshFeedPanel();
+</script>
+{% endblock %}

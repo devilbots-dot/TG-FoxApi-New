@@ -1,0 +1,142 @@
+{% extends "webapp/base.html" %}
+{% block title %}Record · TG-Fox API{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1 class="page-title">Record</h1>
+  <p class="page-sub">Your buy and sell history</p>
+</section>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="buy" id="tabBuy">🛒 Purchases <span class="tab-count" id="cntBuy">0</span></button>
+  <button class="tab-btn" data-tab="sell" id="tabSell">📤 Sales <span class="tab-count" id="cntSell">0</span></button>
+</div>
+
+<div class="rec-list" id="recBuy">
+  <div class="rec-empty muted">Loading…</div>
+</div>
+<div class="rec-list" id="recSell" hidden>
+  <div class="rec-empty muted">Loading…</div>
+</div>
+{% endblock %}
+<style>
+.tab-bar { display:flex; gap:6px; padding:4px; background:var(--card); border:1px solid var(--card-border); border-radius:14px; margin-bottom:10px; }
+.tab-btn { flex:1; border:0; background:transparent; color:var(--muted); font-family:var(--font-sans); font-size:13px; font-weight:600; padding:10px 8px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; transition:.15s; }
+.tab-btn.active { background:var(--accent-soft); color:var(--accent); }
+.tab-count { font-size:11px; padding:1px 6px; border-radius:10px; background:rgba(255,255,255,.06); color:inherit; font-weight:700; }
+.rec-list { display:flex; flex-direction:column; gap:8px; }
+.rec-empty { text-align:center; padding:24px 12px; font-size:13px; }
+.rec-card { display:flex; gap:10px; padding:12px 14px; background:var(--card); border:1px solid var(--card-border); border-radius:14px; box-shadow:var(--shadow); backdrop-filter:blur(8px); }
+.rec-icon { width:36px; height:36px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.rec-icon.buy { background:rgba(76,139,255,.15); }
+.rec-icon.sell { background:rgba(155,123,255,.15); }
+.rec-body { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
+.rec-line1 { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.rec-line2 { display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; }
+.rec-title { font-size:13px; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rec-amt { font-size:14px; font-weight:800; font-family:var(--font-display); flex-shrink:0; }
+.rec-amt.buy { color:var(--buy); }
+.rec-amt.sell { color:var(--sell); }
+.rec-status { font-weight:700; letter-spacing:.02em; text-transform:uppercase; font-size:10px; padding:2px 7px; border-radius:8px; }
+.rec-status.ok { background:rgba(76,175,80,.15); color:#7ed88a; }
+.rec-status.wait { background:rgba(244,181,63,.15); color:var(--accent); }
+.rec-status.bad { background:rgba(255,90,106,.15); color:var(--danger); }
+.rec-date { font-size:11px; }
+.rec-sub { font-size:11px; margin-top:2px; }
+</style>
+
+{% block scripts %}
+<script>
+(function(){
+  const tg = window.Telegram && window.Telegram.WebApp;
+  const initData = (tg && tg.initData) || '';
+  const HEADERS = { 'X-Telegram-Init-Data': initData };
+
+  function fmt$(n){ return '$' + (Number(n||0)).toFixed(2); }
+  function fmtDate(iso){
+    if (!iso) return '—';
+    try { const d = new Date(iso); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'}) + ' · ' + d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}); } catch(_) { return iso; }
+  }
+  function statusClass(s){
+    s = (s||'').toLowerCase();
+    if (['completed','paid','approved','success','delivered','payment_released'].includes(s)) return 'ok';
+    if (['pending','pending_termination'].includes(s)) return 'wait';
+    if (['cancelled','rejected','refunded','disputed'].includes(s)) return 'bad';
+    return 'wait';
+  }
+  function statusIcon(s){
+    const c = statusClass(s);
+    return c === 'ok' ? '✓' : c === 'bad' ? '✕' : '⋯';
+  }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function tabTo(name){
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===name));
+    document.getElementById('recBuy').hidden = name!=='buy';
+    document.getElementById('recSell').hidden = name!=='sell';
+  }
+  document.getElementById('tabBuy').addEventListener('click', () => tabTo('buy'));
+  document.getElementById('tabSell').addEventListener('click', () => tabTo('sell'));
+
+  function renderBuy(list){
+    const wrap = document.getElementById('recBuy');
+    document.getElementById('cntBuy').textContent = list.length;
+    if (!list.length) { wrap.innerHTML = '<div class="rec-empty muted">No purchases yet.</div>'; return; }
+    wrap.innerHTML = list.map(o => `
+      <article class="rec-card">
+        <div class="rec-icon buy">🛒</div>
+        <div class="rec-body">
+          <div class="rec-line1">
+            <span class="rec-title">${esc(o.account_id || o.id)}</span>
+            <span class="rec-amt buy">${fmt$(o.amount)}</span>
+          </div>
+          <div class="rec-line2">
+            <span class="rec-status ${statusClass(o.status)}">${statusIcon(o.status)} ${esc(o.status)}</span>
+            <span class="rec-date muted">${fmtDate(o.completed_at || o.at)}</span>
+          </div>
+        </div>
+      </article>`).join('');
+  }
+
+  function renderSell(list){
+    const wrap = document.getElementById('recSell');
+    document.getElementById('cntSell').textContent = list.length;
+    if (!list.length) { wrap.innerHTML = '<div class="rec-empty muted">No sell requests yet.</div>'; return; }
+    wrap.innerHTML = list.map(s => `
+      <article class="rec-card">
+        <div class="rec-icon sell">📤</div>
+        <div class="rec-body">
+          <div class="rec-line1">
+            <span class="rec-title">${esc(s.country || s.code)}</span>
+            <span class="rec-amt sell">${fmt$(s.price)}</span>
+          </div>
+          <div class="rec-line2">
+            <span class="rec-status ${statusClass(s.status)}">${statusIcon(s.status)} ${esc(s.status)}</span>
+            <span class="rec-date muted">${fmtDate(s.at)}</span>
+          </div>
+          ${s.phone ? `<div class="rec-sub muted">${esc(s.phone)}</div>` : ''}
+        </div>
+      </article>`).join('');
+  }
+
+  async function load(){
+    try {
+      const res = await fetch('/webapp/api/record', { headers: HEADERS });
+      if (!res.ok) {
+        const body = await res.text().catch(()=>'');
+        let msg = 'Failed to load records';
+        try { msg = JSON.parse(body).detail || msg; } catch(_){}
+        document.getElementById('recBuy').innerHTML = `<div class="rec-empty muted">${msg}</div>`;
+        document.getElementById('recSell').innerHTML = `<div class="rec-empty muted">${msg}</div>`;
+        return;
+      }
+      const d = await res.json();
+      renderBuy(d.purchases || []);
+      renderSell(d.sales || []);
+    } catch (e) {
+      document.getElementById('recBuy').innerHTML = `<div class="rec-empty muted">${e.message}</div>`;
+    }
+  }
+  load();
+})();
+</script>
+{% endblock %}

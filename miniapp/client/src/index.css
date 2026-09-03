@@ -1,0 +1,74 @@
+/**
+ * TgFox Blue Console: user-supplied TG FOX API logo, CasherCard-inspired
+ * white dashboard shell, action blue #1769F5, and compact utility panels.
+ */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --primary: #1769F5;
+  --primary-foreground: #FFFFFF;
+  --background: #F7F9FD;
+  --foreground: #202633;
+  --card: #FFFFFF;
+  --card-foreground: #202633;
+  --popover: #FFFFFF;
+  --popover-foreground: #202633;
+  --secondary: #ECF4FF;
+  --secondary-foreground: #1769F5;
+  --muted: #F3F5F9;
+  --muted-foreground: #7B8497;
+  --accent: #EAF2FF;
+  --accent-foreground: #1769F5;
+  --destructive: #E34A5A;
+  --destructive-foreground: #FFFFFF;
+  --border: #E6EAF1;
+  --input: #E6EAF1;
+  --ring: #1769F5;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; }
+body { margin: 0; min-width: 320px; background: #F7F9FD; color: #202633; font-family: "DM Sans", sans-serif; -webkit-font-smoothing: antialiased; }
+button, input, select { font: inherit; }
+button:not(:disabled) { cursor: pointer; }
+
+@layer utilities {
+  .font-ui { font-family: "DM Sans", sans-serif; }
+  .safe-top { padding-top: max(.55rem, env(safe-area-inset-top)); }
+  .safe-bottom { padding-bottom: max(.5rem, env(safe-area-inset-bottom)); }
+  .thin-card { border: 1px solid #E6EAF1; background: #FFFFFF; box-shadow: 0 2px 7px rgba(30, 55, 92, .025); }
+  .pressable:active { transform: scale(.985); }
+  .blue-button { background: #1769F5; color: white; box-shadow: none; }
+  .panel-enter { animation: panel-enter 220ms cubic-bezier(.22,.85,.34,1) both; }
+}
+@keyframes panel-enter { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } }

@@ -1,0 +1,55 @@
+{% extends "webapp/base.html" %}
+{% block title %}Account · TG-Fox API{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1 class="page-title">Account</h1>
+  <p class="page-sub">Your balance, rank progress and activity</p>
+</section>
+
+<article class="card balance-card">
+  <div class="label">TOTAL BALANCE</div>
+  <div class="huge" id="balHuge">$0.00</div>
+  <div class="bs-row">
+    <div class="bs-item"><span class="dot buy"></span><div><div class="mini-label">BUY</div><div class="mini-val" id="buySpent">$0.00</div></div></div>
+    <div class="bs-item"><span class="dot sell"></span><div><div class="mini-label">SELL</div><div class="mini-val" id="sellEarned">$0.00</div></div></div>
+  </div>
+  <div class="balance-actions">
+    <button class="bal-btn deposit" id="depositBtn">
+      <span class="bal-btn-ico">＋</span><span>Deposit</span>
+    </button>
+    <button class="bal-btn withdraw" id="withdrawBtn">
+      <span class="bal-btn-ico">↑</span><span>Withdraw</span>
+    </button>
+  </div>
+</article>
+
+<article class="card reward-card">
+  <div class="reward-head">
+    <div class="reward-title"><span class="star">⭐</span> Next Rank</div>
+    <div class="reward-prize" id="rewardPrize">VIP2</div>
+  </div>
+  <div class="progress"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="reward-foot">
+    <span class="progress-txt"><b id="progressCur">$0</b> / <span id="progressGoal">$50</span> spent</span>
+    <span class="muted" id="progressRem">$50 more to unlock</span>
+  </div>
+</article>
+
+<div class="stats-grid">
+  <article class="card stat-card"><div class="stat-icon">🛍</div><div><div class="stat-num" id="purchasesN">0</div><div class="stat-lbl">PURCHASES</div></div></article>
+  <article class="card stat-card"><div class="stat-icon">📈</div><div><div class="stat-num" id="salesN">0</div><div class="stat-lbl">SALES</div></div></article>
+  <article class="card stat-card rank-card"><div class="stat-icon">⭐</div><div><div class="stat-num rank-num" id="rankName">VIP1</div><div class="stat-lbl">RANK</div></div></article>
+</div>
+
+<section class="section-head"><span class="section-ico">👤</span> ACCOUNT</section>
+<article class="card row-card">
+  <div class="row-lbl">Account ID</div>
+  <div class="row-val" id="accountId">—</div>
+</article>
+
+<section class="section-head"><span class="section-ico">⚙️</span> SETTINGS</section>
+<article class="card row-card">
+  <div><div class="row-lbl">Theme</div><div class="row-sub muted" id="currentThemeName">Dark Gold</div></div>
+  <button class="btn ghost" id="openThemesBtn">Change</button>
+</article>
+{% endblock %}

@@ -1,0 +1,283 @@
+{% extends "admin/base.html" %}
+{% block title %}Logs{% endblock %}
+{% block topbar_title %}📋 Logs{% endblock %}
+
+{% block content %}
+<div class="tabs" id="log-tabs">
+  <button class="tab-btn active" data-tab="console" onclick="switchTab('console')">🖥️ Live Console</button>
+  <button class="tab-btn" data-tab="audit" onclick="switchTab('audit')">📋 Audit Logs</button>
+</div>
+
+<!-- Live Console -->
+<div id="tab-console" class="tab-panel">
+  <div class="console-card">
+    <div class="console-header">
+      <div class="console-title">
+        <span class="console-status" id="console-status" title="Connection status">●</span>
+        <span>Server Console</span>
+      </div>
+      <div class="console-actions">
+        <span class="console-count" id="console-count">0 lines</span>
+        <button class="btn btn-xs btn-secondary" onclick="togglePause()" id="pause-btn">⏸ Pause</button>
+        <button class="btn btn-xs btn-secondary" onclick="toggleScrollLock()" id="lock-btn">🔒 Lock</button>
+        <button class="btn btn-xs btn-secondary" onclick="clearConsole()">🗑 Clear</button>
+        <button class="btn btn-xs btn-secondary" onclick="downloadConsole()">⬇ Download</button>
+      </div>
+    </div>
+    <div class="console-body" id="console-body">
+      <div class="loading"><div class="spinner"></div><div>Connecting to log stream…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Audit Logs -->
+<div id="tab-audit" class="tab-panel hidden">
+  <div class="page-header">
+    <div class="page-title">Audit Logs</div>
+    <div class="page-actions">
+      <button class="btn btn-secondary btn-sm" onclick="loadLogs(1)">🔄 Refresh</button>
+    </div>
+  </div>
+
+  <div class="filters">
+    <input type="text" id="q" class="search-input" placeholder="🔍 Search logs…" oninput="debounceLoad()">
+    <select id="f-category" class="filter-select" onchange="loadLogs(1)">
+      <option value="">All Categories</option>
+      <option value="login">Login</option>
+      <option value="admin">Admin</option>
+      <option value="order">Order</option>
+      <option value="payment">Payment</option>
+      <option value="proxy">Proxy</option>
+      <option value="session">Session</option>
+      <option value="country">Country</option>
+      <option value="user">User</option>
+      <option value="settings">Settings</option>
+    </select>
+    <select id="f-ok" class="filter-select" onchange="loadLogs(1)">
+      <option value="">All Results</option>
+      <option value="true">Success</option>
+      <option value="false">Failed</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-title">Audit Log</span>
+      <span class="table-count" id="logs-count">—</span>
+    </div>
+    <div id="logs-body"><div class="loading"><div class="spinner"></div></div></div>
+    <div class="pagination" id="logs-pagination"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let _page = 1, _debounce;
+
+// ── Tab switching ────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('#log-tabs .tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+  document.getElementById('tab-console').classList.toggle('hidden', name !== 'console');
+  document.getElementById('tab-audit').classList.toggle('hidden', name !== 'audit');
+  if (name === 'audit') loadLogs(1);
+  if (name === 'console') maybeStartStream();
+  localStorage.setItem('admin_logs_tab', name);
+}
+
+const savedTab = localStorage.getItem('admin_logs_tab') || 'console';
+if (savedTab !== 'console') switchTab(savedTab);
+
+// ── Audit logs table ───────────────────────────────────────────────────────
+async function loadLogs(page = _page) {
+  _page = page;
+  const tbody = document.getElementById('logs-body');
+  const q = document.getElementById('q').value;
+  const cat = document.getElementById('f-category').value;
+  const ok = document.getElementById('f-ok').value;
+  showLoading(tbody);
+  try {
+    const params = new URLSearchParams({ page, limit: 100 });
+    if (q) params.set('q', q);
+    if (cat) params.set('category', cat);
+    if (ok) params.set('ok', ok);
+    const data = await apiGET('/admin/api/logs?' + params);
+    document.getElementById('logs-count').textContent = fmtNum(data.total) + ' entries';
+    if (!data.items.length) { showEmpty(tbody, 'No logs found.'); document.getElementById('logs-pagination').innerHTML=''; return; }
+
+    tbody.innerHTML = `<table class="tbl">
+      <thead><tr><th>Time</th><th>Category</th><th>Action</th><th>Actor</th><th>IP</th><th>Target</th><th>Detail</th><th>Result</th></tr></thead>
+      <tbody>${data.items.map(l => `<tr>
+        <td class="text-small text-mono" style="white-space:nowrap">${fmtDate(l.ts)}</td>
+        <td><span class="badge badge-purple">${l.category}</span></td>
+        <td class="text-small text-mono">${l.action}</td>
+        <td>${l.actor || '—'}</td>
+        <td class="text-small text-mono">${l.ip || '—'}</td>
+        <td class="text-small text-mono">${l.target || '—'}</td>
+        <td class="text-small text-muted" style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${l.detail || '—'}</td>
+        <td>${l.ok ? '<span class="badge badge-green">✓ OK</span>' : '<span class="badge badge-red">✕ Fail</span>'}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+    renderPagination(document.getElementById('logs-pagination'), data, n => loadLogs(n));
+  } catch(e) { showEmpty(tbody, 'Failed to load logs.'); }
+}
+
+function debounceLoad() { clearTimeout(_debounce); _debounce = setTimeout(() => loadLogs(1), 400); }
+
+// ── Live console ─────────────────────────────────────────────────────────────
+const consoleBody = document.getElementById('console-body');
+const consoleStatus = document.getElementById('console-status');
+const consoleCount = document.getElementById('console-count');
+let _lines = [];
+let _paused = false;
+let _scrollLocked = true;
+let _sse = null;
+let _reconnectDelay = 1000;
+let _maxReconnectDelay = 30000;
+let _reconnectTimer = null;
+let _consoleStarted = false;
+
+function levelClass(line) {
+  if (/CRITICAL|FATAL/i.test(line)) return 'log-critical';
+  if (/ERROR/i.test(line)) return 'log-error';
+  if (/WARNING|WARN/i.test(line)) return 'log-warning';
+  if (/INFO/i.test(line)) return 'log-info';
+  if (/DEBUG/i.test(line)) return 'log-debug';
+  return '';
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function appendLine(line) {
+  if (_paused) return;
+  const div = document.createElement('div');
+  div.className = 'console-line ' + levelClass(line);
+  div.textContent = line;
+  consoleBody.appendChild(div);
+  _lines.push(line);
+  // trim memory
+  if (_lines.length > 5000) {
+    _lines.shift();
+    consoleBody.removeChild(consoleBody.firstElementChild);
+  }
+  consoleCount.textContent = fmtNum(_lines.length) + ' lines';
+  if (_scrollLocked) consoleBody.scrollTop = consoleBody.scrollHeight;
+}
+
+function setStatus(connected) {
+  consoleStatus.textContent = '●';
+  consoleStatus.className = 'console-status ' + (connected ? 'online' : 'offline');
+  consoleStatus.title = connected ? 'Connected' : 'Disconnected';
+}
+
+function renderHistory(lines) {
+  consoleBody.innerHTML = '';
+  _lines = [];
+  lines.forEach(appendLine);
+  if (!lines.length) {
+    consoleBody.innerHTML = '<div class="empty"><div class="empty-icon">🖥️</div><div class="empty-text">No log history yet.</div></div>';
+  }
+}
+
+async function loadHistory() {
+  try {
+    const data = await apiGET('/admin/api/logs/server?n=500');
+    renderHistory(data.lines || []);
+  } catch(e) {
+    consoleBody.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Failed to load log history.</div></div>';
+  }
+}
+
+function connectStream() {
+  if (_sse) { _sse.close(); _sse = null; }
+  setStatus(false);
+  const es = new EventSource('/admin/api/logs/stream');
+  _sse = es;
+
+  es.onopen = () => {
+    setStatus(true);
+    _reconnectDelay = 1000;
+  };
+
+  es.onmessage = (ev) => {
+    if (ev.data && ev.data.trim() !== '') appendLine(ev.data);
+  };
+
+  es.onerror = () => {
+    setStatus(false);
+    es.close();
+    _sse = null;
+    scheduleReconnect();
+  };
+}
+
+function scheduleReconnect() {
+  if (_reconnectTimer) return;
+  _reconnectTimer = setTimeout(() => {
+    _reconnectTimer = null;
+    connectStream();
+    _reconnectDelay = Math.min(_reconnectDelay * 2, _maxReconnectDelay);
+  }, _reconnectDelay);
+}
+
+function maybeStartStream() {
+  if (_consoleStarted) return;
+  _consoleStarted = true;
+  loadHistory().then(() => connectStream());
+}
+
+function togglePause() {
+  _paused = !_paused;
+  document.getElementById('pause-btn').textContent = _paused ? '▶ Resume' : '⏸ Pause';
+}
+
+function toggleScrollLock() {
+  _scrollLocked = !_scrollLocked;
+  const btn = document.getElementById('lock-btn');
+  btn.textContent = _scrollLocked ? '🔒 Lock' : '🔓 Unlock';
+  if (_scrollLocked) consoleBody.scrollTop = consoleBody.scrollHeight;
+}
+
+function clearConsole() {
+  _lines = [];
+  consoleBody.innerHTML = '';
+  consoleCount.textContent = '0 lines';
+}
+
+function downloadConsole() {
+  const blob = new Blob([_lines.join('\n')], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'server-console-' + new Date().toISOString().slice(0,19).replace(/:/g,'-') + '.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Pause auto-scroll when user manually scrolls up
+consoleBody.addEventListener('scroll', () => {
+  const nearBottom = consoleBody.scrollHeight - consoleBody.scrollTop - consoleBody.clientHeight < 40;
+  if (_scrollLocked && !nearBottom) {
+    _scrollLocked = false;
+    document.getElementById('lock-btn').textContent = '🔓 Unlock';
+  } else if (!_scrollLocked && nearBottom) {
+    _scrollLocked = true;
+    document.getElementById('lock-btn').textContent = '🔒 Lock';
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('tab-console').classList.contains('hidden')) {
+    loadLogs(1);
+  } else {
+    maybeStartStream();
+  }
+});
+</script>
+{% endblock %}

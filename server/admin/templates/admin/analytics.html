@@ -1,0 +1,154 @@
+{% extends "admin/base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block topbar_title %}📈 Analytics{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Analytics</div>
+  <div class="page-actions">
+    <select id="days-select" class="filter-select" onchange="loadAnalytics()">
+      <option value="7">Last 7 days</option>
+      <option value="30" selected>Last 30 days</option>
+      <option value="90">Last 90 days</option>
+    </select>
+    <button class="btn btn-secondary btn-sm" onclick="loadAnalytics()">🔄 Refresh</button>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card" style="grid-column:span 2">
+    <div class="chart-title">💰 Revenue Over Time</div>
+    <canvas id="revenueChart" height="120"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">👥 New Users</div>
+    <canvas id="usersChart" height="160"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">📱 Sessions Uploaded</div>
+    <canvas id="sessionsChart" height="160"></canvas>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px">
+  <div class="chart-card">
+    <div class="chart-title">🌍 Top Countries (Sold)</div>
+    <canvas id="countriesChart" height="180"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">💳 Deposit Methods</div>
+    <canvas id="methodsChart" height="180"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">⚠️ Spam Status</div>
+    <canvas id="spamChart" height="180"></canvas>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+  <div class="section-card">
+    <div class="section-header">🌍 Top Countries by Sales</div>
+    <div class="section-body" id="country-table"></div>
+  </div>
+  <div class="section-card">
+    <div class="section-header">⭐ User Rank Distribution</div>
+    <div class="section-body" id="rank-table"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const _charts = {};
+const COLORS = ['#7c6df4','#22c55e','#3b82f6','#f59e0b','#ef4444','#06b6d4','#f97316','#8b5cf6','#10b981','#ec4899'];
+const GRID_COLOR = 'rgba(46,49,72,.5)';
+const TICK_COLOR = '#9195b0';
+
+function baseOpts(extra = {}) {
+  return {
+    responsive: true,
+    plugins: { legend: { labels: { color: TICK_COLOR, font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: TICK_COLOR, font: { size: 10 } }, grid: { color: GRID_COLOR } },
+      y: { ticks: { color: TICK_COLOR, font: { size: 10 } }, grid: { color: GRID_COLOR } },
+    },
+    ...extra,
+  };
+}
+
+function pieOpts() {
+  return { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: TICK_COLOR, font: { size: 11 }, boxWidth: 12 } } } };
+}
+
+async function loadAnalytics() {
+  const days = document.getElementById('days-select').value;
+  try {
+    const d = await apiGET(`/admin/api/analytics/overview?days=${days}`);
+
+    // Revenue
+    const revLabels = d.revenue_by_day.map(r => r.date);
+    const revData = d.revenue_by_day.map(r => r.revenue);
+    buildOrUpdate('revenueChart', 'line', revLabels, [{
+      label: 'Revenue ($)', data: revData, borderColor: '#7c6df4',
+      backgroundColor: 'rgba(124,109,244,.1)', fill: true, tension: .35, pointRadius: 3,
+    }], baseOpts());
+
+    // Users
+    const usrLabels = d.users_by_day.map(r => r.date);
+    const usrData = d.users_by_day.map(r => r.count);
+    buildOrUpdate('usersChart', 'bar', usrLabels, [{
+      label: 'New Users', data: usrData, backgroundColor: 'rgba(34,197,94,.5)', borderColor: '#22c55e', borderWidth: 1,
+    }], baseOpts());
+
+    // Sessions
+    const sesLabels = d.sessions_by_day.map(r => r.date);
+    const sesData = d.sessions_by_day.map(r => r.count);
+    buildOrUpdate('sessionsChart', 'bar', sesLabels, [{
+      label: 'Sessions', data: sesData, backgroundColor: 'rgba(59,130,246,.5)', borderColor: '#3b82f6', borderWidth: 1,
+    }], baseOpts());
+
+    // Countries pie
+    buildOrUpdate('countriesChart', 'doughnut',
+      d.top_countries.map(c => c.name || c.code),
+      [{ data: d.top_countries.map(c => c.sold), backgroundColor: COLORS, borderWidth: 2, borderColor: 'var(--bg2)' }],
+      pieOpts());
+
+    // Deposit methods
+    buildOrUpdate('methodsChart', 'doughnut',
+      d.deposit_methods.map(m => m.method || 'Other'),
+      [{ data: d.deposit_methods.map(m => m.total), backgroundColor: COLORS, borderWidth: 2, borderColor: 'var(--bg2)' }],
+      pieOpts());
+
+    // Spam
+    buildOrUpdate('spamChart', 'doughnut',
+      d.spam_breakdown.map(s => s.status),
+      [{ data: d.spam_breakdown.map(s => s.count), backgroundColor: COLORS, borderWidth: 2, borderColor: 'var(--bg2)' }],
+      pieOpts());
+
+    // Country table
+    const ctEl = document.getElementById('country-table');
+    ctEl.innerHTML = d.top_countries.length ? `<table class="tbl">
+      <thead><tr><th>Country</th><th>Code</th><th>Sold</th></tr></thead>
+      <tbody>${d.top_countries.map((c,i) => `<tr><td>${i+1}. ${c.name}</td><td class="text-mono">${c.code}</td><td>${fmtNum(c.sold)}</td></tr>`).join('')}</tbody>
+    </table>` : '<div class="empty"><div class="empty-text">No data</div></div>';
+
+    // Rank table
+    const rkEl = document.getElementById('rank-table');
+    rkEl.innerHTML = d.rank_distribution.length ? `<table class="tbl">
+      <thead><tr><th>Rank</th><th>Users</th></tr></thead>
+      <tbody>${d.rank_distribution.map(r => `<tr><td>${r.rank}</td><td>${fmtNum(r.count)}</td></tr>`).join('')}</tbody>
+    </table>` : '<div class="empty"><div class="empty-text">No data</div></div>';
+
+  } catch(e) { toast('Failed to load analytics', 'error'); }
+}
+
+function buildOrUpdate(id, type, labels, datasets, options) {
+  const ctx = document.getElementById(id);
+  if (_charts[id]) _charts[id].destroy();
+  _charts[id] = new Chart(ctx, { type, data: { labels, datasets }, options });
+}
+
+document.addEventListener('DOMContentLoaded', loadAnalytics);
+</script>
+{% endblock %}

@@ -1,0 +1,324 @@
+{% extends "admin/base.html" %}
+{% block title %}Payments{% endblock %}
+{% block topbar_title %}💳 Payment Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Payments</div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" onclick="exportCurrentTab()">⬇ Export CSV</button>
+    <button class="btn btn-secondary btn-sm" onclick="reload()">🔄 Refresh</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" id="tab-deposits" onclick="switchTab('deposits')">💰 Deposits</button>
+  <button class="tab-btn" id="tab-withdrawals" onclick="switchTab('withdrawals')">📤 Withdrawals</button>
+  <button class="tab-btn" id="tab-transactions" onclick="switchTab('transactions')">📋 Transactions</button>
+</div>
+
+<!-- Deposits -->
+<div id="panel-deposits">
+  <div class="filters">
+    <input type="text" id="dep-q" class="search-input" placeholder="🔍 User ID or Deposit ID…" oninput="debounce(() => loadDeposits(1))">
+    <select id="dep-status" class="filter-select" onchange="loadDeposits(1)">
+      <option value="pending">Pending</option>
+      <option value="">All</option>
+      <option value="completed">Completed</option>
+      <option value="rejected">Rejected</option>
+      <option value="expired">Expired</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><span class="table-title">Deposits</span><span id="dep-count" class="table-count">—</span></div>
+    <div id="dep-body"><div class="loading"><div class="spinner"></div></div></div>
+    <div class="pagination" id="dep-pagination"></div>
+  </div>
+</div>
+
+<!-- Withdrawals -->
+<div id="panel-withdrawals" style="display:none">
+  <div class="filters">
+    <input type="text" id="wit-q" class="search-input" placeholder="🔍 User ID or Withdrawal ID…" oninput="debounce(() => loadWithdrawals(1))">
+    <select id="wit-status" class="filter-select" onchange="loadWithdrawals(1)">
+      <option value="pending">Pending</option>
+      <option value="">All</option>
+      <option value="completed">Completed</option>
+      <option value="rejected">Rejected</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><span class="table-title">Withdrawals</span><span id="wit-count" class="table-count">—</span></div>
+    <div id="wit-body"><div class="loading"><div class="spinner"></div></div></div>
+    <div class="pagination" id="wit-pagination"></div>
+  </div>
+</div>
+
+<!-- Transactions -->
+<div id="panel-transactions" style="display:none">
+  <div class="filters">
+    <select id="txn-type" class="filter-select" onchange="loadTxns(1)">
+      <option value="">All Types</option>
+      <option value="deposit">Deposit</option>
+      <option value="withdrawal">Withdrawal</option>
+      <option value="purchase">Purchase</option>
+      <option value="refund">Refund</option>
+      <option value="sale">Sale</option>
+      <option value="adjustment">Adjustment</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><span class="table-title">Transactions</span><span id="txn-count" class="table-count">—</span></div>
+    <div id="txn-body"><div class="loading"><div class="spinner"></div></div></div>
+    <div class="pagination" id="txn-pagination"></div>
+  </div>
+</div>
+
+<!-- Withdrawal Approve Modal -->
+<div class="modal-overlay" id="wit-approve-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">✅ Approve Withdrawal</span>
+      <button class="modal-close" onclick="closeModal('wit-approve-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">TX Hash (enter "manual" for cash)</label>
+        <input type="text" class="form-control" id="wit-tx-hash" placeholder="manual">
+      </div>
+      <input type="hidden" id="wit-approve-id">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('wit-approve-modal')">Cancel</button>
+      <button class="btn btn-success" id="wit-approve-submit" onclick="doApproveWit()">✓ Approve</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="reject-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="reject-title">Reject</span>
+      <button class="modal-close" onclick="closeModal('reject-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Note</label>
+        <input type="text" class="form-control" id="reject-note" placeholder="Reason">
+      </div>
+      <input type="hidden" id="reject-id">
+      <input type="hidden" id="reject-type">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('reject-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="doReject()">✕ Reject</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let _curTab = 'deposits', _dbt, _withdrawalApprovalInFlight = false;
+
+function debounce(fn) { clearTimeout(_dbt); _dbt = setTimeout(fn, 400); }
+
+function switchTab(tab) {
+  _curTab = tab;
+  ['deposits','withdrawals','transactions'].forEach(t => {
+    document.getElementById('panel-' + t).style.display = t === tab ? '' : 'none';
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+  });
+  if (tab === 'deposits') loadDeposits(1);
+  else if (tab === 'withdrawals') loadWithdrawals(1);
+  else loadTxns(1);
+}
+
+function reload() {
+  if (_curTab === 'deposits') loadDeposits(1);
+  else if (_curTab === 'withdrawals') loadWithdrawals(1);
+  else loadTxns(1);
+}
+
+async function exportCurrentTab() {
+  let url, filename;
+  if (_curTab === 'deposits') {
+    const q = document.getElementById('dep-q').value;
+    const status = document.getElementById('dep-status').value;
+    const params = new URLSearchParams();
+    if (q) params.set('q', q); if (status) params.set('status', status);
+    url = '/admin/api/deposits/export?' + params; filename = 'deposits.csv';
+  } else if (_curTab === 'withdrawals') {
+    const q = document.getElementById('wit-q').value;
+    const status = document.getElementById('wit-status').value;
+    const params = new URLSearchParams();
+    if (q) params.set('q', q); if (status) params.set('status', status);
+    url = '/admin/api/withdrawals/export?' + params; filename = 'withdrawals.csv';
+  } else {
+    const type = document.getElementById('txn-type').value;
+    const params = new URLSearchParams();
+    if (type) params.set('txn_type', type);
+    url = '/admin/api/transactions/export?' + params; filename = 'transactions.csv';
+  }
+  const res = await fetch(url, { credentials: 'same-origin' });
+  if (!res.ok) { toast('Export failed', 'error'); return; }
+  const blob = await res.blob();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  toast('CSV exported', 'success');
+}
+
+async function loadDeposits(page = 1) {
+  const tbody = document.getElementById('dep-body');
+  const q = document.getElementById('dep-q').value;
+  const status = document.getElementById('dep-status').value;
+  showLoading(tbody);
+  try {
+    const params = new URLSearchParams({ page, limit: 50 });
+    if (q) params.set('q', q);
+    if (status) params.set('status', status);
+    const data = await apiGET('/admin/api/deposits?' + params);
+    if (data.ok === false) throw new Error(data.detail || data.message || 'Could not load deposits');
+    document.getElementById('dep-count').textContent = fmtNum(data.total);
+    if (!data.items.length) { showEmpty(tbody, 'No deposits found.'); document.getElementById('dep-pagination').innerHTML=''; return; }
+
+    tbody.innerHTML = `<table class="tbl">
+      <thead><tr><th>Deposit ID</th><th>User</th><th>Amount</th><th>Method</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+      <tbody>${data.items.map(d => `<tr>
+        <td class="text-mono text-small">${d.deposit_id}</td>
+        <td>${d.user_id}</td>
+        <td>${fmtMoney(d.amount)}</td>
+        <td>${d.method || '—'}</td>
+        <td>${statusBadge(d.status)}</td>
+        <td>${fmtDate(d.created_at)}</td>
+        <td><div class="tbl-actions">
+          ${d.status === 'pending' ? `
+            <button class="btn btn-success btn-xs" onclick="approveDeposit('${d.deposit_id}')">✓ Approve</button>
+            <button class="btn btn-danger btn-xs" onclick="openReject('${d.deposit_id}','deposit')">✕</button>
+          ` : ''}
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+    renderPagination(document.getElementById('dep-pagination'), data, n => loadDeposits(n));
+  } catch(e) { document.getElementById('dep-count').textContent = '—'; showEmpty(tbody, 'Could not load deposits.', 'Use Refresh to try again.'); }
+}
+
+async function loadWithdrawals(page = 1) {
+  const tbody = document.getElementById('wit-body');
+  const q = document.getElementById('wit-q').value;
+  const status = document.getElementById('wit-status').value;
+  showLoading(tbody);
+  try {
+    const params = new URLSearchParams({ page, limit: 50 });
+    if (q) params.set('q', q);
+    if (status) params.set('status', status);
+    const data = await apiGET('/admin/api/withdrawals?' + params);
+    if (data.ok === false) throw new Error(data.detail || data.message || 'Could not load withdrawals');
+    document.getElementById('wit-count').textContent = fmtNum(data.total);
+    if (!data.items.length) { showEmpty(tbody, 'No withdrawals found.'); document.getElementById('wit-pagination').innerHTML=''; return; }
+
+    tbody.innerHTML = `<table class="tbl">
+      <thead><tr><th>ID</th><th>User</th><th>Amount</th><th>Method</th><th>Wallet</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+      <tbody>${data.items.map(w => `<tr>
+        <td class="text-mono text-small">${w.withdrawal_id}</td>
+        <td>${w.user_id}</td>
+        <td>${fmtMoney(w.amount)}</td>
+        <td>${w.method || '—'}</td>
+        <td class="text-mono text-small" style="max-width:120px;overflow:hidden;text-overflow:ellipsis">${w.wallet_address || '—'}</td>
+        <td>${statusBadge(w.status)}</td>
+        <td>${fmtDate(w.created_at)}</td>
+        <td><div class="tbl-actions">
+          ${w.status === 'pending' ? `
+            <button class="btn btn-success btn-xs" onclick="openApproveWit('${w.withdrawal_id}')">✓ Approve</button>
+            <button class="btn btn-danger btn-xs" onclick="openReject('${w.withdrawal_id}','withdrawal')">✕</button>
+          ` : ''}
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+    renderPagination(document.getElementById('wit-pagination'), data, n => loadWithdrawals(n));
+  } catch(e) { document.getElementById('wit-count').textContent = '—'; showEmpty(tbody, 'Could not load withdrawals.', 'Use Refresh to try again.'); }
+}
+
+async function loadTxns(page = 1) {
+  const tbody = document.getElementById('txn-body');
+  const type = document.getElementById('txn-type').value;
+  showLoading(tbody);
+  try {
+    const params = new URLSearchParams({ page, limit: 50 });
+    if (type) params.set('txn_type', type);
+    const data = await apiGET('/admin/api/transactions?' + params);
+    if (data.ok === false) throw new Error(data.detail || data.message || 'Could not load transactions');
+    document.getElementById('txn-count').textContent = fmtNum(data.total);
+    if (!data.items.length) { showEmpty(tbody, 'No transactions found.'); document.getElementById('txn-pagination').innerHTML=''; return; }
+
+    tbody.innerHTML = `<table class="tbl">
+      <thead><tr><th>Txn ID</th><th>User</th><th>Type</th><th>Amount</th><th>Note</th><th>Date</th></tr></thead>
+      <tbody>${data.items.map(t => `<tr>
+        <td class="text-mono text-small">${t.txn_id}</td>
+        <td>${t.user_id}</td>
+        <td>${statusBadge(t.type)}</td>
+        <td style="color:${t.amount >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtMoney(t.amount)}</td>
+        <td class="text-muted">${t.note || '—'}</td>
+        <td>${fmtDate(t.created_at)}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+    renderPagination(document.getElementById('txn-pagination'), data, n => loadTxns(n));
+  } catch(e) { document.getElementById('txn-count').textContent = '—'; showEmpty(tbody, 'Could not load transactions.', 'Use Refresh to try again.'); }
+}
+
+async function approveDeposit(id) {
+  confirm(`Approve deposit ${id} and credit user balance?`, async () => {
+    const r = await apiPOST(`/admin/api/deposits/${id}/approve`);
+    if (r.ok) { toast('Deposit approved, balance credited', 'success'); loadDeposits(1); }
+    else toast(r.detail || 'Failed', 'error');
+  });
+}
+
+function openApproveWit(id) {
+  document.getElementById('wit-approve-id').value = id;
+  document.getElementById('wit-tx-hash').value = 'manual';
+  openModal('wit-approve-modal');
+}
+
+async function doApproveWit() {
+  if (_withdrawalApprovalInFlight) return;
+  const id = document.getElementById('wit-approve-id').value;
+  const txHash = document.getElementById('wit-tx-hash').value || 'manual';
+  confirm(`Approve withdrawal ${id}? This confirms the payout record and cannot be undone from this screen.`, async () => {
+    const button = document.getElementById('wit-approve-submit');
+    _withdrawalApprovalInFlight = true;
+    if (button) { button.disabled = true; button.textContent = 'Approving…'; }
+    try {
+      const r = await apiPOST(`/admin/api/withdrawals/${id}/approve`, {tx_hash: txHash});
+      if (r.ok) { toast('Withdrawal approved', 'success'); closeModal('wit-approve-modal'); loadWithdrawals(1); }
+      else toast(r.detail || 'Failed', 'error');
+    } catch (error) {
+      toast(error instanceof Error ? error.message : 'Withdrawal approval failed', 'error');
+    } finally {
+      _withdrawalApprovalInFlight = false;
+      if (button) { button.disabled = false; button.textContent = '✓ Approve'; }
+    }
+  });
+}
+
+function openReject(id, type) {
+  document.getElementById('reject-id').value = id;
+  document.getElementById('reject-type').value = type;
+  document.getElementById('reject-title').textContent = `✕ Reject ${type}`;
+  document.getElementById('reject-note').value = '';
+  openModal('reject-modal');
+}
+
+async function doReject() {
+  const id = document.getElementById('reject-id').value;
+  const type = document.getElementById('reject-type').value;
+  const note = document.getElementById('reject-note').value;
+  const url = type === 'deposit' ? `/admin/api/deposits/${id}/reject` : `/admin/api/withdrawals/${id}/reject`;
+  const r = await apiPOST(url, {note});
+  if (r.ok) { toast('Rejected', 'success'); closeModal('reject-modal'); reload(); }
+  else toast(r.detail || 'Failed', 'error');
+}
+
+document.addEventListener('DOMContentLoaded', () => loadDeposits(1));
+</script>
+{% endblock %}

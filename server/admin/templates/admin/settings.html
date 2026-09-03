@@ -1,0 +1,802 @@
+{% extends "admin/base.html" %}
+{% block title %}System Settings{% endblock %}
+{% block topbar_title %}⚙️ System Settings{% endblock %}
+
+{% block content %}
+<!-- Server Actions -->
+<div class="section-card" style="margin-bottom:16px">
+  <div class="section-header">
+    <span>🖥️ Server Actions</span>
+    <div class="flex gap-2">
+      <span class="badge badge-green" id="server-status">● Running</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:13px;font-weight:600">Restart Application Server</div>
+        <div class="form-hint">Apply environment variable changes and reload the bot + API.</div>
+      </div>
+      <button class="btn btn-warning" onclick="restartServer()">🔄 Restart Server</button>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+  <!-- Feature Toggles -->
+  <div class="section-card">
+    <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+      <span>🔧 Feature Toggles</span>
+      <button class="btn btn-primary btn-sm" onclick="saveSettings()">💾 Save</button>
+    </div>
+    <div class="section-body" id="toggles-body">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- Environment Variables -->
+  <div class="section-card" style="grid-row:span 2">
+    <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+      <span>🔑 Environment Variables</span>
+      <button class="btn btn-primary btn-sm" onclick="openEnvModal()">➕ Add New</button>
+    </div>
+    <div class="section-body" style="padding:0">
+      <div class="env-table-header">
+        <span>Key</span>
+        <span>Status</span>
+        <span style="text-align:right">Actions</span>
+      </div>
+      <div id="env-body" class="env-table-body">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+      <div class="env-footer">
+        System secrets are masked; editing them creates a custom override that takes effect after restart.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sell Timing Settings -->
+<div class="section-card" style="margin-bottom:16px">
+  <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+    <span>⏱️ Sell Timing Settings</span>
+    <button class="btn btn-primary btn-sm" onclick="saveSellTiming()">💾 Save</button>
+  </div>
+  <div class="section-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="sell-timing-body">
+      <div class="form-group">
+        <label class="form-label">Termination Delay (minutes)</label>
+        <input type="number" id="termination-delay" class="form-control" min="0" step="1" placeholder="1">
+        <div class="form-hint">Time bot waits before terminating other sessions — gives seller time to logout manually from their device.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Hold (hours)</label>
+        <input type="number" id="payment-hold" class="form-control" min="0" step="1" placeholder="48">
+        <div class="form-hint">Used ONLY when the sell criteria are already fulfilled during the selling flow. Hours the balance stays pending before release.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Hold After Auto Termination (hours)</label>
+        <input type="number" id="payment-hold-auto" class="form-control" min="0" step="1" placeholder="48">
+        <div class="form-hint">Used ONLY for country-based automatic termination flows. Hold starts after termination completes; a final lifecycle re-check runs before release.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Worker Threshold Settings -->
+<div class="section-card" style="margin-bottom:16px">
+  <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+    <span>⚙️ Worker Thresholds</span>
+    <button class="btn btn-primary btn-sm" onclick="saveNumericSettings()">💾 Save</button>
+  </div>
+  <div class="section-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px" id="numeric-settings-body">
+      <div class="form-group">
+        <label class="form-label">Low Stock Alert Threshold</label>
+        <input type="number" id="num-low_stock_threshold" class="form-control" min="1" step="1" placeholder="5">
+        <div class="form-hint">Alert admin when any country's clean stock drops to or below this number of accounts.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Order Timeout (minutes)</label>
+        <input type="number" id="num-order_timeout_minutes" class="form-control" min="5" step="5" placeholder="30">
+        <div class="form-hint">Auto-cancel pending orders whose OTP was never delivered after this many minutes. Buyer is refunded.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Platform Fee (%)</label>
+        <input type="number" id="num-platform_fee_percent" class="form-control" min="0" max="50" step="0.1" placeholder="5.0">
+        <div class="form-hint">Percentage deducted from each sale as platform revenue (e.g. 5 = 5%). Takes effect on the next order created.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Deposit Methods -->
+<div class="section-card">
+  <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+    <span>📥 Deposit Methods</span>
+    <button class="btn btn-primary btn-sm" onclick="saveDepositMethods()">💾 Save Methods</button>
+  </div>
+  <div class="section-body" id="methods-body">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- Env Var Modal -->
+<div class="modal-overlay" id="env-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="env-modal-title">Add Environment Variable</span>
+      <button class="modal-close" onclick="closeModal('env-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Key</label>
+        <input type="text" id="env-key" class="form-control" placeholder="e.g. LOG_GROUP_ID">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Value</label>
+        <textarea id="env-value" class="form-control" rows="4" placeholder="Enter value..."></textarea>
+      </div>
+      <div class="form-hint" id="env-warning" style="display:none;color:var(--yellow)">
+        ⚠️ This is a system secret. The new value will be stored as a custom override and will take effect only after restarting the server.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('env-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEnvVar()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Restart Modal -->
+<div class="modal-overlay" id="restart-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Restart Server?</span>
+      <button class="modal-close" onclick="closeModal('restart-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>The bot and API will be stopped and the Replit workflow will restart them. This takes a few seconds.</p>
+      <p class="form-hint">Make sure you have saved any environment variable changes first.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('restart-modal')">Cancel</button>
+      <button class="btn btn-warning" id="restart-confirm-btn" onclick="confirmRestart()">🔄 Restart Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Session Selling Rank Gate -->
+<div class="section-card" style="margin-bottom:16px">
+  <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+    <span>📤 Session Selling</span>
+    <button class="btn btn-primary btn-sm" onclick="saveSessionSelling()">💾 Save</button>
+  </div>
+  <div class="section-body">
+    <div class="kv-row" style="margin-bottom:12px">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--text)">Session Selling Enabled</div>
+        <div class="form-hint">When off, no user can start the sell flow. Blocked users see a "Contact Support" button.</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="ss-enabled">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Minimum rank required to sell</label>
+      <select id="ss-min-rank" class="form-control"></select>
+      <div class="form-hint">Users below this VIP rank will see: "Minimum rank required: X" + Contact Support. Choose VIP1 to allow everyone.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Rank Discounts -->
+<div class="section-card" style="margin-bottom:16px">
+  <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+    <span>🏆 Rank Discounts (buy price)</span>
+    <div class="flex gap-2">
+      <button class="btn btn-secondary btn-sm" onclick="addRankTier()">➕ Add Tier</button>
+      <button class="btn btn-primary btn-sm" onclick="saveRankDiscounts()">💾 Save</button>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="form-hint" style="margin-bottom:10px">
+      Set a discount % for each VIP rank. When a user buys, their current rank's discount is applied to the buy price.
+    </div>
+    <div id="rank-tiers-body"></div>
+  </div>
+</div>
+
+<!-- Rank Minimum Spend (required $ spent to reach a rank) -->
+<div class="section-card" style="margin-bottom:16px">
+  <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+    <span>💵 Rank Minimum Spend</span>
+    <div class="flex gap-2">
+      <button class="btn btn-secondary btn-sm" onclick="resetRankMinSpend()">↺ Reset to defaults</button>
+      <button class="btn btn-primary btn-sm" onclick="saveRankMinSpend()">💾 Save</button>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="form-hint" style="margin-bottom:10px">
+      Set the total <b>$ spent</b> required for each rank. Users below the session-selling minimum rank will see how much more they need to spend to unlock selling. VIP1 is always 0.
+    </div>
+    <div id="rank-min-spend-body"></div>
+  </div>
+</div>
+
+<!-- Country Discounts -->
+<div class="section-card" style="margin-bottom:16px">
+  <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+    <span>🌍 Country Discounts (time-limited)</span>
+    <button class="btn btn-primary btn-sm" onclick="openCountryDiscountModal()">➕ Add Discount</button>
+  </div>
+  <div class="section-body" id="country-discounts-body">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- Country Discount Modal -->
+<div class="modal-overlay" id="cd-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add Country Discount</span>
+      <button class="modal-close" onclick="closeModal('cd-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Country Code (ISO-2)</label>
+        <input type="text" id="cd-cc" class="form-control" maxlength="3" placeholder="e.g. IN, GH, US">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Discount %</label>
+        <input type="number" id="cd-pct" class="form-control" min="0" max="100" step="0.5" placeholder="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Duration (hours)</label>
+        <input type="number" id="cd-hours" class="form-control" min="1" step="1" placeholder="24">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('cd-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCountryDiscount()">Save</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+let _settings = {};
+let _methodStates = {};
+let _envItems = [];
+let _restartRequiredEnv = [];
+
+// ── Feature Toggles ──────────────────────────────────────────────────────────
+
+let _boolKeys = [];
+let _numericKeys = [];
+
+async function loadSettings() {
+  try {
+    const data = await apiGET('/admin/api/settings');
+    _settings = data.settings;
+    _boolKeys = data.bool_keys || [];
+    _numericKeys = data.numeric_keys || [];
+    _restartRequiredEnv = data.restart_required_env || [];
+    if(Array.isArray(data.ranks) && data.ranks.length) _rankNames = data.ranks;
+
+    const toggleEl = document.getElementById('toggles-body');
+    const labels = {
+      maintenance_mode:                  { label: 'Maintenance Mode',                    hint: 'Blocks new orders, deposits, and withdrawals' },
+      deposits_enabled:                  { label: 'Deposits Enabled',                    hint: 'Allow users to create new deposits' },
+      withdrawals_enabled:               { label: 'Withdrawals Enabled',                 hint: 'Allow users to request withdrawals' },
+      sell_requests_enabled:             { label: 'Sell Requests Enabled',               hint: 'Allow users to submit sell requests' },
+      registration_enabled:              { label: 'Registration Enabled',                hint: 'Allow new users to join' },
+      hide_fake_stock_when_real_zero:    { label: 'Hide Fake Stock When Real Stock Ends', hint: 'When ON, a country stops showing its fake stock number as soon as its real stock reaches 0' },
+      auto_transfer_on_approval:         { label: '⚡ Auto-Transfer on Approval',        hint: 'When ON, approved sell sessions are pushed straight to buy inventory — no manual "Send to Inventory" step needed.' },
+      auto_transfer_on_payment_release:  { label: '⚡ Auto-Transfer on Payment Release', hint: 'When ON, sessions that pass the 24 h live re-verification are auto-added to buy inventory when payment is released.' },
+    };
+
+    // Only render boolean keys in the toggles section
+    const boolSettings = Object.entries(_settings).filter(([key]) => _boolKeys.includes(key));
+    toggleEl.innerHTML = boolSettings.map(([key, val]) => {
+      const info = labels[key] || { label: key, hint: '' };
+      const id = 'toggle-' + key;
+      const isChecked = settingBool(val, false) ? 'checked' : '';
+      const isMaintenance = key === 'maintenance_mode';
+      return `<div class="kv-row" style="margin-bottom:10px">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text)">${info.label}${isMaintenance ? ' ⚠️' : ''}</div>
+          <div class="form-hint">${info.hint}</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="${id}" ${isChecked} onchange="onToggle('${key}',this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>`;
+    }).join('');
+
+    // Populate numeric inputs
+    _numericKeys.forEach(key => {
+      const el = document.getElementById('num-' + key);
+      if (el && _settings[key] !== undefined) el.value = _settings[key];
+    });
+  } catch(e) { toast('Failed to load settings', 'error'); }
+}
+
+function settingBool(value, fallback = false) {
+  if (typeof value === 'boolean') return value;
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === 'string') {
+    const v = value.trim().toLowerCase();
+    if (['1', 'true', 'yes', 'on', 'enabled'].includes(v)) return true;
+    if (['0', 'false', 'no', 'off', 'disabled'].includes(v)) return false;
+  }
+  return Boolean(value);
+}
+
+function onToggle(key, val) { _settings[key] = val; }
+
+async function saveSettings() {
+  const body = {};
+  _boolKeys.forEach(key => {
+    const el = document.getElementById('toggle-' + key);
+    if (el) body[key] = el.checked;
+  });
+  try {
+    const r = await apiPOST('/admin/api/settings', body);
+    if (r.ok) toast('Feature toggles saved', 'success');
+    else toast(r.detail || 'Failed', 'error');
+  } catch(e) { toast('Error saving settings', 'error'); }
+}
+
+async function saveNumericSettings() {
+  const body = {};
+  _numericKeys.forEach(key => {
+    const el = document.getElementById('num-' + key);
+    if (el && el.value !== '') {
+      body[key] = parseFloat(el.value);
+    }
+  });
+  if (!Object.keys(body).length) { toast('No values to save', 'error'); return; }
+  try {
+    const r = await apiPOST('/admin/api/settings', body);
+    if (r.ok) toast('Threshold settings saved', 'success');
+    else toast(r.detail || 'Failed', 'error');
+  } catch(e) { toast('Error saving thresholds', 'error'); }
+}
+
+// ── Environment Variables ────────────────────────────────────────────────────
+
+async function loadEnvVars() {
+  try {
+    const data = await apiGET('/admin/api/env-vars');
+    _envItems = data.items || [];
+    const el = document.getElementById('env-body');
+    if (!_envItems.length) {
+      el.innerHTML = '<div class="env-empty">No environment variables configured.</div>';
+      return;
+    }
+
+    el.innerHTML = _envItems.map(item => {
+      const isSystem = item.source === 'system';
+      const statusBadge = item.is_set
+        ? (item.has_override ? '<span class="badge badge-yellow">Set (override)</span>' : '<span class="badge badge-green">✓ Set</span>')
+        : '<span class="badge badge-red">✕ Not Set</span>';
+      const restartBadge = item.requires_restart ? '<span class="badge badge-cyan" style="margin-left:6px">restart</span>' : '';
+      const valuePreview = isSystem
+        ? '<span class="env-masked">••••••••</span>'
+        : `<span class="env-value">${escapeHtml(String(item.value || ''))}</span>`;
+
+      return `<div class="env-row">
+        <div class="env-info">
+          <div class="env-key">${escapeHtml(item.key)} ${restartBadge}</div>
+          <div class="env-value-wrap">${valuePreview}</div>
+        </div>
+        <div class="env-status">${statusBadge}</div>
+        <div class="env-actions">
+          <button class="btn btn-xs btn-secondary" onclick="editEnvVar('${escapeHtml(item.key)}')">Edit</button>
+          ${item.is_deletable ? `<button class="btn btn-xs btn-danger" onclick="deleteEnvVar('${escapeHtml(item.key)}')">Delete</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { toast('Failed to load environment variables', 'error'); }
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function openEnvModal(key, value) {
+  const isEdit = !!key;
+  document.getElementById('env-modal-title').textContent = isEdit ? 'Edit Environment Variable' : 'Add Environment Variable';
+  document.getElementById('env-key').value = key || '';
+  document.getElementById('env-value').value = value || '';
+  document.getElementById('env-key').disabled = isEdit;
+  const warning = document.getElementById('env-warning');
+  if (isEdit && _restartRequiredEnv.includes(key)) {
+    warning.style.display = 'block';
+  } else {
+    warning.style.display = 'none';
+  }
+  openModal('env-modal');
+}
+
+function editEnvVar(key) {
+  const item = _envItems.find(x => x.key === key);
+  openEnvModal(key, item && item.source === 'custom' ? item.value : '');
+}
+
+async function saveEnvVar() {
+  const key = document.getElementById('env-key').value.trim().toUpperCase();
+  const value = document.getElementById('env-value').value;
+  if (!key) { toast('Key is required', 'error'); return; }
+
+  try {
+    const r = await apiPOST('/admin/api/env-vars', { key, value });
+    if (r.ok) {
+      closeModal('env-modal');
+      toast(r.requires_restart ? 'Saved. Restart required.' : 'Saved', 'success');
+      loadEnvVars();
+    } else {
+      toast(r.error || 'Failed to save', 'error');
+    }
+  } catch(e) { toast('Error saving env var', 'error'); }
+}
+
+async function deleteEnvVar(key) {
+  confirm(`Delete environment variable "${key}"?`, async () => {
+    try {
+      const r = await apiDELETE('/admin/api/env-vars/' + encodeURIComponent(key));
+      if (r.ok) {
+        toast(r.requires_restart ? 'Deleted. Restart required.' : 'Deleted', 'success');
+        loadEnvVars();
+      } else {
+        toast(r.error || 'Failed to delete', 'error');
+      }
+    } catch(e) { toast('Error deleting env var', 'error'); }
+  });
+}
+
+// ── Server Restart ───────────────────────────────────────────────────────────
+
+function restartServer() {
+  openModal('restart-modal');
+}
+
+async function confirmRestart() {
+  const btn = document.getElementById('restart-confirm-btn');
+  btn.disabled = true;
+  btn.textContent = 'Restarting…';
+  try {
+    const r = await apiPOST('/admin/api/restart', {});
+    if (r.ok) {
+      toast('Server is restarting...', 'success');
+      document.getElementById('server-status').outerHTML = '<span class="badge badge-yellow" id="server-status">● Restarting</span>';
+      setTimeout(() => closeModal('restart-modal'), 800);
+      // Attempt to reconnect after a few seconds
+      setTimeout(() => checkServerOnline(), 5000);
+    } else {
+      toast(r.error || 'Restart failed', 'error');
+      btn.disabled = false;
+      btn.textContent = '🔄 Restart Now';
+    }
+  } catch(e) {
+    toast('Restart request failed', 'error');
+    btn.disabled = false;
+    btn.textContent = '🔄 Restart Now';
+  }
+}
+
+async function checkServerOnline() {
+  try {
+    await fetch('/admin/api/settings', { credentials: 'same-origin' });
+    window.location.reload();
+  } catch(e) {
+    setTimeout(checkServerOnline, 3000);
+  }
+}
+
+// ── Sell Timing Settings ─────────────────────────────────────────────────────
+
+async function loadSellTiming() {
+  try {
+    const data = await apiGET('/admin/api/sell-timing');
+    document.getElementById('termination-delay').value = data.termination_delay_minutes ?? 1;
+    document.getElementById('payment-hold').value      = data.payment_hold_hours ?? 48;
+    document.getElementById('payment-hold-auto').value = data.payment_hold_auto_term_hours ?? data.payment_hold_hours ?? 48;
+  } catch(e) { toast('Failed to load sell timing settings', 'error'); }
+}
+
+async function saveSellTiming() {
+  const delay = parseInt(document.getElementById('termination-delay').value);
+  const hold  = parseInt(document.getElementById('payment-hold').value);
+  const holdAuto = parseInt(document.getElementById('payment-hold-auto').value);
+  if (isNaN(delay) || delay < 0) { toast('Invalid termination delay', 'error'); return; }
+  if (isNaN(hold)  || hold  < 0) { toast('Invalid payment hold', 'error');      return; }
+  if (isNaN(holdAuto) || holdAuto < 0) { toast('Invalid auto-termination payment hold', 'error'); return; }
+  try {
+    const r = await apiPOST('/admin/api/sell-timing', {
+      termination_delay_minutes: delay,
+      payment_hold_hours: hold,
+      payment_hold_auto_term_hours: holdAuto,
+    });
+    if (r.ok) toast('Sell timing settings saved', 'success');
+    else toast(r.detail || 'Failed', 'error');
+  } catch(e) { toast('Error saving sell timing settings', 'error'); }
+}
+
+// ── Deposit Methods ──────────────────────────────────────────────────────────
+
+const METHOD_EMOJI = {
+  oxapay:         '💎',
+  crypto:         '🔐',
+  telegram_stars: '⭐',
+  binance_pay:    '🔶',
+  egypt_wallet:   '🇪🇬',
+  jaib_wallet:    '🔵',
+};
+
+async function loadDepositMethods() {
+  try {
+    const data = await apiGET('/admin/api/deposit-methods');
+    const el = document.getElementById('methods-body');
+
+    if (!data.methods || !data.methods.length) {
+      el.innerHTML = '<p style="color:var(--text3);font-size:13px">No deposit providers registered.</p>';
+      return;
+    }
+
+    el.innerHTML = `
+      <div style="margin-bottom:10px;color:var(--text3);font-size:12px">
+        Toggle each payment method on or off. Methods marked <span class="badge badge-red">Not Configured</span>
+        are missing required secrets — configure them in Environment Variables above, then restart.
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+        ${data.methods.map(m => {
+          const emoji = METHOD_EMOJI[m.method_id] || '💳';
+          const cfgBadge = m.configured
+            ? `<span class="badge badge-green">✓ Configured</span>`
+            : `<span class="badge badge-red">✕ Not Configured</span>`;
+          const checked  = m.enabled && m.configured ? 'checked' : '';
+          const disabled = !m.configured ? 'disabled' : '';
+          _methodStates[m.method_id] = m.enabled && m.configured;
+          return `
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <div style="font-size:15px;font-weight:600">${emoji} ${m.method_name}</div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="method-${m.method_id}" ${checked} ${disabled}
+                    onchange="onMethodToggle('${m.method_id}', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div style="font-size:11px;color:var(--text3);font-family:monospace">${m.method_id}</div>
+              <div style="margin-top:6px">${cfgBadge}</div>
+            </div>`;
+        }).join('')}
+      </div>`;
+  } catch(e) { toast('Failed to load deposit methods', 'error'); }
+}
+
+function onMethodToggle(id, val) { _methodStates[id] = val; }
+
+async function saveDepositMethods() {
+  document.querySelectorAll('[id^="method-"]').forEach(el => {
+    const id = el.id.replace('method-', '');
+    _methodStates[id] = el.checked;
+  });
+  try {
+    const r = await apiPOST('/admin/api/deposit-methods', _methodStates);
+    if (r.ok) toast('Deposit methods saved', 'success');
+    else toast(r.detail || 'Failed', 'error');
+  } catch(e) { toast('Error saving deposit methods', 'error'); }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadSettings();
+  loadEnvVars();
+  loadSellTiming();
+  loadDepositMethods();
+});
+
+// ── Session Selling ─────────────────────────────────────────────────────
+let _rankNames = ['VIP1','VIP2','VIP3','PREMIUM','DIAMOND'];
+function _populateRankSelect(sel, current){
+  if(!sel) return;
+  sel.innerHTML = _rankNames.map(r => `<option value="${r}" ${r===current?'selected':''}>${r}</option>`).join('');
+}
+async function loadSessionSelling(){
+  try{
+    const el = document.getElementById('ss-enabled');
+    const sel = document.getElementById('ss-min-rank');
+    if(el) el.checked = settingBool(_settings.session_selling_enabled, true);
+    const cur = String(_settings.session_selling_min_rank || 'VIP1').toUpperCase();
+    _populateRankSelect(sel, cur);
+  }catch(e){}
+}
+async function saveSessionSelling(){
+  const body = {
+    session_selling_enabled: document.getElementById('ss-enabled').checked,
+    session_selling_min_rank: document.getElementById('ss-min-rank').value || 'VIP1',
+  };
+  try{
+    const r = await apiPOST('/admin/api/settings', body);
+    if(r.ok) toast('Session selling settings saved', 'success');
+    else toast(r.detail || 'Failed', 'error');
+  }catch(e){ toast('Error saving', 'error'); }
+}
+
+// ── Rank Discounts ──────────────────────────────────────────────────────
+let _rankTiers = [];
+async function loadRankDiscounts(){
+  try{
+    const data = await apiGET('/admin/api/rank-discounts');
+    if(Array.isArray(data.ranks) && data.ranks.length) _rankNames = data.ranks;
+    _rankTiers = (data.tiers || []).map(t => ({rank: String(t.rank||'').toUpperCase(), percent: Number(t.percent)||0}));
+    if(!_rankTiers.length) _rankTiers = _rankNames.map(r => ({rank:r, percent:0}));
+    renderRankTiers();
+  }catch(e){ toast('Failed to load rank discounts', 'error'); }
+}
+function _rankOptions(sel){
+  return _rankNames.map(r => `<option value="${r}" ${r===sel?'selected':''}>${r}</option>`).join('');
+}
+function renderRankTiers(){
+  const el = document.getElementById('rank-tiers-body');
+  el.innerHTML = _rankTiers.map((t,i) => `
+    <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:8px;align-items:end">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Rank</label>
+        <select class="form-control" onchange="_rankTiers[${i}].rank=this.value">${_rankOptions(t.rank)}</select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Discount %</label>
+        <input type="number" min="0" max="100" step="0.5" class="form-control" value="${t.percent}" onchange="_rankTiers[${i}].percent=parseFloat(this.value)||0">
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="_rankTiers.splice(${i},1); renderRankTiers()">✕</button>
+    </div>`).join('');
+}
+function addRankTier(){
+  const used = new Set(_rankTiers.map(t=>t.rank));
+  const next = _rankNames.find(r => !used.has(r)) || _rankNames[0];
+  _rankTiers.push({rank: next, percent: 0});
+  renderRankTiers();
+}
+async function saveRankDiscounts(){
+  try{
+    const r = await apiPOST('/admin/api/rank-discounts', {tiers:_rankTiers});
+    if(r.ok) toast('Rank discounts saved', 'success');
+    else toast('Failed', 'error');
+  }catch(e){ toast('Error saving rank discounts', 'error'); }
+}
+
+// ── Country Discounts ───────────────────────────────────────────────────
+async function loadCountryDiscounts(){
+  try{
+    const data = await apiGET('/admin/api/country-discounts');
+    const el = document.getElementById('country-discounts-body');
+    if(!data.items || !data.items.length){
+      el.innerHTML = '<p style="color:var(--text3);font-size:13px">No country discounts set.</p>';
+      return;
+    }
+    el.innerHTML = `<div style="display:grid;grid-template-columns:1fr;gap:8px">` +
+      data.items.map(it => {
+        const badge = it.active
+          ? `<span class="badge badge-green">Active — ${fmtRemaining(it.remaining_seconds)} left</span>`
+          : `<span class="badge badge-red">Expired</span>`;
+        return `<div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+          <div>
+            <div style="font-weight:600">🌍 ${escapeHtml(it.country_code)} — <span style="color:var(--green)">${it.percent}% off</span></div>
+            <div class="form-hint">${badge} · expires ${it.expires_at ? new Date(it.expires_at).toLocaleString() : '—'}</div>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="deleteCountryDiscount('${escapeHtml(it.country_code)}')">Remove</button>
+        </div>`;
+      }).join('') + `</div>`;
+  }catch(e){ toast('Failed to load country discounts', 'error'); }
+}
+function fmtRemaining(sec){
+  if(sec<=0) return '0m';
+  const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60);
+  return h ? `${h}h ${m}m` : `${m}m`;
+}
+function openCountryDiscountModal(){
+  document.getElementById('cd-cc').value = '';
+  document.getElementById('cd-pct').value = '';
+  document.getElementById('cd-hours').value = '24';
+  openModal('cd-modal');
+}
+async function saveCountryDiscount(){
+  const cc = document.getElementById('cd-cc').value.trim().toUpperCase();
+  const pct = parseFloat(document.getElementById('cd-pct').value);
+  const hours = parseFloat(document.getElementById('cd-hours').value);
+  if(!cc || cc.length < 2){ toast('Invalid country code', 'error'); return; }
+  if(isNaN(pct) || pct<0 || pct>100){ toast('Invalid percent', 'error'); return; }
+  if(isNaN(hours) || hours<=0){ toast('Invalid duration', 'error'); return; }
+  try{
+    const r = await apiPOST('/admin/api/country-discounts', {country_code:cc, percent:pct, duration_hours:hours});
+    if(r.ok){ closeModal('cd-modal'); toast('Country discount saved', 'success'); loadCountryDiscounts(); }
+    else toast(r.error || 'Failed', 'error');
+  }catch(e){ toast('Error saving', 'error'); }
+}
+async function deleteCountryDiscount(cc){
+  confirm(`Remove discount for ${cc}?`, async () => {
+    try{
+      const r = await apiDELETE('/admin/api/country-discounts/' + encodeURIComponent(cc));
+      if(r.ok){ toast('Removed', 'success'); loadCountryDiscounts(); }
+      else toast(r.error || 'Failed', 'error');
+    }catch(e){ toast('Error', 'error'); }
+  });
+}
+
+// ── Rank Min Spend ───────────────────────────────────────────────────
+let _rankMinSpend = [];
+let _rankMinSpendDefaults = {};
+async function loadRankMinSpend(){
+  try{
+    const data = await apiGET('/admin/api/rank-min-spend');
+    if(Array.isArray(data.ranks) && data.ranks.length) _rankNames = data.ranks;
+    _rankMinSpendDefaults = data.defaults || {};
+    _rankMinSpend = (data.tiers || []).map(t => ({
+      rank: String(t.rank||'').toUpperCase(),
+      required_spend: Number(t.required_spend)||0,
+      is_override: !!t.is_override,
+      default: Number(t.default)||0,
+    }));
+    renderRankMinSpend();
+  }catch(e){ toast('Failed to load rank min spend', 'error'); }
+}
+function renderRankMinSpend(){
+  const el = document.getElementById('rank-min-spend-body');
+  if(!el) return;
+  el.innerHTML = _rankMinSpend.map((t,i) => {
+    const isLowest = String(t.rank).toUpperCase() === 'VIP1';
+    return `
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:8px;align-items:end">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Rank</label>
+          <input class="form-control" value="${escapeHtml(t.rank)}" disabled>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Required spend ($)</label>
+          <input type="number" min="0" step="1" class="form-control"
+                 value="${t.required_spend}"
+                 ${isLowest ? 'disabled' : ''}
+                 onchange="_rankMinSpend[${i}].required_spend=parseFloat(this.value)||0">
+        </div>
+        <div class="form-hint" style="min-width:110px;text-align:right">
+          default: $${(t.default||0)}
+        </div>
+      </div>`;
+  }).join('');
+}
+async function saveRankMinSpend(){
+  try{
+    const body = {tiers: _rankMinSpend
+      .filter(t => String(t.rank).toUpperCase() !== 'VIP1')
+      .map(t => ({rank: t.rank, required_spend: t.required_spend}))};
+    const r = await apiPOST('/admin/api/rank-min-spend', body);
+    if(r.ok) toast('Rank minimum spend saved', 'success');
+    else toast('Failed', 'error');
+  }catch(e){ toast('Error saving', 'error'); }
+}
+function resetRankMinSpend(){
+  _rankMinSpend = _rankMinSpend.map(t => ({...t, required_spend: t.default||0}));
+  renderRankMinSpend();
+}
+
+// Hook into initial load
+const _origLoadSettings = loadSettings;
+loadSettings = async function(){
+  await _origLoadSettings();
+  loadSessionSelling();
+};
+document.addEventListener('DOMContentLoaded', () => {
+  loadRankDiscounts();
+  loadRankMinSpend();
+  loadCountryDiscounts();
+});
+
+</script>
+{% endblock %}

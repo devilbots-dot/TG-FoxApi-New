@@ -1,0 +1,454 @@
+start_1: مرحباً!
+start_2: 'مرحباً {0}! 👋
+
+
+  أهلاً بك في {1}.
+
+
+  أنا جاهز لمساعدتك. استخدم الأزرار أدناه للبدء.'
+language_changed: ✅ تم تغيير اللغة إلى العربية!
+choose_language: '🌐 يرجى اختيار لغتك:'
+back: « رجوع
+language_btn: 🇸🇦 العربية
+menu_wallet: 💰 المحفظة
+menu_market: 🛒 السوق
+menu_apikey: 🔑 مفتاح API الخاص بي
+menu_profile: 👤 الملف الشخصي
+menu_updates: 📢 التحديثات
+menu_support: 💬 الدعم
+menu_language: 🌐 اللغة
+menu_back: 🔙 رجوع
+welcome_caption: '👋 Welcome, {0}!
+
+
+  🦊 **TG-Fox API**
+
+  _أحد أفضل الأسواق العالمية مع مزود API لإنشاء موقعك أو تطبيقك الخاص._
+
+
+  💳 **Balance:** `${2}`
+
+  🏆 **Rank:** `{3}`
+
+
+  Use the buttons below to get started 👇'
+home_title: TG-Fox API
+home_welcome: 👋 مرحباً بعودتك، {0}!
+home_tagline: 'أحد أفضل الأسواق العالمية مع مزود API لإنشاء موقعك أو تطبيقك الخاص.
+
+
+  استخدم الأزرار أدناه للبدء 👇'
+btn_profile: 👤 الملف الشخصي
+btn_market: 🛒 السوق
+btn_updates: 📢 المبيعات الأخيرة
+btn_support: 💬 الدول التي نشتري منها
+btn_language: 🌐 اللغة
+btn_apikey: 🔑 مفتاح API
+btn_deposit: 💰 إيداع
+btn_withdraw: 💸 سحب
+btn_refer_earn: 👥 دعوة واكسب
+btn_transactions: 📜 المعاملات
+btn_back: ⬅️ رجوع
+btn_back_profile: ⬅️ العودة للملف
+btn_back_market: ⬅️ العودة للسوق
+btn_back_wallet: 💳 العودة للمحفظة
+btn_regen_key: 🔄 تجديد المفتاح
+btn_deposits: 📥 الإيداعات
+btn_withdrawals: 📤 السحوبات
+btn_purchases: 🛒 المشتريات
+btn_all_history: 📋 كل السجل
+btn_manage_addr: 🔑 إدارة العناوين
+profile_title: ملفك الشخصي
+wallet_title_section: المحفظة
+trade_title: إحصاءات التداول
+ref_title_section: الإحالات
+lbl_user_id: معرف المستخدم
+lbl_username: اسم المستخدم
+lbl_rank: الرتبة
+lbl_member_since: عضو منذ
+lbl_balance: الرصيد
+lbl_total_deposited: إجمالي الإيداعات
+lbl_total_spent: إجمالي الإنفاق
+lbl_total_earned: إجمالي الأرباح
+lbl_accounts_bought: الحسابات المشتراة
+lbl_accounts_sold: الحسابات المباعة
+lbl_ref_link: رابطك
+lbl_referred_users: المدعوون
+lbl_bonus_earned: المكافأة المكتسبة
+lbl_no_username: لا يوجد اسم مستخدم
+lbl_tap_to_copy: اضغط للنسخ
+refer_title: دعوة واكسب
+refer_earn_line: 🎁 **اكسب مكافآت لكل صديق تدعوه!**
+refer_link_lbl: 🔗 **رابط الإحالة الخاص بك:**
+refer_total_lbl: 👤 **إجمالي المدعوين:** `{0}` مستخدم
+refer_bonus_lbl: 💰 **المكافآت المكتسبة:** `${0}`
+refer_tip: '📌 شارك رابطك مع الأصدقاء. ستحصل على مكافأة
+
+  عندما يودعون أول مرة!'
+tx_title: سجل المعاملات
+tx_subtitle: 'عرض سجلك المالي الكامل.
+
+  اختر فئة أدناه 👇'
+tx_dep_title: سجل الإيداعات
+tx_wit_title: سجل السحوبات
+tx_pur_title: سجل المشتريات
+tx_all_title: السجل الكامل
+tx_empty_dep: 📭 لا توجد إيداعات بعد.
+tx_empty_wit: 📭 لا توجد سحوبات بعد.
+tx_empty_pur: 📭 لا توجد مشتريات بعد.
+tx_empty_all: 📭 لا توجد معاملات بعد.
+apikey_title: مفتاح API الخاص بك
+apikey_header_fmt: '📌 **تنسيق الرأس:**
+
+  `X-Api-Key: tg_{user_id}_{secret}`'
+apikey_docs: 📖 **المستندات:** `/docs`
+apikey_warn: ⚠️ لا تشارك مفتاح API مع أحد!
+apikey_regen_title: تم تجديد مفتاح API
+apikey_regen_warn: '⚠️ مفتاحك القديم لم يعد صالحاً.
+
+  حدّث جميع تكاملاتك.'
+apikey_regen_alert: ✅ تم إنشاء مفتاح جديد!
+lang_title: اختيار اللغة
+lang_subtitle: 'اختر لغتك المفضلة:'
+lang_changed_alert: ✅ تم تحديث اللغة!
+wallet_main_title: محفظتك
+wallet_addr_section: عناوين السحب (USDT)
+wallet_addr_tip: 'أضف عناوينك لتفعيل خاصية السحب.
+
+  تُعالَج الإيداعات تلقائياً عبر OxaPay.'
+wallet_manage_title: عناوين السحب
+wallet_manage_body: "أضف عناوين محفظة USDT للسحب.\n\n\U0001F4CC **الشبكات المدعومة:**\n  • **TRC20** — USDT على شبكة TRON\n  • **BEP20** — USDT على Binance Smart Chain\n\n⚠️ تحقق دائماً من العنوان.\nعنوان خاطئ = خسارة دائمة!"
+trc_not_set: غير محدد ⚠️
+bep_not_set: غير محدد ⚠️
+btn_add_trc: ➕ إضافة عنوان TRC20
+btn_add_bep: ➕ إضافة عنوان BEP20
+wallet_deposit_title: إيداع الأموال
+wallet_deposit_body: 'أرسل المبلغ **(بالدولار)** الذي تريد إيداعه.
+
+
+  📌 العملات المقبولة:
+
+  BTC، ETH، USDT، LTC والمزيد
+
+
+  💵 **الحد الأدنى:** ${0}
+
+
+  اكتب /cancel للإلغاء.'
+wallet_withdraw_title: طلب سحب
+wallet_withdraw_body: '📌 **الشبكات المتاحة:** {0}
+
+
+  أرسل المبلغ **(بالدولار)** للسحب.
+
+
+  💵 **الحد الأدنى:** ${1}
+
+
+  اكتب /cancel للإلغاء.'
+wallet_no_addr_alert: '⚠️ أضف عنوان سحب أولاً!
+
+  المحفظة ← إدارة العناوين'
+wallet_select_network: اختيار الشبكة
+wallet_select_network_body: أي شبكة لسحب `${0} USDT`؟
+wallet_confirm_title: تأكيد السحب
+wallet_confirm_body: '💵 **المبلغ:** `${0} USDT`
+
+  🌐 **الشبكة:** `{1}`
+
+  📬 **العنوان:** `{2}`
+
+
+  اكتب **YES** للتأكيد أو /cancel للإلغاء.'
+wallet_confirm_word: نعم
+wallet_confirm_prompt: اكتب **YES** لتأكيد السحب أو /cancel للإلغاء.
+wallet_success_title: تم استلام طلب السحب!
+wallet_success_body: '🆔 **المعرف:** `{0}`
+
+  💵 **المبلغ:** `${1} USDT`
+
+  🌐 **الشبكة:** `{2}`
+
+  📬 **العنوان:** `{3}`
+
+
+  سحبك في انتظار موافقة المشرف.
+
+  ستُرسل الأموال بعد المعالجة.'
+wallet_payment_title: رابط الدفع جاهز
+wallet_payment_body: '💵 **المبلغ:** `${0} USD`
+
+  🔗 **رابط الدفع:**
+
+  {1}
+
+
+  ✅ سيُضاف رصيدك تلقائياً
+
+  بعد تأكيد OxaPay.
+
+
+  ⏱ **ينتهي خلال:** 60 دقيقة
+
+  💡 ادفع بـ BTC، ETH، USDT، LTC والمزيد.'
+wallet_insufficient: '❌ **رصيد غير كافٍ.**
+
+
+  رصيدك: `${0}`
+
+  المطلوب: `${1}`'
+err_invalid_amount: '❌ أدخل رقماً صحيحاً (مثال: `10` أو `25.50`)'
+err_min_deposit: ❌ الحد الأدنى للإيداع ${0}. حاول مجدداً أو /cancel.
+err_min_withdraw: ❌ الحد الأدنى للسحب ${0}. حاول مجدداً أو /cancel.
+err_payment_fail: '❌ فشل إنشاء رابط الدفع.
+
+  حاول لاحقاً أو تواصل مع الدعم.'
+err_withdraw_fail: '❌ فشل إنشاء طلب السحب.
+
+  تم استرداد رصيدك. حاول مجدداً.'
+err_unexpected: ❌ خطأ غير متوقع. حاول لاحقاً.
+err_session_exp: انتهت الجلسة. ابدأ من جديد.
+err_no_withdraw_addr: '⚠️ **لا يوجد عنوان سحب.**
+
+
+  استخدم /setwallet لإضافة عنوان TRC20 أو BEP20.'
+err_invalid_trc20: ❌ عنوان TRC20 غير صالح. يجب أن يبدأ بـ `T` ويتكون من 34 حرفًا.
+err_invalid_bep20: ❌ عنوان BEP20 غير صالح. يجب أن يبدأ بـ `0x` ويتكون من 42 حرفًا.
+set_addr_title: ضبط عنوان {0}
+set_addr_body: 'أرسل عنوان محفظة USDT **{0}** الخاص بك.
+
+
+  مثال: {1}
+
+
+  ⚠️ أرسل عنوان USDT صحيحاً فقط!
+
+  اكتب /cancel للإلغاء.'
+addr_saved_title: تم حفظ عنوان {0}!
+addr_saved_body: يمكنك الآن سحب USDT إلى هذا العنوان.
+oxapay_not_configured: '❌ OxaPay غير مفعّل.
+
+  تواصل مع المشرف.'
+cancel_success: ✅ تم الإلغاء. استخدم /start للعودة للقائمة الرئيسية.
+cancel_nothing: لا يوجد شيء للإلغاء.
+banned_msg: 🚫 أنت محظور من استخدام هذا البوت.
+generating_link: ⏳ جارٍ إنشاء رابط الدفع…
+processing_withdrawal: ⏳ جارٍ معالجة السحب…
+dep_choose_title: اختر طريقة الإيداع
+dep_choose_body: 'اختر طريقة الدفع المفضلة لديك:'
+dep_enter_amount: 'أدخل المبلغ **(بالدولار الأمريكي)** للإيداع:'
+dep_type_cancel: اكتب /cancel للإلغاء.
+dep_select_network: اختر الشبكة
+dep_which_network: عبر أي شبكة تريد الإيداع؟
+dep_ready_title: الدفع جاهز
+dep_send_title: أرسل العملة المشفرة
+dep_manual_title: تحويل يدوي
+dep_created_title: تم إنشاء الإيداع
+dep_tap_pay: اضغط **ادفع الآن** لفتح صفحة الدفع.
+dep_auto_credit: سيُضاف رصيدك تلقائياً بعد تأكيد الدفع.
+dep_addr_warn: أرسل **المبلغ الدقيق** عبر الشبكة الصحيحة. الشبكة الخاطئة = فقدان الأموال.
+dep_manual_note: أدرج رقم الإيداع في ملاحظة التحويل، ثم أرسل الإيصال للدعم.
+dep_back_methods: ⬅️ العودة للطرق
+lbl_min_deposit: الحد الأدنى للإيداع
+lbl_method: الطريقة
+lbl_amount: المبلغ
+lbl_currency: العملة
+lbl_expires: ينتهي خلال
+lbl_minutes: دقيقة
+lbl_network: الشبكة
+lbl_address: أرسل إلى هذا العنوان
+lbl_ref: رقم الإيداع
+lbl_send_amount: مبلغ الإرسال
+lbl_send_to: أرسل إلى
+lbl_holder: اسم الحساب
+btn_pay_now: 💳 ادفع الآن →
+btn_contact_support: 💬 تواصل مع الدعم
+no_deposit_methods: ❌ لا توجد طرق إيداع متاحة. تواصل مع المشرف.
+method_unavailable: ❌ هذه الطريقة غير متاحة حالياً.
+market_title: السوق
+market_balance_lbl: رصيدك
+market_tagline: 'Buy and sell verified Telegram accounts
+
+  with instant OTP delivery.'
+btn_buy_account: 🟢 شراء حساب
+btn_sell_account: 🔴 بيع حساب
+buy_title: شراء حساب
+buy_no_stock: 🚫 No countries available right now. Check back later!
+buy_page_info: صفحة {0}/{1} — {2} دولة
+buy_hint: اضغط على دولة لعرض التفاصيل 👇
+buy_country_title: شراء حساب — {0}
+buy_country_lbl: الدولة
+buy_phone_code_lbl: رمز الهاتف
+buy_price_lbl: السعر
+buy_stock_lbl: المتوفر
+buy_delivery_lbl: التسليم
+buy_delivery_val: رمز فوري
+buy_confirm_hint: Press Buy Now to proceed.
+btn_buy_now: ✅ اشترِ الآن
+buy_no_channel: ⚠️ قناة الجلسات غير مهيأة. تواصل مع الإدارة.
+buy_no_clean_account: ⚠️ لا يوجد حساب نظيف متاح الآن. حاول لاحقًا.
+buy_purchased_title: تم شراء الحساب!
+buy_paid_lbl: المدفوع
+buy_new_balance_lbl: الرصيد الجديد
+buy_tfa_lbl: كلمة مرور التحقق بخطوتين
+buy_otp_waiting_title: بانتظار رمز التحقق…
+buy_otp_step1: 1️⃣ افتح تيليجرام وأدخل الرقم أعلاه
+buy_otp_step2: 2️⃣ Request a login OTP
+buy_otp_step3: 3️⃣ سأرسل لك الرمز هنا تلقائيًا
+buy_otp_timeout_note: '_المهلة: دقيقتان_'
+btn_cancel_otp: ❌ إلغاء انتظار الرمز
+buy_success_alert: ✅ تم الشراء! بانتظار الرمز…
+buy_error_generic: ❌ حدث خطأ ما. حاول مرة أخرى.
+buy_view_all_title: كل الدول المتاحة
+buy_view_all_empty: 🚫 لا توجد دول متاحة الآن.
+otp_received_title: تم استلام الرمز! 🎉
+otp_phone_lbl: الهاتف
+otp_code_lbl: رمز التحقق
+otp_enter_instruction: أدخل هذا الرمز في تيليجرام لإكمال تسجيل الدخول.
+otp_sensitive_note: _احتفظ بالرمز خاصًا — لا تشاركه مع أحد._
+otp_timeout_title: انتهت مهلة الرمز ⏰
+otp_timeout_body: 'No OTP was received within 2 minutes. Please make sure you entered the phone correctly and requested a login OTP.
+
+
+  Contact support if you need help.'
+otp_cancelled_title: تم إلغاء انتظار الرمز
+otp_cancelled_body: 'تم إلغاء فترة انتظار الرمز.
+
+
+  ⚠️ عملية شراء الحساب لا تزال صالحة.
+
+  تواصل مع الدعم إن احتجت لتسليم الرمز.'
+otp_error: OTP delivery failed for {0}. Please contact support.
+btn_back_to_market: ⬅️ العودة للسوق
+sell_title: بيع حساب
+sell_no_countries: 🚫 No countries accepting accounts right now. Check back later!
+sell_page_info: صفحة {0}/{1} — {2} دولة
+sell_hint: اختر دولة لعرض سعر البيع 👇
+sell_country_title: بيع حساب — {0}
+sell_country_lbl: الدولة
+sell_phone_code_lbl: رمز الهاتف
+sell_we_pay_lbl: ندفع لك
+sell_requirements_title: ✅ المتطلبات
+sell_req_prefix: • Phone number must start with {0}
+sell_req_valid_session: • ملف الجلسة يجب أن يكون صالحًا ومصرحًا به
+sell_req_no_spam: • الحساب يجب ألا يكون مقيدًا بسبب سبام أو مجمّدًا أو محظورًا
+sell_req_no_dupe: • يجب ألا يكون مكررًا في نظامنا
+sell_how_title: 📋 كيف تعمل
+sell_how_step1: 1️⃣ Upload your .session file
+sell_how_step2: 2️⃣ نتحقق من الحساب تلقائيًا
+sell_how_step3: 3️⃣ Funds go to your Pending Balance
+sell_how_step4: 4️⃣ يراجع المشرف → يصبح الرصيد متاحًا
+sell_review_time: '⏱ وقت المراجعة المتوقع: 1–24 ساعة'
+sell_why_rejected: '📌 أسباب الرفض الشائعة: رقم دولة خاطئ، جلسة منتهية، حساب محظور/سبام، مكرر.'
+btn_start_selling: 📤 ابدأ البيع
+btn_my_requests: 📋 طلباتي
+sell_my_requests_title: طلبات البيع الخاصة بي
+sell_empty_requests: 📭 لا توجد طلبات بيع بعد.
+sell_requests_footer: Last 10 requests shown
+sell_country_full: 🚫 هذه الدولة لا تقبل حسابات حاليًا.
+sell_init_title: بيع حساب — {0}
+sell_you_receive_lbl: ستستلم
+sell_required_prefix_lbl: بادئة الرقم المطلوبة
+sell_step1_title: الخطوة 1 — أنشئ ملف الجلسة
+sell_telethon_note: Run this snippet on your computer. It creates my_session.session.
+sell_step2_title: الخطوة 2 — ارفع الملف هنا
+sell_step2_body: 📎 Send the .session file as a document in this chat.
+sell_waiting: ⏳ بانتظار ملفك…
+sell_type_cancel: اكتب /cancel للإلغاء.
+sell_cancelled_title: تم إلغاء البيع
+sell_cancelled_body: لم يتم إرسال أي حساب. يمكنك البدء من جديد في أي وقت.
+sell_rate_limit: ⏱ تم بلوغ الحد. الحد الأقصى {0} إرسال كل {1} ساعة. حاول لاحقًا.
+sell_max_pending: ⏳ لديك {0} طلبات معلقة. انتظر مراجعتها قبل إرسال المزيد.
+sell_wrong_file: ❌ Wrong file type. Please send a .session file.
+sell_file_too_large: ❌ File too large. A valid session file is under 100 KB.
+sell_validating_title: جارٍ التحقق من الجلسة
+sell_validating_body: ⏳ الاتصال بتيليجرام… انتظر حتى 30 ثانية.
+sell_no_channel: ⚠️ المنصة غير مكتملة الإعداد. تواصل مع الإدارة.
+sell_download_error: ❌ Could not read your file. Please send the file again, or type /cancel.
+sell_success_title: تم إرسال الجلسة! ✅
+sell_request_id_lbl: رقم الطلب
+sell_pending_balance_lbl: الرصيد المعلق
+sell_status_lbl: الحالة
+sell_awaiting_review: ⏳ بانتظار مراجعة الإدارة
+sell_success_note: Your pending balance will be credited once admin approves your request.
+sell_spam_flag_note: _⚠️ This account has a temporary spam flag. Admin will make the final decision._
+sell_track_hint: Track your request in My Sell Requests.
+sell_error_generic: ❌ حدث خطأ غير متوقع. حاول مجددًا أو تواصل مع الدعم.
+btn_sell_another: 💼 بيع حساب آخر
+btn_prev: ⬅️ السابق
+btn_next: التالي ➡️
+btn_view_all: 📋 عرض الكل
+btn_cancel: ❌ إلغاء
+err_country_not_found: ❌ الدولة غير موجودة.
+sell_country_name_lbl: الدولة
+buy_otp_requesting: 📨 جارٍ طلب الرمز من تيليجرام…
+buy_otp_prompt: '📱 **الهاتف:** `{0}`
+
+
+  أرسلنا رمز الدخول لهذا الرقم.
+
+  أدخل الرمز هنا:'
+buy_otp_cancel_hint: _(اكتب /cancel للإلغاء واسترداد المبلغ كاملاً)_
+buy_otp_invalid: '❌ رمز خاطئ. تحقق وحاول مجددًا:'
+buy_otp_expired: ❌ انتهت صلاحية الرمز. تم استرداد المبلغ — حاول الشراء مرة أخرى.
+buy_tfa_prompt: '🔐 هذا الحساب لديه **تحقق بخطوتين** مفعل.
+
+
+  أدخل كلمة المرور:'
+buy_tfa_invalid: '❌ كلمة مرور خاطئة. حاول مجددًا:'
+buy_flood_wait: ⏳ حد معدل تيليجرام — انتظر **{0} ثانية** ثم أرسل الرمز مجددًا.
+buy_auth_checking: 🔍 جارٍ التحقق من الحساب…
+buy_complete_title: الحساب جاهز! 🎉
+buy_logout_instruction: اذهب إلى **الإعدادات → الخصوصية → الجلسات النشطة** وسجّل الخروج من الجلسات الأخرى لتأمين الحساب.
+buy_auth_cancelled_title: تم إلغاء الشراء
+buy_auth_cancelled_body: تم استرداد رصيدك `${0}`.
+buy_account_banned: ❌ هذا الحساب محظور من تيليجرام. تم استرداد مبلغ الشراء.
+buy_sessions_terminated: ✅ تم إنهاء جميع الجلسات الأخرى تلقائيًا.
+buy_sessions_partial: ⚠️ بعض الجلسات لم يتم إنهاؤها — أزلها يدويًا من الإعدادات → الجلسات النشطة.
+buy_auth_send_code_fail: '❌ تعذّر طلب الرمز من تيليجرام. تم استرداد المبلغ.
+
+
+  حاول لاحقًا أو تواصل مع الدعم.'
+buy_auth_cancel_hint_inline: اضغط إلغاء للإلغاء واسترداد المبلغ.
+dep_tap_now: اضغط **ادفع الآن** للانتقال إلى صفحة الدفع.
+buy_auth_already_active: ⏳ You already have a pending OTP flow. Send the OTP or type /cancel.
+btn_home_deposit: 💰 إيداع
+btn_home_withdraw_money: 👤 سحب
+btn_extra: ✨ إضافي
+btn_sessions_menu: 📦 بيع / شراء الجلسات
+btn_sell_account_start: 🔴 ابدأ البيع
+btn_my_sell_record: 📋 سجل مبيعاتي
+btn_open: 📖 فتح
+btn_search_country: 🔍 بحث
+btn_search_again: 🔍 بحث مجدداً
+registration_disabled_msg: "🚫 **تسجيل المستخدمين الجدد معطّل حالياً.**\n\nيرجى المحاولة لاحقاً. عند تفعيل تسجيل المستخدمين الجدد مجدداً ستتمكن من بدء البوت.\n\nإذا كان لديك أي استفسار أو مشكلة، يرجى التواصل مع الدعم."
+
+feature_disabled_alert: "هذه الميزة معطلة حالياً."
+maintenance_mode_msg: "🔧 **وضع الصيانة مفعل حالياً.**\n\nتم إيقاف الطلبات والإيداعات والسحوبات الجديدة مؤقتاً. يرجى المحاولة لاحقاً.\n\nإذا كان لديك أي استفسار أو مشكلة، تواصل مع الدعم."
+deposits_disabled_msg: "🚫 **الإيداعات الجديدة معطلة حالياً.**\n\nيرجى المحاولة بعد بعض الوقت. عندما يتم تفعيل الإيداعات مرة أخرى، ستتمكن من إنشاء إيداع جديد.\n\nإذا كان لديك أي استفسار أو مشكلة، تواصل مع الدعم."
+withdrawals_disabled_msg: "🚫 **طلبات السحب الجديدة معطلة حالياً.**\n\nيرجى المحاولة بعد بعض الوقت. عندما يتم تفعيل السحب مرة أخرى، ستتمكن من طلب السحب.\n\nإذا كان لديك أي استفسار أو مشكلة، تواصل مع الدعم."
+
+# -- Session selling gate (auto-added) --
+sell_disabled_msg: '🛑 **بيع الجلسات معطّل حالياً.**
+
+
+  يرجى المحاولة لاحقاً. لأي استفسار، تواصل مع الدعم.'
+sell_rank_locked_msg: '🔒 **بيع الجلسات مقيّد حسب الرتبة.**
+
+
+  • الحد الأدنى للرتبة: **{min_rank}** (يتطلّب إنفاق `${required_spend:g}`)
+
+  • رتبتك الحالية: **{current_rank}** — أنفقت `${current_spend:g}`
+
+  • أنفق **`${needed_spend:g}`** إضافياً لفتح البيع
+
+
+  لأي استفسار، تواصل مع الدعم.'
+
+btn_user_dashboard: "🎛 لوحة المستخدم"
+
+# -- Binance Pay (Auto) deposit (auto-added) --
+binance_pay_auto_label: "Binance Pay (Auto)"
+dep_dup_order_title: "رقم الطلب مستخدم بالفعل"
+dep_dup_order_body: "تم استخدام رقم طلب Binance هذا في إيداع آخر. يمكن استخدام كل رقم طلب مرة واحدة فقط."
+dep_dup_order_hint: "يرجى إجراء دفعة جديدة أو التواصل مع الدعم."

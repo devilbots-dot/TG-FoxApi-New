@@ -1,0 +1,143 @@
+{% extends "admin/base.html" %}
+{% block title %}Orders{% endblock %}
+{% block topbar_title %}🛒 Order Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Orders</div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" onclick="exportOrders()">⬇ Export CSV</button>
+    <button class="btn btn-secondary btn-sm" onclick="loadOrders(1)">🔄 Refresh</button>
+  </div>
+</div>
+
+<div class="filters">
+  <input type="text" id="q" class="search-input" placeholder="🔍 Order ID or User ID…" oninput="debounceLoad()">
+  <select id="f-status" class="filter-select" onchange="loadOrders(1)">
+    <option value="">All Statuses</option>
+    <option value="pending">Pending</option>
+    <option value="completed">Completed</option>
+    <option value="cancelled">Cancelled</option>
+    <option value="refunded">Refunded</option>
+    <option value="disputed">Disputed</option>
+  </select>
+</div>
+
+<div class="table-wrap">
+  <div class="table-header">
+    <span class="table-title">Orders</span>
+    <span class="table-count" id="orders-count">—</span>
+  </div>
+  <div id="orders-body"><div class="loading"><div class="spinner"></div></div></div>
+  <div class="pagination" id="orders-pagination"></div>
+</div>
+
+<!-- Action Modal -->
+<div class="modal-overlay" id="action-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="action-modal-title">Order Action</span>
+      <button class="modal-close" onclick="closeModal('action-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" id="action-reason-label">Reason</label>
+        <input type="text" class="form-control" id="action-reason" placeholder="Enter reason…">
+      </div>
+      <div class="form-group" id="tx-hash-group" style="display:none">
+        <label class="form-label">TX Hash (optional)</label>
+        <input type="text" class="form-control" id="action-tx-hash" placeholder="0x…">
+      </div>
+      <input type="hidden" id="action-order-id">
+      <input type="hidden" id="action-type">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('action-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="doOrderAction()">Confirm</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let _page = 1, _debounce;
+
+async function loadOrders(page = _page) {
+  _page = page;
+  const tbody = document.getElementById('orders-body');
+  const q = document.getElementById('q').value;
+  const status = document.getElementById('f-status').value;
+  showLoading(tbody);
+  try {
+    const params = new URLSearchParams({ page, limit: 50 });
+    if (q) params.set('q', q);
+    if (status) params.set('status', status);
+    const data = await apiGET('/admin/api/orders?' + params);
+    document.getElementById('orders-count').textContent = fmtNum(data.total) + ' orders';
+
+    if (!data.items.length) { showEmpty(tbody, 'No orders found.'); document.getElementById('orders-pagination').innerHTML=''; return; }
+
+    tbody.innerHTML = `<table class="tbl">
+      <thead><tr><th>Order ID</th><th>Buyer</th><th>Amount</th><th>Fee</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+      <tbody>${data.items.map(o => `<tr>
+        <td class="text-mono text-small">${o.order_id}</td>
+        <td>${o.buyer_id}</td>
+        <td>${fmtMoney(o.amount)}</td>
+        <td>${fmtMoney(o.fee)}</td>
+        <td>${statusBadge(o.status)}</td>
+        <td>${fmtDate(o.created_at)}</td>
+        <td><div class="tbl-actions">
+          ${o.status === 'pending' ? `
+            <button class="btn btn-success btn-xs" onclick="orderAction('${o.order_id}','complete')">✓ Complete</button>
+            <button class="btn btn-danger btn-xs" onclick="orderAction('${o.order_id}','cancel')">✕ Cancel</button>
+          ` : ''}
+          ${['pending','disputed'].includes(o.status) ? `<button class="btn btn-warning btn-xs" onclick="orderAction('${o.order_id}','refund')">↩ Refund</button>` : ''}
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+    renderPagination(document.getElementById('orders-pagination'), data, n => loadOrders(n));
+  } catch(e) { showEmpty(tbody, 'Failed to load orders.'); }
+}
+
+function orderAction(orderId, type) {
+  document.getElementById('action-order-id').value = orderId;
+  document.getElementById('action-type').value = type;
+  const titles = { complete: '✓ Complete Order', cancel: '✕ Cancel Order', refund: '↩ Refund Order' };
+  document.getElementById('action-modal-title').textContent = titles[type] || 'Order Action';
+  document.getElementById('action-reason-label').textContent = type === 'complete' ? 'Note (optional)' : 'Reason';
+  document.getElementById('action-reason').value = '';
+  openModal('action-modal');
+}
+
+async function doOrderAction() {
+  const orderId = document.getElementById('action-order-id').value;
+  const type = document.getElementById('action-type').value;
+  const reason = document.getElementById('action-reason').value;
+  try {
+    const body = type === 'complete' ? {} : { reason };
+    const r = await apiPOST(`/admin/api/orders/${orderId}/${type}`, body);
+    if (r.ok) { toast('Order updated', 'success'); closeModal('action-modal'); loadOrders(); }
+    else toast(r.detail || 'Failed', 'error');
+  } catch(e) { toast('Error', 'error'); }
+}
+
+function debounceLoad() { clearTimeout(_debounce); _debounce = setTimeout(() => loadOrders(1), 400); }
+
+async function exportOrders() {
+  const q = document.getElementById('q').value;
+  const status = document.getElementById('f-status').value;
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  if (status) params.set('status', status);
+  const res = await fetch('/admin/api/orders/export?' + params, { credentials: 'same-origin' });
+  if (!res.ok) { toast('Export failed', 'error'); return; }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'orders.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  toast('Orders exported', 'success');
+}
+
+document.addEventListener('DOMContentLoaded', () => loadOrders(1));
+</script>
+{% endblock %}

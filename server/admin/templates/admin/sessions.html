@@ -1,0 +1,234 @@
+{% extends "admin/base.html" %}
+{% block title %}Sessions{% endblock %}
+{% block topbar_title %}📱 Session Accounts{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Session Accounts</div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" onclick="loadSessions()">🔄 Refresh</button>
+  </div>
+</div>
+
+<!-- Stats row -->
+<div class="cards" id="session-stats" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));margin-bottom:20px">
+  <div class="loading"><div class="spinner"></div></div>
+</div>
+
+<!-- Filters -->
+<div class="filters">
+  <input type="text" id="q" class="search-input" placeholder="🔍 Phone, username, ID…" oninput="debounceLoad()">
+  <select id="f-sold" class="filter-select" onchange="loadSessions(1)">
+    <option value="">All Status</option>
+    <option value="false">Unsold</option>
+    <option value="true">Sold</option>
+  </select>
+  <select id="f-spam" class="filter-select" onchange="loadSessions(1)">
+    <option value="">All Spam</option>
+    <option value="clean">Clean</option>
+    <option value="temporary_spam">Temporary spam</option>
+    <option value="permanent_spam">Permanent spam</option>
+    <option value="frozen">Frozen</option>
+    <option value="unknown">Unknown</option>
+  </select>
+  <select id="f-country" class="filter-select" onchange="loadSessions(1)">
+    <option value="">All Countries</option>
+  </select>
+</div>
+
+<!-- Table -->
+<div class="table-wrap">
+  <div class="table-header">
+    <span class="table-title">Accounts</span>
+    <span class="table-count" id="session-count">—</span>
+  </div>
+  <div id="session-table-body"><div class="loading"><div class="spinner"></div></div></div>
+  <div class="pagination" id="session-pagination"></div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="session-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">📱 Account Detail</span>
+      <button class="modal-close" onclick="closeModal('session-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="session-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('session-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Spam Status Modal -->
+<div class="modal-overlay" id="spam-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">⚠️ Update Spam Status</span>
+      <button class="modal-close" onclick="closeModal('spam-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Spam Status</label>
+        <select class="form-control" id="spam-status-val">
+          <option value="clean">Clean</option>
+          <option value="temporary_spam">Temporary spam</option>
+          <option value="permanent_spam">Permanent spam</option>
+          <option value="frozen">Frozen</option>
+          <option value="unknown">Unknown</option>
+        </select>
+      </div>
+      <input type="hidden" id="spam-account-id">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('spam-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="doUpdateSpam()">Update</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let _page = 1, _debounce;
+
+async function loadSessionStats() {
+  const el = document.getElementById('session-stats');
+  try {
+    const s = await apiGET('/admin/api/stats');
+    const ss = s.sessions;
+    el.innerHTML = `
+      <div class="card stat-card"><div class="stat-icon purple">📱</div><div class="stat-info"><div class="stat-value">${fmtNum(ss.total)}</div><div class="stat-label">Total</div></div></div>
+      <div class="card stat-card"><div class="stat-icon blue">🏪</div><div class="stat-info"><div class="stat-value">${fmtNum(ss.unsold)}</div><div class="stat-label">Unsold</div></div></div>
+      <div class="card stat-card"><div class="stat-icon green">✅</div><div class="stat-info"><div class="stat-value">${fmtNum(ss.clean)}</div><div class="stat-label">Clean</div></div></div>
+      <div class="card stat-card"><div class="stat-icon yellow">⚠️</div><div class="stat-info"><div class="stat-value">${fmtNum(ss.temporary_spam)}</div><div class="stat-label">Temporary spam</div></div></div>
+      <div class="card stat-card"><div class="stat-icon orange">🟠</div><div class="stat-info"><div class="stat-value">${fmtNum(ss.permanent_spam)}</div><div class="stat-label">Permanent spam</div></div></div>
+      <div class="card stat-card"><div class="stat-icon red">❄️</div><div class="stat-info"><div class="stat-value">${fmtNum(ss.frozen)}</div><div class="stat-label">Frozen</div></div></div>
+      <div class="card stat-card"><div class="stat-icon gray">❓</div><div class="stat-info"><div class="stat-value">${fmtNum(ss.unknown)}</div><div class="stat-label">Unknown</div></div></div>
+    `;
+    // Load countries into filter
+    const cStats = await apiGET('/admin/api/sessions/stats');
+    const sel = document.getElementById('f-country');
+    const existing = sel.options[0];
+    sel.innerHTML = '';
+    sel.appendChild(existing);
+    (cStats.countries || []).forEach(c => {
+      const o = document.createElement('option');
+      o.value = c.country_code; o.textContent = `${c.country_name} (${c.unsold})`;
+      sel.appendChild(o);
+    });
+  } catch(e) {}
+}
+
+async function loadSessions(page = _page) {
+  _page = page;
+  const tbody = document.getElementById('session-table-body');
+  const q = document.getElementById('q').value;
+  const sold = document.getElementById('f-sold').value;
+  const spam = document.getElementById('f-spam').value;
+  const country = document.getElementById('f-country').value;
+
+  showLoading(tbody);
+  try {
+    const params = new URLSearchParams({ page, limit: 50 });
+    if (q) params.set('q', q);
+    if (sold) params.set('sold', sold);
+    if (spam) params.set('spam', spam);
+    if (country) params.set('country', country);
+
+    const data = await apiGET('/admin/api/sessions?' + params);
+    document.getElementById('session-count').textContent = `${fmtNum(data.total)} accounts`;
+
+    if (!data.items.length) { showEmpty(tbody, 'No session accounts found.'); document.getElementById('session-pagination').innerHTML=''; return; }
+
+    tbody.innerHTML = `<table class="tbl">
+      <thead><tr>
+        <th>Account ID</th><th>Phone</th><th>Country</th><th>Username</th>
+        <th>Spam</th><th>2FA</th><th>Status</th><th>Uploaded</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${data.items.map(a => `<tr>
+        <td class="text-mono text-small">${a.account_id}</td>
+        <td class="text-mono">${a.phone || '—'}</td>
+        <td>${a.country_name || a.country_code || '—'}</td>
+        <td>${a.username ? '@' + a.username : '—'}</td>
+        <td>${spamBadge(a.spam_status)}</td>
+        <td>${a.has_2fa ? '<span class="badge badge-purple">🔐 2FA</span>' : '<span class="badge badge-gray">—</span>'}</td>
+        <td>${a.sold ? `<span class="badge badge-green">✓ Sold</span>${a.sold_to ? `<div class="text-mono text-small" style="margin-top:2px;opacity:.75;">UID: ${a.sold_to}</div>` : ''}` : '<span class="badge badge-blue">🏪 Available</span>'}</td>
+        <td>${fmtDateShort(a.uploaded_at)}</td>
+        <td><div class="tbl-actions">
+          <button class="btn btn-secondary btn-xs" onclick="viewSession(${JSON.stringify(a).replace(/"/g,'&quot;')})">👁</button>
+          <button class="btn btn-warning btn-xs" onclick="openSpamModal('${a.account_id}','${a.spam_status}')">⚠</button>
+          ${a.sold
+            ? `<button class="btn btn-secondary btn-xs" onclick="revertSold('${a.account_id}')">↩</button>`
+            : `<button class="btn btn-danger btn-xs" onclick="deleteSession('${a.account_id}')">🗑</button>`}
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+
+    renderPagination(document.getElementById('session-pagination'), data, n => loadSessions(n));
+  } catch(e) { showEmpty(tbody, 'Failed to load sessions.'); }
+}
+
+function viewSession(a) {
+  document.getElementById('session-modal-body').innerHTML = `
+    <div class="kv-list">
+      <div class="kv-row"><span class="kv-key">Account ID</span><span class="kv-val text-mono">${a.account_id}</span></div>
+      <div class="kv-row"><span class="kv-key">Phone</span><span class="kv-val text-mono">${a.phone || '—'}</span></div>
+      <div class="kv-row"><span class="kv-key">Username</span><span class="kv-val">${a.username ? '@' + a.username : '—'}</span></div>
+      <div class="kv-row"><span class="kv-key">First Name</span><span class="kv-val">${a.first_name || '—'}</span></div>
+      <div class="kv-row"><span class="kv-key">Telegram User ID</span><span class="kv-val text-mono">${a.tg_user_id || '—'}</span></div>
+      <div class="kv-row"><span class="kv-key">Country</span><span class="kv-val">${a.country_name || '—'} (${a.country_code || '—'})</span></div>
+      <div class="kv-row"><span class="kv-key">Spam Status</span><span class="kv-val">${spamBadge(a.spam_status)}</span></div>
+      <div class="kv-row"><span class="kv-key">2FA</span><span class="kv-val">${a.has_2fa ? '🔐 Enabled' : 'Disabled'}</span></div>
+      <div class="kv-row"><span class="kv-key">Verification</span><span class="kv-val">${a.verification_status || '—'}</span></div>
+      <div class="kv-row"><span class="kv-key">Sold</span><span class="kv-val">${a.sold ? '✓ Sold to ' + a.sold_to : 'Available'}</span></div>
+      <div class="kv-row"><span class="kv-key">Proxy Used</span><span class="kv-val text-mono">${a.proxy_used || '—'}</span></div>
+      <div class="kv-row"><span class="kv-key">API ID Used</span><span class="kv-val text-mono">${a.api_id_used || '—'}</span></div>
+      <div class="kv-row"><span class="kv-key">Session Msg ID</span><span class="kv-val text-mono">${a.session_msg_id || '—'}</span></div>
+      <div class="kv-row"><span class="kv-key">Uploaded At</span><span class="kv-val">${fmtDate(a.uploaded_at)}</span></div>
+      <div class="kv-row"><span class="kv-key">Login Time</span><span class="kv-val">${fmtDate(a.login_time)}</span></div>
+      <div class="kv-row"><span class="kv-key">Sold At</span><span class="kv-val">${a.sold_at ? fmtDate(a.sold_at) : '—'}</span></div>
+    </div>`;
+  openModal('session-modal');
+}
+
+function openSpamModal(id, current) {
+  document.getElementById('spam-account-id').value = id;
+  document.getElementById('spam-status-val').value = current || 'unknown';
+  openModal('spam-modal');
+}
+
+async function doUpdateSpam() {
+  const id = document.getElementById('spam-account-id').value;
+  const status = document.getElementById('spam-status-val').value;
+  try {
+    const r = await apiPATCH(`/admin/api/sessions/${id}/spam-status`, {spam_status: status});
+    if (r.ok) { toast('Spam status updated', 'success'); closeModal('spam-modal'); loadSessions(); }
+    else toast(r.detail || 'Failed', 'error');
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+}
+
+async function deleteSession(id) {
+  confirm('Delete this session account? This cannot be undone.', async () => {
+    const r = await apiDELETE(`/admin/api/sessions/${id}`);
+    if (r.ok) { toast('Session deleted', 'success'); loadSessions(); }
+    else toast('Failed to delete', 'error');
+  });
+}
+
+async function revertSold(id) {
+  confirm('Revert this session back to available?', async () => {
+    const r = await apiPOST(`/admin/api/sessions/${id}/revert-sold`);
+    if (r.ok) { toast('Reverted to available', 'success'); loadSessions(); }
+    else toast('Failed', 'error');
+  });
+}
+
+function debounceLoad() {
+  clearTimeout(_debounce);
+  _debounce = setTimeout(() => loadSessions(1), 400);
+}
+
+document.addEventListener('DOMContentLoaded', () => { loadSessionStats(); loadSessions(1); });
+</script>
+{% endblock %}

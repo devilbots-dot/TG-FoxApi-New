@@ -1,0 +1,156 @@
+{% extends "admin/base.html" %}
+{% block title %}Background Tasks{% endblock %}
+{% block topbar_title %}⚙️ Background Tasks{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Background Workers</div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" onclick="loadTasks()">🔄 Refresh</button>
+  </div>
+</div>
+
+<p class="text-muted" style="margin-bottom:1rem;font-size:0.875rem">
+  Workers auto-run in the background. You can trigger one now, or change how
+  often it ticks — defaults are preserved and any change takes effect on the
+  very next tick without a restart.
+</p>
+
+<div id="related-body" style="margin-bottom:1.25rem"></div>
+<div id="tasks-body"><div class="loading"><div class="spinner"></div></div></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadTasks() {
+  const body = document.getElementById('tasks-body');
+  const rel  = document.getElementById('related-body');
+  try {
+    const data = await apiGET('/admin/api/tasks');
+    const workers = data.workers || [];
+    const related = data.related_settings || {};
+
+    rel.innerHTML = `
+      <div class="stat-card">
+        <div style="font-weight:600;margin-bottom:0.5rem">🔗 Linked timing settings (read by workers)</div>
+        <div class="text-muted text-small" style="margin-bottom:0.75rem">
+          These values live in Settings / Countries. Workers read them live, so a change here
+          propagates to the corresponding worker automatically — no separate copy.
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.5rem">
+          ${relBlock('Payment hold', related.payment_hold_hours, 'h', 'payment_release')}
+          ${relBlock('Order timeout', related.order_timeout_minutes, 'm', 'order_timeout')}
+          ${relBlock('Low-stock threshold', related.low_stock_threshold, ' acc', 'low_stock_alert')}
+          ${relBlock('Termination delay (default)', related.termination_delay_minutes, 'm', 'termination_retry')}
+          ${relBlock('Retry backoff base', related.termination_retry_base_hours, 'h', 'termination_retry')}
+          ${relBlock('Retry backoff max', related.termination_retry_max_hours, 'h', 'termination_retry')}
+        </div>
+      </div>`;
+
+    if (!workers.length) { showEmpty(body, 'No workers registered.'); return; }
+
+    body.innerHTML = `<div class="cards-grid">${workers.map(w => `
+      <div class="stat-card" style="position:relative">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem">
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;margin-bottom:0.25rem">${escHtml(w.name)}</div>
+            <div class="text-muted text-small">${escHtml(w.description)}</div>
+          </div>
+          <span class="badge ${w.running ? 'badge-green' : 'badge-red'}">${w.running ? '● Running' : '● Stopped'}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem">
+          <div>
+            <div class="text-muted text-small">Last Run</div>
+            <div class="text-small">${w.last_run ? fmtDate(w.last_run) : 'Never'}</div>
+          </div>
+          <div>
+            <div class="text-muted text-small">Runs / Errors</div>
+            <div class="text-small">${fmtNum(w.run_count)} / <span style="color:${w.error_count > 0 ? 'var(--danger)' : 'inherit'}">${fmtNum(w.error_count)}</span></div>
+          </div>
+        </div>
+        <div style="margin-bottom:0.75rem">
+          <div class="text-muted text-small" style="margin-bottom:0.25rem">
+            Tick interval
+            <span class="text-muted" style="font-size:0.75rem">
+              (default ${fmtInterval(w.default_interval_s)}${w.interval_s !== w.default_interval_s ? ' • <b>overridden</b>' : ''})
+            </span>
+          </div>
+          <div style="display:flex;gap:0.35rem;align-items:center">
+            <input id="int-${escAttr(w.name)}" type="number" min="5" max="86400" value="${w.interval_s}"
+                   class="form-input" style="flex:1;padding:0.35rem 0.5rem;font-size:0.85rem" />
+            <span class="text-muted text-small">sec</span>
+            <button class="btn btn-primary btn-sm" onclick="saveInterval('${escAttr(w.name)}')">Save</button>
+            <button class="btn btn-secondary btn-sm" onclick="resetInterval('${escAttr(w.name)}')" title="Reset to default">↺</button>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm w-full" onclick="triggerWorker('${escAttr(w.name)}')">▶ Trigger Now</button>
+      </div>
+    `).join('')}</div>`;
+  } catch(e) {
+    showEmpty(body, 'Failed to load task status.');
+  }
+}
+
+function relBlock(label, value, unit, workerHint) {
+  const v = (value === null || value === undefined) ? '—' : (value + unit);
+  return `<div>
+    <div class="text-muted text-small">${escHtml(label)}</div>
+    <div class="text-small" style="font-weight:600">${escHtml(String(v))}</div>
+    <div class="text-muted" style="font-size:0.7rem">→ ${escHtml(workerHint)}</div>
+  </div>`;
+}
+
+function fmtInterval(s) {
+  if (s < 60) return s + 's';
+  if (s < 3600) return Math.round(s/60) + 'm';
+  return Math.round(s/3600) + 'h';
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function escAttr(s) { return escHtml(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+async function triggerWorker(name) {
+  if (!confirm(`Manually trigger worker "${name}"?\n\nThis runs the worker's action once immediately.`)) return;
+  try {
+    const data = await apiPOST(`/admin/api/tasks/${encodeURIComponent(name)}/trigger`, {});
+    if (data.ok) {
+      showToast(`✅ Worker "${name}" triggered successfully.`, 'success');
+    } else {
+      showToast(data.detail || 'Trigger failed.', 'error');
+    }
+  } catch(e) {
+    showToast('Request failed.', 'error');
+  }
+  setTimeout(loadTasks, 1500);
+}
+
+async function saveInterval(name) {
+  const el = document.getElementById(`int-${name}`);
+  const v = parseInt(el.value, 10);
+  if (!v || v < 5 || v > 86400) {
+    showToast('Interval must be between 5 and 86400 seconds.', 'error');
+    return;
+  }
+  try {
+    const data = await apiPOST(`/admin/api/tasks/${encodeURIComponent(name)}/interval`, { seconds: v });
+    if (data.ok) showToast(`✅ Interval saved for "${name}".`, 'success');
+    else showToast(data.detail || 'Save failed.', 'error');
+  } catch(e) { showToast('Request failed.', 'error'); }
+  setTimeout(loadTasks, 800);
+}
+
+async function resetInterval(name) {
+  if (!confirm(`Reset "${name}" back to the code default interval?`)) return;
+  try {
+    const data = await apiPOST(`/admin/api/tasks/${encodeURIComponent(name)}/interval`, { seconds: null });
+    if (data.ok) showToast(`↺ "${name}" reset to default.`, 'success');
+    else showToast(data.detail || 'Reset failed.', 'error');
+  } catch(e) { showToast('Request failed.', 'error'); }
+  setTimeout(loadTasks, 800);
+}
+
+document.addEventListener('DOMContentLoaded', loadTasks);
+</script>
+{% endblock %}

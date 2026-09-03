@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — TG-Fox API</title>
+  <link rel="stylesheet" href="/admin/static/admin/css/admin.css">
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">📊</div>
+      <h1>TG-Fox API</h1>
+      <p>Admin Control Panel</p>
+    </div>
+
+    {% if error %}
+    <div class="login-error">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <form action="/admin/auth/login" method="post">
+      <div class="form-group">
+        <label class="form-label">Admin Password</label>
+        <input type="password" name="password" class="form-control" placeholder="Enter your password" autofocus required>
+      </div>
+      <button type="submit" class="login-submit">🔐 Sign In</button>
+    </form>
+
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn-icon" onclick="toggleTheme()" id="theme-toggle" title="Toggle theme" style="margin:0 auto">☀️</button>
+    </div>
+  </div>
+</div>
+<script src="/admin/static/admin/js/admin.js"></script>
+</body>
+</html>

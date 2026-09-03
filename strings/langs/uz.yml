@@ -1,0 +1,450 @@
+start_1: Xush kelibsiz!
+start_2: 'Salom {0}! 👋
+
+
+  {1} ga xush kelibsiz.
+
+
+  Men sizga yordam berishga tayyorman. Boshlash uchun quyidagi tugmalardan foydalaning.'
+language_changed: ✅ Til o'zbekchaga o'zgartirildi!
+choose_language: '🌐 Iltimos, tilingizni tanlang:'
+back: « Orqaga
+language_btn: 🇺🇿 O'zbekcha
+menu_wallet: 💰 Hamyon
+menu_market: 🛒 Bozor
+menu_apikey: 🔑 API kalitim
+menu_profile: 👤 Profil
+menu_updates: 📢 Yangiliklar
+menu_support: 💬 Yordam
+menu_language: 🌐 Til
+menu_back: 🔙 Orqaga
+welcome_caption: '👋 Welcome, {0}!
+
+
+  🦊 **TG-Fox API**
+
+  _O''z veb-saytingiz yoki ilovangizni yaratish uchun API provayderi bilan yetakchi global bozorlardan biri._
+
+
+  💳 **Balance:** `${2}`
+
+  🏆 **Rank:** `{3}`
+
+
+  Use the buttons below to get started 👇'
+home_title: TG-Fox API
+home_welcome: 👋 Qaytib keldingiz, {0}!
+home_tagline: 'O''z veb-saytingiz yoki ilovangizni yaratish uchun API provayderi bilan yetakchi global bozorlardan biri.
+
+
+  Boshlash uchun quyidagi tugmalardan foydalaning 👇'
+btn_profile: 👤 Profil
+btn_market: 🛒 Bozor
+btn_updates: 📢 Yangiliklar
+btn_support: 💬 Yordam
+btn_language: 🌐 Til
+btn_apikey: 🔑 API Kalit
+btn_deposit: 💰 To'ldirish
+btn_withdraw: 💸 Chiqarish
+btn_refer_earn: 👥 Taklif & Daromad
+btn_transactions: 📜 Tranzaksiyalar
+btn_back: ⬅️ Orqaga
+btn_back_profile: ⬅️ Profilga
+btn_back_market: ⬅️ Bozorga
+btn_back_wallet: 💳 Hamyonga
+btn_regen_key: 🔄 Yangi kalit
+btn_deposits: 📥 To'ldirish
+btn_withdrawals: 📤 Chiqarish
+btn_purchases: 🛒 Xaridlar
+btn_all_history: 📋 Barcha tarix
+btn_manage_addr: 🔑 Manzillar
+profile_title: SIZNING PROFILINGIZ
+wallet_title_section: HAMYON
+trade_title: SAVDO STATISTIKASI
+ref_title_section: REFERALLAR
+lbl_user_id: ID
+lbl_username: Username
+lbl_rank: Daraja
+lbl_member_since: A'zo bo'lgan sana
+lbl_balance: Balans
+lbl_total_deposited: Jami to'ldirilgan
+lbl_total_spent: Jami sarflangan
+lbl_total_earned: Jami ishlangan
+lbl_accounts_bought: Sotib olingan
+lbl_accounts_sold: Sotilgan
+lbl_ref_link: Sizning havolangiz
+lbl_referred_users: Taklif qilinganlar
+lbl_bonus_earned: Ishlangan bonus
+lbl_no_username: Username yo'q
+lbl_tap_to_copy: Nusxalash uchun bosing
+refer_title: TAKLIF & DAROMAD
+refer_earn_line: 🎁 **Har bir do'stingiz uchun mukofot oling!**
+refer_link_lbl: 🔗 **Sizning referal havolangiz:**
+refer_total_lbl: 👤 **Jami taklif qilinganlar:** `{0}` kishi
+refer_bonus_lbl: 💰 **Ishlangan bonus:** `${0}`
+refer_tip: '📌 Havolani do''stlaringiz bilan ulashing. Ular birinchi
+
+  depozit qilganda siz bonus olasiz!'
+tx_title: TRANZAKSIYA TARIXI
+tx_subtitle: 'Moliyaviy tarixingizni ko''ring.
+
+  Quyida kategoriya tanlang 👇'
+tx_dep_title: TO'LDIRISH TARIXI
+tx_wit_title: CHIQARISH TARIXI
+tx_pur_title: XARIDLAR TARIXI
+tx_all_title: TO'LIQ TARIX
+tx_empty_dep: 📭 Hali to'ldirish yo'q.
+tx_empty_wit: 📭 Hali chiqarish yo'q.
+tx_empty_pur: 📭 Hali xarid yo'q.
+tx_empty_all: 📭 Hali tranzaksiya yo'q.
+apikey_title: SIZNING API KALITINGIZ
+apikey_header_fmt: '📌 **Sarlavha formati:**
+
+  `X-Api-Key: tg_{user_id}_{secret}`'
+apikey_docs: 📖 **Hujjatlar:** `/docs`
+apikey_warn: ⚠️ API kalitingizni hech kimga bermang!
+apikey_regen_title: API KALIT YANGILANDI
+apikey_regen_warn: '⚠️ Eski kalit endi ishlamaydi.
+
+  Barcha integratsiyalarni yangilang.'
+apikey_regen_alert: ✅ Yangi kalit yaratildi!
+lang_title: TIL TANLASH
+lang_subtitle: 'O''zingizga qulay tilni tanlang:'
+lang_changed_alert: ✅ Til yangilandi!
+wallet_main_title: SIZNING HAMYONINGIZ
+wallet_addr_section: CHIQARISH MANZILLARI (USDT)
+wallet_addr_tip: 'Chiqarish uchun manzillarni o''rnating.
+
+  Depozitlar OxaPay orqali avtomatik qayta ishlanadi.'
+wallet_manage_title: CHIQARISH MANZILLARI
+wallet_manage_body: "Chiqarish uchun USDT hamyon manzillarini o'rnating.\n\n\U0001F4CC **Qo'llab-quvvatlanadigan tarmoqlar:**\n  • **TRC20** — TRON tarmog'ida USDT\n  • **BEP20** — Binance Smart Chain da USDT\n\n⚠️ Manzilni doim tekshiring.\nNoto'g'ri manzil = mablag' qaytmaydi!"
+trc_not_set: O'rnatilmagan ⚠️
+bep_not_set: O'rnatilmagan ⚠️
+btn_add_trc: ➕ TRC20 qo'shish
+btn_add_bep: ➕ BEP20 qo'shish
+wallet_deposit_title: BALANSNI TO'LDIRISH
+wallet_deposit_body: 'To''ldirmoqchi bo''lgan summani **(USD da)** yuboring.
+
+
+  📌 Qabul qilinadigan kriptovalyutalar:
+
+  BTC, ETH, USDT, LTC va boshqalar
+
+
+  💵 **Minimal depozit:** ${0}
+
+
+  Bekor qilish uchun: /cancel'
+wallet_withdraw_title: CHIQARISH SO'ROVI
+wallet_withdraw_body: '📌 **Mavjud tarmoqlar:** {0}
+
+
+  Chiqarish summasini **(USD da)** yuboring.
+
+
+  💵 **Minimal summa:** ${1}
+
+
+  Bekor qilish uchun: /cancel'
+wallet_no_addr_alert: '⚠️ Avval chiqarish manzilini o''rnating!
+
+  Hamyon → Manzillar'
+wallet_select_network: TARMOQ TANLASH
+wallet_select_network_body: '`${0} USDT` chiqarish uchun qaysi tarmoq?'
+wallet_confirm_title: CHIQARISHNI TASDIQLASH
+wallet_confirm_body: '💵 **Summa:** `${0} USDT`
+
+  🌐 **Tarmoq:** `{1}`
+
+  📬 **Manzil:** `{2}`
+
+
+  Tasdiqlash uchun **YES** yuboring yoki /cancel.'
+wallet_confirm_word: HA
+wallet_confirm_prompt: Tasdiqlash uchun **YES** yuboring yoki /cancel.
+wallet_success_title: CHIQARISH SO'ROVI YUBORILDI!
+wallet_success_body: '🆔 **ID:** `{0}`
+
+  💵 **Summa:** `${1} USDT`
+
+  🌐 **Tarmoq:** `{2}`
+
+  📬 **Manzil:** `{3}`
+
+
+  Chiqarish admin tasdig''ini kutmoqda.
+
+  Mablag'' qayta ishlanganidan so''ng yuboriladi.'
+wallet_payment_title: TO'LOV HAVOLASI TAYYOR
+wallet_payment_body: '💵 **Summa:** `${0} USD`
+
+  🔗 **To''lov havolasi:**
+
+  {1}
+
+
+  ✅ OxaPay tasdiqlashidan so''ng balans
+
+  avtomatik to''ldiriladi.
+
+
+  ⏱ **Muddati:** 60 daqiqa
+
+  💡 BTC, ETH, USDT, LTC va boshqalar bilan to''lang.'
+wallet_insufficient: '❌ **Balans yetarli emas.**
+
+
+  Sizning balansingiz: `${0}`
+
+  Kerak: `${1}`'
+err_invalid_amount: '❌ To''g''ri raqam kiriting (masalan: `10` yoki `25.50`)'
+err_min_deposit: ❌ Minimal depozit — ${0}. Qayta urinib ko'ring yoki /cancel.
+err_min_withdraw: ❌ Minimal summa — ${0}. Qayta urinib ko'ring yoki /cancel.
+err_payment_fail: '❌ To''lov havolasi yaratib bo''lmadi.
+
+  Keyinroq urinib ko''ring yoki yordam so''rang.'
+err_withdraw_fail: '❌ Chiqarish yaratib bo''lmadi.
+
+  Balansingiz qaytarildi. Qayta urinib ko''ring.'
+err_unexpected: ❌ Kutilmagan xato. Keyinroq urinib ko'ring.
+err_session_exp: Sessiya tugadi. Qaytadan boshlang.
+err_no_withdraw_addr: '⚠️ **Chiqarish manzili yo''q.**
+
+
+  TRC20 yoki BEP20 manzil qo''shish uchun /setwallet ishlating.'
+err_invalid_trc20: ❌ TRC20 manzili yaroqsiz. `T` bilan boshlanishi va 34 belgidan iborat bo'lishi kerak.
+err_invalid_bep20: ❌ BEP20 manzili yaroqsiz. `0x` bilan boshlanishi va 42 belgidan iborat bo'lishi kerak.
+set_addr_title: '{0} MANZILINI O''RNATISH'
+set_addr_body: 'USDT **{0}** hamyon manzilingizni yuboring.
+
+
+  Misol: {1}
+
+
+  ⚠️ Faqat to''g''ri USDT manzil yuboring!
+
+  Bekor qilish uchun: /cancel'
+addr_saved_title: '{0} MANZILI SAQLANDI!'
+addr_saved_body: Endi ushbu manzilga USDT chiqara olasiz.
+oxapay_not_configured: '❌ OxaPay sozlanmagan.
+
+  Admin bilan bog''laning.'
+cancel_success: ✅ Bekor qilindi. Asosiy menyuga qaytish uchun /start.
+cancel_nothing: Bekor qilish uchun narsa yo'q.
+banned_msg: 🚫 Siz bu botdan bloklangansiz.
+generating_link: ⏳ To'lov havolasi yaratilmoqda…
+processing_withdrawal: ⏳ Chiqarish qayta ishlanmoqda…
+dep_choose_title: TO'LOV USULINI TANLANG
+dep_choose_body: 'Qulay to''lov usulini tanlang:'
+dep_enter_amount: 'Kiritmoqchi bo''lgan miqdorni **(USD da)** yozing:'
+dep_type_cancel: Bekor qilish uchun /cancel yozing.
+dep_select_network: TARMOQNI TANLANG
+dep_which_network: Qaysi tarmoq orqali depozit qilmoqchisiz?
+dep_ready_title: TO'LOV TAYYOR
+dep_send_title: KRIPTO YUBORING
+dep_manual_title: QO'LDA O'TKAZMA
+dep_created_title: DEPOZIT YARATILDI
+dep_tap_pay: To'lov sahifasini ochish uchun **Hozir to'lash** tugmasini bosing.
+dep_auto_credit: To'lov tasdiqlangandan so'ng balansingiz avtomatik ravishda to'ldiriladi.
+dep_addr_warn: To'g'ri tarmoq orqali **aniq miqdorni** yuboring. Noto'g'ri tarmoq = mablag' yo'qolishi.
+dep_manual_note: O'tkazma izohiga depozit ID sini kiriting, so'ng chekni qo'llab-quvvatlash xizmatiga yuboring.
+dep_back_methods: ⬅️ Usullarga qaytish
+lbl_min_deposit: Minimal depozit
+lbl_method: Usul
+lbl_amount: Miqdor
+lbl_currency: Valyuta
+lbl_expires: Muddati tugaydi
+lbl_minutes: daqiqa
+lbl_network: Tarmoq
+lbl_address: Ushbu manzilga yuboring
+lbl_ref: Depozit ID
+lbl_send_amount: Yuborish miqdori
+lbl_send_to: Kimga
+lbl_holder: Hisob nomi
+btn_pay_now: 💳 Hozir to'lash →
+btn_contact_support: 💬 Qo'llab-quvvatlash bilan bog'laning
+no_deposit_methods: ❌ Depozit usullari mavjud emas. Admin bilan bog'laning.
+method_unavailable: ❌ Bu usul hozirda mavjud emas.
+market_title: BOZOR
+market_balance_lbl: Balansingiz
+market_tagline: 'Buy and sell verified Telegram accounts
+
+  with instant OTP delivery.'
+btn_buy_account: 🟢 Akkaunt sotib olish
+btn_sell_account: 🔴 Akkaunt sotish
+buy_title: AKKAUNT XARIDI
+buy_no_stock: 🚫 No countries available right now. Check back later!
+buy_page_info: Sahifa {0}/{1} — {2} davlat
+buy_hint: Batafsil uchun davlatni bosing 👇
+buy_country_title: XARID — {0}
+buy_country_lbl: Davlat
+buy_phone_code_lbl: Telefon kodi
+buy_price_lbl: Narx
+buy_stock_lbl: Mavjud
+buy_delivery_lbl: Yetkazish
+buy_delivery_val: Bir zumda OTP
+buy_confirm_hint: Press Buy Now to proceed.
+btn_buy_now: ✅ Sotib olish
+buy_no_channel: ⚠️ Sessiya kanali sozlanmagan. Adminga murojaat qiling.
+buy_no_clean_account: ⚠️ Hozircha toza akkaunt yo'q. Keyinroq urinib ko'ring.
+buy_purchased_title: AKKAUNT XARID QILINDI!
+buy_paid_lbl: To'landi
+buy_new_balance_lbl: Yangi balans
+buy_tfa_lbl: 2FA paroli
+buy_otp_waiting_title: OTP kutilmoqda…
+buy_otp_step1: 1️⃣ Telegramni oching va yuqoridagi raqamni kiriting
+buy_otp_step2: 2️⃣ Request a login OTP
+buy_otp_step3: 3️⃣ OTPni bu yerga avtomatik yuboraman
+buy_otp_timeout_note: '_Vaqt: 2 daqiqa_'
+btn_cancel_otp: ❌ OTP kutishni bekor qilish
+buy_success_alert: ✅ Xarid! OTP kutilmoqda…
+buy_error_generic: ❌ Xatolik. Qayta urinib ko'ring.
+buy_view_all_title: Barcha mavjud davlatlar
+buy_view_all_empty: 🚫 Hozircha davlat yo'q.
+otp_received_title: OTP KELDI! 🎉
+otp_phone_lbl: Telefon
+otp_code_lbl: OTP kodi
+otp_enter_instruction: Kirishni yakunlash uchun ushbu kodni Telegramga kiriting.
+otp_sensitive_note: _Kodni hech kim bilan ulashmang._
+otp_timeout_title: OTP VAQTI TUGADI ⏰
+otp_timeout_body: 'No OTP was received within 2 minutes. Please make sure you entered the phone correctly and requested a login OTP.
+
+
+  Contact support if you need help.'
+otp_cancelled_title: OTP KUTISH BEKOR
+otp_cancelled_body: 'OTP kutish bekor qilindi.
+
+
+  ⚠️ Xaridingiz kuchda.
+
+  Kerak bo''lsa qo''llab-quvvatlashga yozing.'
+otp_error: OTP delivery failed for {0}. Please contact support.
+btn_back_to_market: ⬅️ Bozorga qaytish
+sell_title: AKKAUNT SOTISH
+sell_no_countries: 🚫 No countries accepting accounts right now. Check back later!
+sell_page_info: Sahifa {0}/{1} — {2} davlat
+sell_hint: Narxni ko'rish uchun davlat tanlang 👇
+sell_country_title: SOTISH — {0}
+sell_country_lbl: Davlat
+sell_phone_code_lbl: Telefon kodi
+sell_we_pay_lbl: Biz to'laymiz
+sell_requirements_title: ✅ Talablar
+sell_req_prefix: • Phone number must start with {0}
+sell_req_valid_session: • Sessiya fayli haqiqiy va avtorizatsiya qilingan bo'lishi kerak
+sell_req_no_spam: • Akkaunt spam, muzlatilgan yoki bloklangan bo'lmasligi kerak
+sell_req_no_dupe: • Tizimda takror bo'lmasligi kerak
+sell_how_title: 📋 Qanday ishlaydi
+sell_how_step1: 1️⃣ Upload your .session file
+sell_how_step2: 2️⃣ Akkauntni avtomatik tekshiramiz
+sell_how_step3: 3️⃣ Funds go to your Pending Balance
+sell_how_step4: 4️⃣ Admin tekshiradi → balans mavjud bo'ladi
+sell_review_time: '⏱ Taxminiy tekshiruv: 1–24 soat'
+sell_why_rejected: '📌 Rad sabablari: noto''g''ri raqam, muddati o''tgan sessiya, spam/blok, takror.'
+btn_start_selling: 📤 Sotishni boshlash
+btn_my_requests: 📋 So'rovlarim
+sell_my_requests_title: SOTISH SO'ROVLARIM
+sell_empty_requests: 📭 So'rovlar yo'q.
+sell_requests_footer: Last 10 requests shown
+sell_country_full: 🚫 Hozir bu davlat qabul qilmayapti.
+sell_init_title: SOTISH — {0}
+sell_you_receive_lbl: Olasiz
+sell_required_prefix_lbl: Kerakli prefiks
+sell_step1_title: 1-qadam — Sessiya faylini yarating
+sell_telethon_note: Run this snippet on your computer. It creates my_session.session.
+sell_step2_title: 2-qadam — Faylni bu yerga yuklang
+sell_step2_body: 📎 Send the .session file as a document in this chat.
+sell_waiting: ⏳ Faylingiz kutilmoqda…
+sell_type_cancel: Bekor qilish uchun /cancel.
+sell_cancelled_title: SOTISH BEKOR
+sell_cancelled_body: Akkaunt yuborilmadi. Istagan payt qayta boshlashingiz mumkin.
+sell_rate_limit: ⏱ Limit. Max {0} ta yuborish / {1}s.
+sell_max_pending: ⏳ Sizda {0} kutilayotgan so'rov bor.
+sell_wrong_file: ❌ Wrong file type. Please send a .session file.
+sell_file_too_large: ❌ File too large. A valid session file is under 100 KB.
+sell_validating_title: SESSIYA TEKSHIRUVI
+sell_validating_body: ⏳ Telegramga ulanmoqda… 30 soniyagacha.
+sell_no_channel: ⚠️ Platforma sozlanmagan.
+sell_download_error: ❌ Could not read your file. Please send the file again, or type /cancel.
+sell_success_title: SESSIYA YUBORILDI! ✅
+sell_request_id_lbl: So'rov ID
+sell_pending_balance_lbl: Kutilayotgan balans
+sell_status_lbl: Holat
+sell_awaiting_review: ⏳ Admin tekshiruvida
+sell_success_note: Your pending balance will be credited once admin approves your request.
+sell_spam_flag_note: _⚠️ This account has a temporary spam flag. Admin will make the final decision._
+sell_track_hint: Track your request in My Sell Requests.
+sell_error_generic: ❌ Kutilmagan xato.
+btn_sell_another: 💼 Yana sotish
+btn_prev: ⬅️ Oldingi
+btn_next: Keyingi ➡️
+btn_view_all: 📋 Barchasi
+btn_cancel: ❌ Bekor
+err_country_not_found: ❌ Davlat topilmadi.
+sell_country_name_lbl: Davlat
+buy_otp_requesting: 📨 Telegramdan OTP so'ralmoqda…
+buy_otp_prompt: '📱 **Telefon:** `{0}`
+
+
+  Ushbu raqamga kod yuborildi.
+
+  OTPni kiriting:'
+buy_otp_cancel_hint: _(Bekor va to'liq qaytarish uchun /cancel)_
+buy_otp_invalid: '❌ Noto''g''ri OTP. Qayta urinib ko''ring:'
+buy_otp_expired: ❌ OTP muddati tugadi. Pul qaytarildi.
+buy_tfa_prompt: '🔐 Akkauntda **2FA** yoqilgan.
+
+
+  2FA parolini kiriting:'
+buy_tfa_invalid: '❌ Noto''g''ri 2FA paroli. Qayta:'
+buy_flood_wait: ⏳ Telegram limiti — **{0} soniya** kuting va OTPni qayta yuboring.
+buy_auth_checking: 🔍 Akkaunt tekshirilmoqda…
+buy_complete_title: AKKAUNT TAYYOR! 🎉
+buy_logout_instruction: '**Sozlamalar → Maxfiylik → Faol seanslar**dan boshqa seanslardan chiqing.'
+buy_auth_cancelled_title: XARID BEKOR
+buy_auth_cancelled_body: '`${0}` balans qaytarildi.'
+buy_account_banned: ❌ Ushbu akkaunt Telegram tomonidan bloklangan. Qaytarildi.
+buy_sessions_terminated: ✅ Barcha boshqa seanslar yopildi.
+buy_sessions_partial: ⚠️ Ba'zi seanslar yopilmadi — qo'lda oling.
+buy_auth_send_code_fail: ❌ OTP so'ralmadi. Qaytarildi.
+buy_auth_cancel_hint_inline: Qaytarish uchun Bekor ni bosing.
+buy_auth_already_active: ⏳ You already have a pending OTP flow. Send the OTP or type /cancel.
+btn_home_deposit: 💰 Depozit
+btn_home_withdraw_money: 👤 Yechish
+btn_extra: ✨ Qo'shimcha
+btn_sessions_menu: 📦 Sessiyalarni Sotish / Sotib olish
+btn_sell_account_start: 🔴 Sotishni Boshlash
+btn_my_sell_record: 📋 Sotuvlarim
+btn_open: 📖 Ochish
+btn_search_country: 🔍 Qidirish
+btn_search_again: 🔍 Qayta Qidirish
+registration_disabled_msg: "🚫 **Yangi foydalanuvchilarni ro‘yxatdan o‘tkazish hozircha o‘chirilgan.**\n\nIltimos, biroz vaqtdan so‘ng qayta urinib ko‘ring. Ro‘yxatdan o‘tish yana yoqilganda, botni ishga tushira olasiz.\n\nAgar savolingiz yoki muammoyingiz bo‘lsa, iltimos qo‘llab-quvvatlash bilan bog‘laning."
+
+feature_disabled_alert: "Bu funksiya hozir o‘chirilgan."
+maintenance_mode_msg: "🔧 **Platformada texnik xizmat rejimi yoqilgan.**\n\nYangi buyurtmalar, depozitlar va yechib olishlar vaqtincha to‘xtatilgan. Iltimos, keyinroq urinib ko‘ring.\n\nSavol yoki muammo bo‘lsa, support bilan bog‘laning."
+deposits_disabled_msg: "🚫 **Yangi depozitlar hozir o‘chirilgan.**\n\nIltimos, birozdan keyin urinib ko‘ring. Depozitlar qayta yoqilganda yangi depozit yaratishingiz mumkin.\n\nSavol yoki muammo bo‘lsa, support bilan bog‘laning."
+withdrawals_disabled_msg: "🚫 **Yangi yechib olish so‘rovlari hozir o‘chirilgan.**\n\nIltimos, birozdan keyin urinib ko‘ring. Yechib olish qayta yoqilganda so‘rov yuborishingiz mumkin.\n\nSavol yoki muammo bo‘lsa, support bilan bog‘laning."
+
+# -- Session selling gate (auto-added) --
+sell_disabled_msg: '🛑 **Sessiya sotuvi hozircha o''chirilgan.**
+
+
+  Iltimos, keyinroq urinib ko''ring. Savolingiz bo''lsa qo''llab-quvvatlashga murojaat qiling.'
+sell_rank_locked_msg: '🔒 **Sessiya sotuvi rang bo''yicha cheklangan.**
+
+
+  • Minimal rang: **{min_rank}** (`${required_spend:g}` sarflash kerak)
+
+  • Sizning rang: **{current_rank}** — siz `${current_spend:g}` sarfladingiz
+
+  • Ochish uchun yana **`${needed_spend:g}`** sarflang
+
+
+  Savolingiz bo''lsa qo''llab-quvvatlashga yozing.'
+
+btn_user_dashboard: "🎛 Foydalanuvchi paneli"
+
+# -- Binance Pay (Auto) deposit (auto-added) --
+binance_pay_auto_label: "Binance Pay (Auto)"
+dep_dup_order_title: "Buyurtma ID allaqachon ishlatilgan"
+dep_dup_order_body: "Bu Binance buyurtma ID boshqa depozit uchun ishlatilgan. Har bir ID faqat bir marta ishlatiladi."
+dep_dup_order_hint: "Iltimos, yangi to‘lov qiling yoki qo‘llab-quvvatlashga murojaat qiling."

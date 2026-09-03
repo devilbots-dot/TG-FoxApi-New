@@ -1,0 +1,446 @@
+start_1: خوش آمدید!
+start_2: 'سلام {0}! 👋
+
+
+  به {1} خوش آمدید.
+
+
+  من آماده کمک به شما هستم. برای شروع از دکمه‌های زیر استفاده کنید.'
+language_changed: ✅ زبان به فارسی تغییر یافت!
+choose_language: '🌐 لطفاً زبان خود را انتخاب کنید:'
+back: « بازگشت
+language_btn: 🇮🇷 فارسی
+menu_wallet: 💰 کیف پول
+menu_market: 🛒 بازار
+menu_apikey: 🔑 کلید API من
+menu_profile: 👤 پروفایل
+menu_updates: 📢 اطلاعیه‌ها
+menu_support: 💬 پشتیبانی
+menu_language: 🌐 زبان
+menu_back: 🔙 بازگشت
+welcome_caption: '👋 Welcome, {0}!
+
+
+  🦊 **TG-Fox API**
+
+  _یکی از برترین بازارهای جهانی با ارائه‌دهنده API برای ساخت وب‌سایت یا اپ خودتان._
+
+
+  💳 **Balance:** `${2}`
+
+  🏆 **Rank:** `{3}`
+
+
+  Use the buttons below to get started 👇'
+home_title: TG-Fox API
+home_welcome: 👋 خوش برگشتید، {0}!
+home_tagline: 'یکی از برترین بازارهای جهانی با ارائه‌دهنده API برای ساخت وب‌سایت یا اپ خودتان.
+
+
+  برای شروع از دکمه‌های زیر استفاده کنید 👇'
+btn_profile: 👤 پروفایل
+btn_market: 🛒 بازار
+btn_updates: 📢 آخرین فروش‌ها
+btn_support: 💬 اطلاعیه‌ها
+btn_language: 🌐 زبان
+btn_apikey: 🔑 کلید API
+btn_deposit: 💰 واریز
+btn_withdraw: 💸 برداشت
+btn_refer_earn: 👥 معرفی و درآمد
+btn_transactions: 📜 تراکنش‌ها
+btn_back: ⬅️ بازگشت
+btn_back_profile: ⬅️ بازگشت به پروفایل
+btn_back_market: ⬅️ بازگشت به بازار
+btn_back_wallet: 💳 بازگشت به کیف پول
+btn_regen_key: 🔄 تجدید کلید
+btn_deposits: 📥 واریزها
+btn_withdrawals: 📤 برداشت‌ها
+btn_purchases: 🛒 خریدها
+btn_all_history: 📋 همه تاریخچه
+btn_manage_addr: 🔑 مدیریت آدرس‌ها
+profile_title: پروفایل شما
+wallet_title_section: کیف پول
+trade_title: آمار معاملات
+ref_title_section: معرفی‌ها
+lbl_user_id: شناسه کاربر
+lbl_username: نام کاربری
+lbl_rank: رتبه
+lbl_member_since: عضو از
+lbl_balance: موجودی
+lbl_total_deposited: مجموع واریز
+lbl_total_spent: مجموع خرج
+lbl_total_earned: مجموع درآمد
+lbl_accounts_bought: اکانت خریداری‌شده
+lbl_accounts_sold: اکانت فروخته‌شده
+lbl_ref_link: لینک شما
+lbl_referred_users: معرفی‌شدگان
+lbl_bonus_earned: پاداش کسب‌شده
+lbl_no_username: بدون نام کاربری
+lbl_tap_to_copy: برای کپی ضربه بزنید
+refer_title: معرفی و درآمد
+refer_earn_line: 🎁 **برای هر دوستی که معرفی کنید جایزه بگیرید!**
+refer_link_lbl: 🔗 **لینک معرفی شما:**
+refer_total_lbl: 👤 **مجموع معرفی‌شدگان:** `{0}` نفر
+refer_bonus_lbl: 💰 **پاداش کسب‌شده:** `${0}`
+refer_tip: '📌 لینک را با دوستانتان به اشتراک بگذارید. وقتی
+
+  اولین واریز را انجام دهند شما پاداش می‌گیرید!'
+tx_title: تاریخچه تراکنش‌ها
+tx_subtitle: 'تاریخچه مالی کامل خود را ببینید.
+
+  یک دسته‌بندی انتخاب کنید 👇'
+tx_dep_title: تاریخچه واریزها
+tx_wit_title: تاریخچه برداشت‌ها
+tx_pur_title: تاریخچه خریدها
+tx_all_title: تاریخچه کامل
+tx_empty_dep: 📭 هنوز واریزی نیست.
+tx_empty_wit: 📭 هنوز برداشتی نیست.
+tx_empty_pur: 📭 هنوز خریدی نیست.
+tx_empty_all: 📭 هنوز تراکنشی نیست.
+apikey_title: کلید API شما
+apikey_header_fmt: '📌 **فرمت هدر:**
+
+  `X-Api-Key: tg_{user_id}_{secret}`'
+apikey_docs: 📖 **مستندات:** `/docs`
+apikey_warn: ⚠️ کلید API را با هیچ‌کس به اشتراک نگذارید!
+apikey_regen_title: کلید API تجدید شد
+apikey_regen_warn: '⚠️ کلید قدیمی دیگر معتبر نیست.
+
+  همه یکپارچه‌سازی‌های خود را بروزرسانی کنید.'
+apikey_regen_alert: ✅ کلید جدید ایجاد شد!
+lang_title: انتخاب زبان
+lang_subtitle: 'زبان مورد نظر خود را انتخاب کنید:'
+lang_changed_alert: ✅ زبان بروزرسانی شد!
+wallet_main_title: کیف پول شما
+wallet_addr_section: آدرس‌های برداشت (USDT)
+wallet_addr_tip: 'برای فعال‌سازی برداشت، آدرس‌های خود را تنظیم کنید.
+
+  واریزها از طریق OxaPay به‌صورت خودکار پردازش می‌شوند.'
+wallet_manage_title: آدرس‌های برداشت
+wallet_manage_body: "آدرس کیف پول USDT خود را برای برداشت تنظیم کنید.\n\n\U0001F4CC **شبکه‌های پشتیبانی‌شده:**\n  • **TRC20** — USDT در شبکه TRON\n  • **BEP20** — USDT در Binance Smart Chain\n\n⚠️ همیشه آدرس را دوباره بررسی کنید.\nآدرس اشتباه = از دست دادن دائمی وجه!"
+trc_not_set: تنظیم نشده ⚠️
+bep_not_set: تنظیم نشده ⚠️
+btn_add_trc: ➕ افزودن آدرس TRC20
+btn_add_bep: ➕ افزودن آدرس BEP20
+wallet_deposit_title: واریز وجه
+wallet_deposit_body: 'مبلغی که می‌خواهید واریز کنید **(به دلار)** ارسال کنید.
+
+
+  📌 ارزهای دیجیتال پذیرفته‌شده:
+
+  BTC, ETH, USDT, LTC و بیشتر
+
+
+  💵 **حداقل واریز:** ${0}
+
+
+  برای لغو: /cancel'
+wallet_withdraw_title: درخواست برداشت
+wallet_withdraw_body: '📌 **شبکه‌های موجود:** {0}
+
+
+  مبلغ **(به دلار)** را برای برداشت ارسال کنید.
+
+
+  💵 **حداقل برداشت:** ${1}
+
+
+  برای لغو: /cancel'
+wallet_no_addr_alert: '⚠️ ابتدا آدرس برداشت تنظیم کنید!
+
+  کیف پول ← مدیریت آدرس‌ها'
+wallet_select_network: انتخاب شبکه
+wallet_select_network_body: کدام شبکه برای برداشت `${0} USDT`؟
+wallet_confirm_title: تأیید برداشت
+wallet_confirm_body: '💵 **مبلغ:** `${0} USDT`
+
+  🌐 **شبکه:** `{1}`
+
+  📬 **آدرس:** `{2}`
+
+
+  برای تأیید **YES** بنویسید یا /cancel برای لغو.'
+wallet_confirm_word: بله
+wallet_confirm_prompt: برای تأیید برداشت **YES** بنویسید یا /cancel.
+wallet_success_title: درخواست برداشت ثبت شد!
+wallet_success_body: '🆔 **شناسه:** `{0}`
+
+  💵 **مبلغ:** `${1} USDT`
+
+  🌐 **شبکه:** `{2}`
+
+  📬 **آدرس:** `{3}`
+
+
+  برداشت شما در انتظار تأیید ادمین است.
+
+  پس از پردازش به کیف پول شما ارسال می‌شود.'
+wallet_payment_title: لینک پرداخت آماده است
+wallet_payment_body: '💵 **مبلغ:** `${0} USD`
+
+  🔗 **لینک پرداخت:**
+
+  {1}
+
+
+  ✅ پس از تأیید OxaPay موجودی شما
+
+  به‌صورت خودکار شارژ می‌شود.
+
+
+  ⏱ **منقضی می‌شود در:** ۶۰ دقیقه
+
+  💡 با BTC، ETH، USDT، LTC و بیشتر پرداخت کنید.'
+wallet_insufficient: '❌ **موجودی کافی نیست.**
+
+
+  موجودی شما: `${0}`
+
+  موردنیاز: `${1}`'
+err_invalid_amount: '❌ یک عدد معتبر وارد کنید (مثال: `10` یا `25.50`)'
+err_min_deposit: ❌ حداقل واریز ${0} است. دوباره امتحان کنید یا /cancel.
+err_min_withdraw: ❌ حداقل برداشت ${0} است. دوباره امتحان کنید یا /cancel.
+err_payment_fail: '❌ ایجاد لینک پرداخت ناموفق بود.
+
+  بعداً دوباره امتحان کنید یا با پشتیبانی تماس بگیرید.'
+err_withdraw_fail: '❌ ثبت برداشت ناموفق بود.
+
+  موجودی شما بازگردانده شد. دوباره امتحان کنید.'
+err_unexpected: ❌ خطای غیرمنتظره. بعداً دوباره امتحان کنید.
+err_session_exp: نشست منقضی شد. از نو شروع کنید.
+err_no_withdraw_addr: '⚠️ **آدرس برداشت تنظیم نشده.**
+
+
+  از /setwallet برای افزودن آدرس TRC20 یا BEP20 استفاده کنید.'
+err_invalid_trc20: ❌ آدرس TRC20 نامعتبر است. باید با `T` شروع شود و ۳۴ کاراکتر باشد.
+err_invalid_bep20: ❌ آدرس BEP20 نامعتبر است. باید با `0x` شروع شود و ۴۲ کاراکتر باشد.
+set_addr_title: تنظیم آدرس {0}
+set_addr_body: 'آدرس کیف پول USDT **{0}** خود را ارسال کنید.
+
+
+  مثال: {1}
+
+
+  ⚠️ فقط آدرس معتبر USDT ارسال کنید!
+
+  برای لغو: /cancel'
+addr_saved_title: آدرس {0} ذخیره شد!
+addr_saved_body: اکنون می‌توانید USDT را به این آدرس برداشت کنید.
+oxapay_not_configured: '❌ OxaPay پیکربندی نشده.
+
+  برای فعال‌سازی واریز با ادمین تماس بگیرید.'
+cancel_success: ✅ لغو شد. برای بازگشت به منوی اصلی از /start استفاده کنید.
+cancel_nothing: چیزی برای لغو کردن وجود ندارد.
+banned_msg: 🚫 شما از استفاده از این ربات مسدود شده‌اید.
+generating_link: ⏳ در حال ایجاد لینک پرداخت…
+processing_withdrawal: ⏳ در حال پردازش برداشت…
+dep_choose_title: روش واریز را انتخاب کنید
+dep_choose_body: 'روش پرداخت مورد نظر خود را انتخاب کنید:'
+dep_enter_amount: 'مبلغ **(به دلار)** واریزی را وارد کنید:'
+dep_type_cancel: برای لغو /cancel بنویسید.
+dep_select_network: شبکه را انتخاب کنید
+dep_which_network: از کدام شبکه می‌خواهید واریز کنید؟
+dep_ready_title: پرداخت آماده است
+dep_send_title: ارز دیجیتال ارسال کنید
+dep_manual_title: انتقال دستی
+dep_created_title: واریز ایجاد شد
+dep_tap_pay: برای رفتن به صفحه پرداخت روی **پرداخت** بزنید.
+dep_auto_credit: پس از تأیید پرداخت، موجودی شما به‌طور خودکار شارژ می‌شود.
+dep_addr_warn: '**مبلغ دقیق** را از طریق شبکه درست ارسال کنید. شبکه اشتباه = از دست رفتن پول.'
+dep_manual_note: شناسه واریز را در یادداشت انتقال ذکر کنید، سپس رسید را برای پشتیبانی ارسال کنید.
+dep_back_methods: ⬅️ بازگشت به روش‌ها
+lbl_min_deposit: حداقل واریز
+lbl_method: روش
+lbl_amount: مبلغ
+lbl_currency: ارز
+lbl_expires: انقضا در
+lbl_minutes: دقیقه
+lbl_network: شبکه
+lbl_address: به این آدرس ارسال کنید
+lbl_ref: شناسه واریز
+lbl_send_amount: مبلغ ارسالی
+lbl_send_to: ارسال به
+lbl_holder: نام حساب
+btn_pay_now: 💳 پرداخت کنید →
+btn_contact_support: 💬 تماس با پشتیبانی
+no_deposit_methods: ❌ هیچ روش واریزی در دسترس نیست. با مدیر تماس بگیرید.
+method_unavailable: ❌ این روش در حال حاضر در دسترس نیست.
+market_title: بازار
+market_balance_lbl: موجودی شما
+market_tagline: 'Buy and sell verified Telegram accounts
+
+  with instant OTP delivery.'
+btn_buy_account: 🟢 خرید حساب
+btn_sell_account: 🔴 فروش حساب
+buy_title: خرید حساب
+buy_no_stock: 🚫 No countries available right now. Check back later!
+buy_page_info: صفحه {0}/{1} — {2} کشور
+buy_hint: برای جزئیات روی کشور بزنید 👇
+buy_country_title: خرید — {0}
+buy_country_lbl: کشور
+buy_phone_code_lbl: کد تلفن
+buy_price_lbl: قیمت
+buy_stock_lbl: موجود
+buy_delivery_lbl: تحویل
+buy_delivery_val: OTP آنی
+buy_confirm_hint: Press Buy Now to proceed.
+btn_buy_now: ✅ خرید
+buy_no_channel: ⚠️ کانال جلسه تنظیم نشده. با ادمین تماس بگیرید.
+buy_no_clean_account: ⚠️ حساب تمیز موجود نیست.
+buy_purchased_title: حساب خریداری شد!
+buy_paid_lbl: پرداختی
+buy_new_balance_lbl: موجودی جدید
+buy_tfa_lbl: رمز دومرحله‌ای
+buy_otp_waiting_title: انتظار OTP…
+buy_otp_step1: 1️⃣ Telegram را باز کنید و شماره بالا را وارد کنید
+buy_otp_step2: 2️⃣ Request a login OTP
+buy_otp_step3: 3️⃣ OTP خودکار اینجا می‌آید
+buy_otp_timeout_note: '_زمان: ۲ دقیقه_'
+btn_cancel_otp: ❌ لغو انتظار
+buy_success_alert: ✅ خرید انجام شد! انتظار OTP…
+buy_error_generic: ❌ خطا. دوباره تلاش کنید.
+buy_view_all_title: همه کشورهای موجود
+buy_view_all_empty: 🚫 کشوری موجود نیست.
+otp_received_title: OTP دریافت شد! 🎉
+otp_phone_lbl: تلفن
+otp_code_lbl: کد OTP
+otp_enter_instruction: این کد را در Telegram وارد کنید.
+otp_sensitive_note: _کد را با کسی به اشتراک نگذارید._
+otp_timeout_title: زمان OTP تمام شد ⏰
+otp_timeout_body: 'No OTP was received within 2 minutes. Please make sure you entered the phone correctly and requested a login OTP.
+
+
+  Contact support if you need help.'
+otp_cancelled_title: انتظار OTP لغو شد
+otp_cancelled_body: 'انتظار OTP لغو شد.
+
+
+  ⚠️ خرید همچنان معتبر است.'
+otp_error: OTP delivery failed for {0}. Please contact support.
+btn_back_to_market: ⬅️ بازگشت به بازار
+sell_title: فروش حساب
+sell_no_countries: 🚫 No countries accepting accounts right now. Check back later!
+sell_page_info: صفحه {0}/{1} — {2} کشور
+sell_hint: برای دیدن قیمت کشور را انتخاب کنید 👇
+sell_country_title: فروش — {0}
+sell_country_lbl: کشور
+sell_phone_code_lbl: کد تلفن
+sell_we_pay_lbl: پرداختی ما
+sell_requirements_title: ✅ الزامات
+sell_req_prefix: • Phone number must start with {0}
+sell_req_valid_session: • فایل جلسه معتبر و مجاز
+sell_req_no_spam: • بدون اسپم/فریز/بن
+sell_req_no_dupe: • تکراری نباشد
+sell_how_title: 📋 نحوه کار
+sell_how_step1: 1️⃣ Upload your .session file
+sell_how_step2: 2️⃣ حساب را خودکار بررسی می‌کنیم
+sell_how_step3: 3️⃣ Funds go to your Pending Balance
+sell_how_step4: 4️⃣ ادمین بررسی → موجودی آزاد
+sell_review_time: '⏱ زمان بررسی: ۱–۲۴ ساعت'
+sell_why_rejected: '📌 دلایل رد: شماره اشتباه، جلسه منقضی، اسپم/بن، تکراری.'
+btn_start_selling: 📤 شروع فروش
+btn_my_requests: 📋 درخواست‌های من
+sell_my_requests_title: درخواست‌های فروش من
+sell_empty_requests: 📭 هنوز درخواستی ندارید.
+sell_requests_footer: Last 10 requests shown
+sell_country_full: 🚫 این کشور فعلاً پذیرش ندارد.
+sell_init_title: فروش — {0}
+sell_you_receive_lbl: دریافتی شما
+sell_required_prefix_lbl: پیش‌شماره لازم
+sell_step1_title: گام ۱ — فایل جلسه بسازید
+sell_telethon_note: Run this snippet on your computer. It creates my_session.session.
+sell_step2_title: گام ۲ — فایل را ارسال کنید
+sell_step2_body: 📎 Send the .session file as a document in this chat.
+sell_waiting: ⏳ منتظر فایل شما…
+sell_type_cancel: برای لغو /cancel.
+sell_cancelled_title: فروش لغو شد
+sell_cancelled_body: حسابی ارسال نشد.
+sell_rate_limit: ⏱ محدودیت. حداکثر {0} در هر {1} ساعت.
+sell_max_pending: ⏳ {0} درخواست در انتظار دارید.
+sell_wrong_file: ❌ Wrong file type. Please send a .session file.
+sell_file_too_large: ❌ File too large. A valid session file is under 100 KB.
+sell_validating_title: بررسی جلسه
+sell_validating_body: ⏳ اتصال به Telegram… تا ۳۰ ثانیه.
+sell_no_channel: ⚠️ پلتفرم تنظیم نشده.
+sell_download_error: ❌ Could not read your file. Please send the file again, or type /cancel.
+sell_success_title: جلسه ارسال شد! ✅
+sell_request_id_lbl: شناسه درخواست
+sell_pending_balance_lbl: موجودی در انتظار
+sell_status_lbl: وضعیت
+sell_awaiting_review: ⏳ در انتظار بررسی
+sell_success_note: Your pending balance will be credited once admin approves your request.
+sell_spam_flag_note: _⚠️ This account has a temporary spam flag. Admin will make the final decision._
+sell_track_hint: Track your request in My Sell Requests.
+sell_error_generic: ❌ خطای غیرمنتظره.
+btn_sell_another: 💼 فروش دیگر
+btn_prev: ⬅️ قبلی
+btn_next: بعدی ➡️
+btn_view_all: 📋 مشاهده همه
+btn_cancel: ❌ لغو
+err_country_not_found: ❌ کشور یافت نشد.
+sell_country_name_lbl: کشور
+buy_otp_requesting: 📨 درخواست OTP از Telegram…
+buy_otp_prompt: '📱 **تلفن:** `{0}`
+
+
+  کد ورود ارسال شد. OTP را وارد کنید:'
+buy_otp_cancel_hint: _(برای لغو و بازپرداخت /cancel)_
+buy_otp_invalid: '❌ OTP اشتباه. دوباره امتحان کنید:'
+buy_otp_expired: ❌ OTP منقضی شد. بازپرداخت انجام شد.
+buy_tfa_prompt: '🔐 حساب **2FA** دارد.
+
+
+  رمز 2FA را وارد کنید:'
+buy_tfa_invalid: ❌ رمز 2FA اشتباه.
+buy_flood_wait: ⏳ محدودیت Telegram — **{0} ثانیه** صبر کنید.
+buy_auth_checking: 🔍 بررسی حساب…
+buy_complete_title: حساب آماده است! 🎉
+buy_logout_instruction: به **تنظیمات → حریم خصوصی → جلسات فعال** بروید و دیگر جلسات را خارج کنید.
+buy_auth_cancelled_title: خرید لغو شد
+buy_auth_cancelled_body: موجودی `${0}` بازگردانده شد.
+buy_account_banned: ❌ حساب توسط Telegram بن شد. بازپرداخت شد.
+buy_sessions_terminated: ✅ همه جلسات دیگر خاتمه یافت.
+buy_sessions_partial: ⚠️ برخی جلسات خاتمه نیافت.
+buy_auth_send_code_fail: ❌ درخواست OTP ممکن نشد. بازپرداخت.
+buy_auth_cancel_hint_inline: برای بازپرداخت لغو را بزنید.
+buy_auth_already_active: ⏳ You already have a pending OTP flow. Send the OTP or type /cancel.
+btn_home_deposit: 💰 واریز
+btn_home_withdraw_money: 👤 برداشت
+btn_extra: ✨ اضافه
+btn_sessions_menu: 📦 فروش / خرید سشن
+btn_sell_account_start: 🔴 شروع فروش
+btn_my_sell_record: 📋 سوابق فروش من
+btn_open: 📖 باز کن
+btn_search_country: 🔍 جستجو
+btn_search_again: 🔍 جستجوی مجدد
+registration_disabled_msg: "🚫 **ثبت‌نام کاربران جدید در حال حاضر غیرفعال است.**\n\nلطفاً بعد از مدتی دوباره تلاش کنید. هر زمان ثبت‌نام کاربران جدید فعال شود، می‌توانید ربات را شروع کنید.\n\nاگر سؤال یا مشکلی دارید، لطفاً با پشتیبانی تماس بگیرید."
+
+feature_disabled_alert: "این قابلیت در حال حاضر غیرفعال است."
+maintenance_mode_msg: "🔧 **حالت تعمیر و نگهداری پلتفرم فعال است.**\n\nسفارش‌ها، واریزها و برداشت‌های جدید موقتاً متوقف شده‌اند. لطفاً بعداً دوباره تلاش کنید.\n\nاگر سؤال یا مشکلی دارید، با پشتیبانی تماس بگیرید."
+deposits_disabled_msg: "🚫 **واریزهای جدید در حال حاضر غیرفعال هستند.**\n\nلطفاً بعد از مدتی دوباره تلاش کنید. وقتی واریز دوباره فعال شود، می‌توانید واریز جدید ایجاد کنید.\n\nاگر سؤال یا مشکلی دارید، با پشتیبانی تماس بگیرید."
+withdrawals_disabled_msg: "🚫 **درخواست‌های برداشت جدید در حال حاضر غیرفعال هستند.**\n\nلطفاً بعد از مدتی دوباره تلاش کنید. وقتی برداشت دوباره فعال شود، می‌توانید درخواست برداشت بدهید.\n\nاگر سؤال یا مشکلی دارید، با پشتیبانی تماس بگیرید."
+
+# -- Session selling gate (auto-added) --
+sell_disabled_msg: '🛑 **فروش سشن در حال حاضر غیرفعال است.**
+
+
+  لطفاً بعداً امتحان کنید. برای هرگونه سؤال با پشتیبانی تماس بگیرید.'
+sell_rank_locked_msg: '🔒 **فروش سشن بر اساس رتبه محدود است.**
+
+
+  • حداقل رتبه: **{min_rank}** (نیازمند `${required_spend:g}` هزینه)
+
+  • رتبه شما: **{current_rank}** — شما `${current_spend:g}` خرج کرده‌اید
+
+  • **`${needed_spend:g}`** بیشتر خرج کنید تا باز شود
+
+
+  برای سؤال با پشتیبانی تماس بگیرید.'
+
+btn_user_dashboard: "🎛 داشبورد کاربر"
+
+# -- Binance Pay (Auto) deposit (auto-added) --
+binance_pay_auto_label: "Binance Pay (Auto)"
+dep_dup_order_title: "شناسه سفارش قبلاً استفاده شده"
+dep_dup_order_body: "این شناسه سفارش Binance قبلاً برای واریز دیگری استفاده شده است. هر شناسه فقط یک بار قابل استفاده است."
+dep_dup_order_hint: "لطفاً پرداخت جدیدی انجام دهید یا با پشتیبانی تماس بگیرید."
