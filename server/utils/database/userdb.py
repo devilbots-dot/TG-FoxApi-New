@@ -593,7 +593,7 @@ async def get_user_by_referral(code: str) -> Optional[dict]:
     return await usersdb.find_one({"referral_code": code})
 
 
-async def apply_referral(user_id: int, referral_code: str, bonus: float = 1.0) -> bool:
+async def apply_referral(user_id: int, referral_code: str, bonus: float = 0.003) -> bool:
     # Validate the referral code and ensure it doesn't point back at the same user
     referrer = await usersdb.find_one({"referral_code": referral_code}, {"user_id": 1})
     if not referrer or referrer["user_id"] == user_id:
