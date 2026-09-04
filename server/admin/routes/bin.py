@@ -13,6 +13,7 @@ from server.admin import templates
 from server.admin.deps import require_session
 from server.utils.database.sessiondb import (
     get_session_account,
+    get_bin_session,
     list_bin_sessions,
     restore_session_from_bin,
     delete_bin_session,
@@ -21,6 +22,22 @@ from server.utils.database.auditdb import log_action
 from server.web.security import client_ip
 
 router = APIRouter(tags=["Admin-BIN"], include_in_schema=False)
+_SENSITIVE_BIN_FIELDS = {
+    "password",
+    "tfa_password_enc",
+    "session_bytes_enc",
+    "session_data",
+    "session_file",
+    "string_session",
+}
+
+
+def _public_bin_doc(doc: dict) -> dict:
+    """Keep credentials/session blobs out of admin JSON responses."""
+    result = dict(doc)
+    for key in _SENSITIVE_BIN_FIELDS:
+        result.pop(key, None)
+    return result
 
 
 @router.get("/admin/bin", response_class=HTMLResponse)
@@ -64,8 +81,7 @@ async def list_bin(
             value = item.get(key)
             if value is not None and hasattr(value, "isoformat"):
                 item[key] = value.isoformat()
-        item.pop("tfa_password_enc", None)
-        item.pop("password", None)
+    items = [_public_bin_doc(item) for item in items]
     return JSONResponse(jsonable_encoder({
         "items": items,
         "total": total,
@@ -78,7 +94,7 @@ async def list_bin(
 @router.get("/admin/api/storage/diagnose/{account_id}")
 async def diagnose_storage(account_id: str, _session=Depends(require_session)):
     """Read-only diagnostic of the exact Mongo-referenced Telegram message."""
-    doc = await get_session_account(account_id)
+    doc = await get_bin_session(account_id) or await get_session_account(account_id)
     if not doc:
         return JSONResponse({"ok": False, "error": "Account not found"}, status_code=404)
     chat_id = doc.get("session_chat_id")
@@ -108,11 +124,10 @@ async def diagnose_storage(account_id: str, _session=Depends(require_session)):
 
 @router.get("/admin/api/bin/{account_id}")
 async def bin_detail(account_id: str, _session=Depends(require_session)):
-    doc = await get_session_account(account_id)
-    if not doc or doc.get("inventory_state") != "bin":
+    doc = await get_bin_session(account_id)
+    if not doc:
         return JSONResponse({"ok": False, "error": "BIN session not found"}, status_code=404)
-    doc.pop("tfa_password_enc", None)
-    doc.pop("password", None)
+    doc = _public_bin_doc(doc)
     for key, value in list(doc.items()):
         if hasattr(value, "isoformat"):
             doc[key] = value.isoformat()

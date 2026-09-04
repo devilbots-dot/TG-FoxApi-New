@@ -587,30 +587,29 @@ def test_miniapp_api_key_login_reuses_verified_profile_for_initial_refresh():
     assert "const me = await tgfoxApi.login(apiKey); await refresh(me);" in source
 
 
-def test_no_synthetic_sales_or_buyer_facing_fake_stock_runtime_remains():
+def test_sales_feed_fake_activity_stays_isolated_from_real_accounting():
     service_source = (ROOT / "server/services/sales_feed/service.py").read_text()
     formatter_source = (ROOT / "server/services/sales_feed/formatter.py").read_text()
     stock_source = (ROOT / "server/utils/stock_display.py").read_text()
     bot_admin_source = (ROOT / "server/plugins/bot/sales_feed_admin.py").read_text()
-    assert not (ROOT / "server/services/sales_feed/fake_generator.py").exists()
-    assert "_fake_worker" not in service_source
-    assert "send_fake_preview" not in service_source
-    assert "format_fake_purchase" not in formatter_source
+    fake_source = (ROOT / "server/services/sales_feed/fake_generator.py").read_text()
+    assert "_fake_worker" in service_source
+    assert "send_fake_preview" in service_source
+    assert "format_fake_purchase" in formatter_source
+    assert "never creates an order" in fake_source
+    assert "record_successful_purchase" not in fake_source
     assert "return max(0, real_stock)" in stock_source
-    assert "fake_stock" not in stock_source
-    assert "Sales Feed & Fake Sales" not in bot_admin_source
-    assert "synthetic\nactivity is retired" in bot_admin_source
+    assert "fake_stock" in stock_source
+    assert "send_fake_preview" in bot_admin_source
 
 
-def test_admin_country_ui_retired_fake_stock_controls_are_not_rendered():
+def test_admin_country_ui_keeps_fake_stock_controls_isolated_from_real_stock():
     country_template = (ROOT / "server/admin/templates/admin/countries.html").read_text()
     settings_template = (ROOT / "server/admin/templates/admin/settings.html").read_text()
-    assert "Verified Stock" in country_template
-    assert "Temporarily Disable Buying" in country_template
-    assert "Fake Stock" not in country_template
-    assert "stock_mode" not in country_template
-    assert "hide_fake_stock_when_real_zero" not in country_template
-    assert "key !== 'hide_fake_stock_when_real_zero'" in settings_template
+    assert "Real / Fake Stock" in country_template
+    assert "Fake Stock" in country_template
+    assert "stock_mode" in country_template
+    assert "hide_fake_stock_when_real_zero" in settings_template
 
 
 def test_hardened_cors_custom_env_and_api_key_session_contracts():
@@ -898,7 +897,34 @@ def test_admin_sales_feed_has_real_status_summary_safe_loading_and_guarded_mutat
     assert "apiGET('/admin/api/sales-feed/recent')" in source
     assert "Only real completed orders appear here." in source
     assert '@router.get("/admin/api/sales-feed/recent")' in route_source
-    assert '{"status": "completed"}' in route_source
+    assert '"status": {"$in": ["completed", "delivered", "success", "paid"]}' in route_source
+    assert "jsonable_encoder" in route_source
+
+
+def test_bin_compatibility_normalises_legacy_records_without_moving_them():
+    from server.utils.database.sessiondb import (
+        _legacy_bin_marker_query,
+        _normalise_bin_doc,
+    )
+
+    item = _normalise_bin_doc({
+        "session_id": "legacy-42",
+        "country": "in",
+        "reason": "AUTH_KEY_INVALID",
+        "detected_at": "2026-09-01T12:00:00+00:00",
+    }, "bin_sessions")
+    assert item["account_id"] == "legacy-42"
+    assert item["country_code"] == "IN"
+    assert item["bin_issue"] == "AUTH_KEY_INVALID"
+    assert item["_bin_source"] == "bin_sessions"
+    assert "$or" in _legacy_bin_marker_query()
+
+    source = (ROOT / "server/utils/database/sessiondb.py").read_text()
+    route_source = (ROOT / "server/admin/routes/bin.py").read_text()
+    assert "list_collection_names" in source
+    assert "inventory_state" in source
+    assert "get_bin_session" in route_source
+    assert "_SENSITIVE_BIN_FIELDS" in route_source
 
 
 def asyncio_run(awaitable):

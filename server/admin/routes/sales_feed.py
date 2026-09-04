@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+
 from fastapi import APIRouter, Request, Depends
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
 
 from server.admin import templates
@@ -23,6 +26,28 @@ _FEED_LIST_KEYS    = {"fake_sales_product_pool", "fake_sales_country_pool"}
 _ALL_FEED_KEYS     = _FEED_BOOL_KEYS | _FEED_INT_KEYS | _FEED_STRING_KEYS | _FEED_LIST_KEYS
 
 
+def _as_bool(value, default: bool = False) -> bool:
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on", "enabled"}
+    if value is None:
+        return default
+    return bool(value)
+
+
+def _as_int(value, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _as_number(value, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
 # ── Page ──────────────────────────────────────────────────────────────────────
 
 @router.get("/admin/sales-feed", response_class=HTMLResponse)
@@ -36,39 +61,76 @@ async def sales_feed_page(request: Request, _session=Depends(require_session)):
 async def get_sales_feed_settings(_session=Depends(require_session)):
     s = memstore.settings
     return JSONResponse({
-        "sales_feed_enabled":           bool(s.get("sales_feed_enabled",          False)),
+        "sales_feed_enabled":           _as_bool(s.get("sales_feed_enabled"), False),
         "sales_feed_chat_id":           str(s.get("sales_feed_chat_id",           "") or ""),
-        "sales_feed_silent":            bool(s.get("sales_feed_silent",            False)),
-        "sales_feed_delay_seconds":     int(s.get("sales_feed_delay_seconds",      0)),
-        "fake_sales_enabled":           bool(s.get("fake_sales_enabled",           False)),
-        "fake_sales_interval_min":      int(s.get("fake_sales_interval_min",       300)),
-        "fake_sales_interval_max":      int(s.get("fake_sales_interval_max",       900)),
-        "fake_sales_randomization_level": int(s.get("fake_sales_randomization_level", 5)),
-        "fake_sales_product_pool":      list(s.get("fake_sales_product_pool",      ["account", "session"])),
-        "fake_sales_country_pool":      list(s.get("fake_sales_country_pool",      [])),
+        "sales_feed_silent":            _as_bool(s.get("sales_feed_silent"), False),
+        "sales_feed_delay_seconds":     _as_int(s.get("sales_feed_delay_seconds"), 0),
+        "fake_sales_enabled":           _as_bool(s.get("fake_sales_enabled"), False),
+        "fake_sales_interval_min":      _as_int(s.get("fake_sales_interval_min"), 300),
+        "fake_sales_interval_max":      _as_int(s.get("fake_sales_interval_max"), 900),
+        "fake_sales_randomization_level": _as_int(s.get("fake_sales_randomization_level"), 5),
+        "fake_sales_product_pool":      list(s.get("fake_sales_product_pool") or ["account", "session"]),
+        "fake_sales_country_pool":      list(s.get("fake_sales_country_pool") or []),
     })
 
 
 @router.get("/admin/api/sales-feed/recent")
 async def get_recent_completed_sales(_session=Depends(require_session)):
-    """Return recent real completed orders eligible for Sales Feed visibility."""
+    """Return recent real completed orders for the admin feed preview.
+
+    Older order documents used ``delivered``/``paid`` status values and did not
+    always populate completed_at. Read those historical records as well and
+    normalize their timestamp/amount fields before JSON encoding.
+    """
     from server.utils.database.orderdb import ordersdb
 
     cursor = ordersdb.find(
-        {"status": "completed"},
-        {"_id": 0, "order_id": 1, "buyer_id": 1, "amount": 1, "fee": 1, "completed_at": 1},
-    ).sort("completed_at", -1).limit(8)
+        {"$or": [
+            {"status": {"$in": ["completed", "delivered", "success", "paid"]}},
+            {"delivery_status": "delivered"},
+        ]},
+        {
+            "_id": 0,
+            "order_id": 1,
+            "buyer_id": 1,
+            "amount": 1,
+            "fee": 1,
+            "completed_at": 1,
+            "delivered_at": 1,
+            "updated_at": 1,
+            "created_at": 1,
+            "status": 1,
+            "delivery_status": 1,
+            "order_type": 1,
+            "country_code": 1,
+            "country_name": 1,
+        },
+    ).limit(40)
     items = []
     async for doc in cursor:
-        completed_at = doc.get("completed_at")
+        completed_at = (
+            doc.get("completed_at")
+            or doc.get("delivered_at")
+            or doc.get("updated_at")
+            or doc.get("created_at")
+        )
         items.append({
             "order_id": str(doc.get("order_id") or ""),
             "buyer_id": doc.get("buyer_id"),
-            "amount": doc.get("amount") or 0,
-            "fee": doc.get("fee") or 0,
-            "completed_at": completed_at.isoformat() if hasattr(completed_at, "isoformat") else completed_at,
+            "amount": _as_number(doc.get("amount")),
+            "fee": _as_number(doc.get("fee")),
+            "status": str(doc.get("status") or "completed"),
+            "delivery_status": str(doc.get("delivery_status") or ""),
+            "order_type": str(doc.get("order_type") or "account"),
+            "country_code": str(doc.get("country_code") or ""),
+            "country_name": str(doc.get("country_name") or ""),
+            "completed_at": completed_at.isoformat() if isinstance(completed_at, datetime) else completed_at,
         })
-    return JSONResponse({"items": items})
+    items.sort(
+        key=lambda item: item.get("completed_at") or "",
+        reverse=True,
+    )
+    return JSONResponse(jsonable_encoder({"items": items[:8]}))
 
 
 # ── POST settings ─────────────────────────────────────────────────────────────
@@ -80,7 +142,7 @@ async def update_sales_feed_settings(request: Request, _session=Depends(require_
 
     for key in _FEED_BOOL_KEYS:
         if key in body:
-            await set_setting(key, bool(body[key]))
+            await set_setting(key, _as_bool(body[key]))
             updated.append(key)
 
     for key in _FEED_INT_KEYS:

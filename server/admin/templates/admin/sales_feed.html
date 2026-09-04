@@ -65,7 +65,7 @@ async function loadSettings(){
   setLoadNote('');
   try {
     const d=await apiGET('/admin/api/sales-feed/settings');
-    if(!d || d.success===false || d.status===false) throw new Error(d?.message||'Could not load Sales Feed settings.');
+    if(!d || d.ok===false || d.success===false || d.status===false) throw new Error(d?.message||d?.detail||'Could not load Sales Feed settings.');
     document.getElementById('sales_feed_enabled').checked=!!d.sales_feed_enabled;
     document.getElementById('sales_feed_silent').checked=!!d.sales_feed_silent;
     document.getElementById('sales_feed_chat_id').value=d.sales_feed_chat_id||'';
@@ -90,7 +90,7 @@ async function loadRecentActivity(){
   body.innerHTML='<div class="empty-state">Loading real completed purchases…</div>'; count.textContent='Loading…';
   try {
     const d=await apiGET('/admin/api/sales-feed/recent');
-    if(!d || d.success===false || d.status===false || !Array.isArray(d.items)) throw new Error('Could not load completed purchases.');
+    if(!d || d.ok===false || d.success===false || d.status===false || !Array.isArray(d.items)) throw new Error('Could not load completed purchases.');
     count.textContent=`${d.items.length} recent`;
     if(!d.items.length){ body.innerHTML='<div class="empty-state">No completed purchases are available to display yet. Only real completed orders appear here.</div>'; return; }
     body.innerHTML=`<table class="tbl"><thead><tr><th>Order</th><th>Buyer</th><th>Amount</th><th>Fee</th><th>Completed</th></tr></thead><tbody>${d.items.map(x=>`<tr><td><code>${esc(x.order_id)}</code></td><td>${esc(x.buyer_id)}</td><td>${money(x.amount)}</td><td>${money(x.fee)}</td><td>${esc(formatCompletedAt(x.completed_at))}</td></tr>`).join('')}</tbody></table>`;

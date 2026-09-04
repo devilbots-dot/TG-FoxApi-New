@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>{% block title %}Admin{% endblock %} — TG-Fox API</title>
-  <link rel="stylesheet" href="/admin/static/admin/css/admin.css">
+  <link rel="stylesheet" href="/admin/static/admin/css/admin.css?v=20260904-bin-feed">
   {% block head %}{% endblock %}
 </head>
 <body>
@@ -50,7 +50,7 @@
   </div>
   <nav class="mobile-nav" id="mobile-nav"><a href="/admin" class="mob-nav-item {% if page == 'dashboard' %}active{% endif %}"><b>DC</b><span>Home</span></a><a href="/admin/orders" class="mob-nav-item {% if page == 'orders' %}active{% endif %}"><b>OR</b><span>Orders</span></a><a href="/admin/payments" class="mob-nav-item {% if page == 'payments' %}active{% endif %}"><b>PY</b><span>Payments</span></a><a href="/admin/users" class="mob-nav-item {% if page == 'users' %}active{% endif %}"><b>UR</b><span>Users</span></a><button class="mob-nav-item" type="button" onclick="toggleSidebar()"><b>+</b><span>More</span></button></nav>
 </div>
-<script src="/admin/static/admin/js/admin.js"></script>
+<script src="/admin/static/admin/js/admin.js?v=20260904-bin-feed"></script>
 <script>
 (function(){const el=document.getElementById('clock');function tick(){if(el)el.textContent=new Date().toLocaleTimeString('en-GB')}tick();setInterval(tick,1000)})();
 async function loadBadges(){try{const stats=await apiGET('/admin/api/stats');const payments=stats.payments||{};const sellBadge=document.getElementById('sell-badge');const payBadge=document.getElementById('pay-badge');const pending=(payments.pending_deposits||0)+(payments.pending_withdrawals||0);if(payBadge&&pending>0){payBadge.textContent=pending;payBadge.classList.add('show')}else if(payBadge)payBadge.classList.remove('show');const requests=await apiGET('/admin/api/sell-requests?status=pending&limit=1');if(sellBadge&&requests.total>0){sellBadge.textContent=requests.total;sellBadge.classList.add('show')}else if(sellBadge)sellBadge.classList.remove('show')}catch(e){}}
