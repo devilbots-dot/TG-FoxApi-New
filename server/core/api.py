@@ -3,6 +3,7 @@ import asyncio
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from starlette.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
@@ -128,7 +129,15 @@ class Api:
         @self.app.middleware("http")
         async def request_id_middleware(request: Request, call_next):
             req_id = request.headers.get("X-Request-Id") or str(uuid.uuid4())
-            response = await call_next(request)
+            try:
+                response = await call_next(request)
+            except RuntimeError as exc:
+                # Starlette can raise this when an SSE client closes or
+                # reconnects before call_next returns. That is a normal
+                # browser disconnect, not an application failure.
+                if str(exc) == "No response returned.":
+                    return Response(status_code=204, headers={"X-Request-Id": req_id})
+                raise
             response.headers["X-Request-Id"] = req_id
             return response
 

@@ -1,6 +1,7 @@
 import re
 import sys
 from os import getenv
+from urllib.parse import urlsplit, urlunsplit
 
 from dotenv import load_dotenv
 
@@ -212,6 +213,20 @@ WEBAPP_BASE_URL = (
 if WEBAPP_BASE_URL and not WEBAPP_BASE_URL.startswith(("http://", "https://")):
     WEBAPP_BASE_URL = f"https://{WEBAPP_BASE_URL}"
 WEBAPP_BASE_URL = WEBAPP_BASE_URL.rstrip("/")
+# The Python server serves the Mini App at the root `/app/` path. Older
+# deployments sometimes stored `/webapp` or `/app` in WEBAPP_BASE_URL, which
+# produced invalid URLs such as `/webapp/app/` and led to a 404 page.
+if WEBAPP_BASE_URL:
+    _webapp_parts = urlsplit(WEBAPP_BASE_URL)
+    if _webapp_parts.path not in ("", "/") or _webapp_parts.query or _webapp_parts.fragment:
+        print(
+            "[WARN] WEBAPP_BASE_URL should be an origin; ignoring its path/query "
+            "because the Mini App is served at /app/.",
+            file=sys.stderr,
+        )
+        WEBAPP_BASE_URL = urlunsplit(
+            (_webapp_parts.scheme, _webapp_parts.netloc, "", "", "")
+        ).rstrip("/")
 WEBAPP_URL = f"{WEBAPP_BASE_URL}/app/" if WEBAPP_BASE_URL else ""
 if WEBAPP_URL and not WEBAPP_URL.startswith("https://"):
     print(

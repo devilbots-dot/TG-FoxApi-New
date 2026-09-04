@@ -24,15 +24,14 @@ _log = logging.getLogger(__name__)
 
 _MAX_AGE_SECONDS = 24 * 60 * 60  # 24h — Telegram recommends re-validating after this
 _MAX_FUTURE_SKEW_SECONDS = 5 * 60
-_DIAGNOSTIC_VERSION = "tma-hmac-v4"
+_DIAGNOSTIC_VERSION = "tma-hmac-v5"
 
 
 def _compute_secret(bot_token: str) -> bytes:
-    # Telegram specifies: secret_key = HMAC-SHA256(bot_token, "WebAppData").
-    # In Python's hmac.new API that means bot_token is the *key* and
-    # b"WebAppData" is the message. Reversing them rejects every genuine
-    # initData payload even when the bot token itself is correct.
-    return hmac.new(bot_token.encode(), b"WebAppData", hashlib.sha256).digest()
+    # Telegram's official algorithm is:
+    # secret_key = HMAC-SHA256(key="WebAppData", message=bot_token).
+    # Reversing these arguments rejects every genuine initData payload.
+    return hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
 
 
 def _auth_reject(detail: str, *, stage: str, request_id: str = "", field_names: tuple[str, ...] = ()) -> None:

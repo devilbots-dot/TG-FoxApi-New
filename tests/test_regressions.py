@@ -64,7 +64,7 @@ def _signed_webapp_init_data(bot_token: str, **overrides: str) -> str:
     }
     fields.update(overrides)
     data_check_string = "\n".join(f"{key}={fields[key]}" for key in sorted(fields))
-    secret = hmac.new(bot_token.encode(), b"WebAppData", hashlib.sha256).digest()
+    secret = hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
     fields["hash"] = hmac.new(secret, data_check_string.encode(), hashlib.sha256).hexdigest()
     return urlencode(fields)
 
@@ -75,6 +75,21 @@ def test_webapp_init_data_accepts_valid_signed_fixture():
     init_data = _signed_webapp_init_data("123456:TEST")
     verified = verify_init_data(init_data, bot_token="123456:TEST")
     assert verified["user"]["id"] == 42
+
+
+def test_webapp_init_data_matches_fixed_telegram_hmac_vector(monkeypatch):
+    """Keep the Telegram key/message order pinned by a time-independent vector."""
+    from server.webapp import auth
+
+    monkeypatch.setattr(auth.time, "time", lambda: 1700000100)
+    init_data = (
+        "auth_date=1700000000&query_id=AAEAAAEAAAAB&"
+        "user=%7B%22id%22%3A42%2C%22first_name%22%3A%22Test%22%7D&"
+        "hash=4d76d859fa0d42e5626dae3c7cd878a45c9ae95551ca092dffd2924253a2ff16"
+    )
+    verified = auth.verify_init_data(init_data, bot_token="123456:TEST")
+    assert verified["auth_date"] == "1700000000"
+    assert verified["user"] == {"id": 42, "first_name": "Test"}
 
 
 def test_webapp_init_data_includes_newer_signature_field_in_hmac_payload():
@@ -94,7 +109,7 @@ def test_webapp_hmac_diagnostic_logs_only_safe_request_metadata(caplog):
     with pytest.raises(HTTPException, match="Telegram verification failed"):
         verify_init_data(init_data.replace("Test", "Other"), bot_token="123456:TEST", request_id="diag-request-123")
     message = caplog.messages[-1]
-    assert "diag=tma-hmac-v4" in message
+    assert "diag=tma-hmac-v5" in message
     assert "request_id=diag-request-123" in message
     assert "stage=hmac-mismatch" in message
     assert "fields=auth_date,hash,query_id,signature,user" in message
@@ -124,7 +139,7 @@ def test_webapp_init_data_rejects_reversed_hmac_key_message_order():
         "user": json.dumps({"id": 42, "first_name": "Test"}, separators=(",", ":")),
     }
     data_check_string = "\n".join(f"{key}={fields[key]}" for key in sorted(fields))
-    wrong_secret = hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
+    wrong_secret = hmac.new(bot_token.encode(), b"WebAppData", hashlib.sha256).digest()
     fields["hash"] = hmac.new(wrong_secret, data_check_string.encode(), hashlib.sha256).hexdigest()
     with pytest.raises(HTTPException, match="Telegram verification failed"):
         verify_init_data(urlencode(fields), bot_token=bot_token)
@@ -464,6 +479,28 @@ def test_admin_payment_records_encode_nested_manual_chain_datetimes_and_live_sse
     dashboard = (ROOT / "server/admin/routes/dashboard.py").read_text()
     assert "async def event_generator():\n        _LIVE_SUBS.add(queue)" in dashboard
     assert "finally:\n            _LIVE_SUBS.discard(queue)" in dashboard
+
+
+def test_admin_order_list_serializes_delivery_and_termination_datetimes():
+    from datetime import datetime, timezone
+    from server.admin.routes.orders import _ser
+
+    encoded = _ser({
+        "created_at": datetime(2026, 9, 4, 8, 0, tzinfo=timezone.utc),
+        "delivered_at": datetime(2026, 9, 4, 8, 1, tzinfo=timezone.utc),
+        "platform_session_terminated_at": datetime(2026, 9, 4, 8, 2, tzinfo=timezone.utc),
+        "delivery": {"events": [datetime(2026, 9, 4, 8, 3, tzinfo=timezone.utc)]},
+    })
+    assert encoded["created_at"].endswith("+00:00")
+    assert encoded["delivered_at"].endswith("+00:00")
+    assert encoded["platform_session_terminated_at"].endswith("+00:00")
+    assert encoded["delivery"]["events"][0].endswith("+00:00")
+
+
+def test_admin_sse_disconnect_is_not_logged_as_an_unhandled_no_response_error():
+    source = (ROOT / "server/core/api.py").read_text()
+    assert 'if str(exc) == "No response returned.":' in source
+    assert "return Response(status_code=204" in source
 
 
 def test_admin_payment_lists_show_retryable_error_without_nan_counts():

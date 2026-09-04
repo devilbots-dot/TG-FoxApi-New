@@ -24,7 +24,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python3 -m server"
+args = "bash build_miniapp.sh && python3 -m server"
 waitForPort = 5000
 
 [workflows.workflow.metadata]

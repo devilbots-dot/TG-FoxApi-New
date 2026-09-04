@@ -1,6 +1,6 @@
 """Order and sell-request management routes."""
 
-from typing import Optional
+from typing import Any, Optional
 from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 import csv
@@ -31,23 +31,20 @@ _log = LOGGER(__name__)
 router = APIRouter(tags=["Admin-Orders"], include_in_schema=False)
 
 
-# Every datetime-typed field on an order doc must be listed here, otherwise
-# JSONResponse can't encode it and the whole list endpoint 500s.
-_DATETIME_FIELDS = (
-    "created_at",
-    "completed_at",
-    "cancelled_at",
-    "delivered_at",
-)
+def _serialize_value(value: Any) -> Any:
+    """Make an order document safe for JSONResponse, including new fields."""
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, dict):
+        return {key: _serialize_value(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_serialize_value(item) for item in value]
+    return value
 
 
 def _ser(doc: dict) -> dict:
-    """Serialize datetimes in a document."""
-    for k in _DATETIME_FIELDS:
-        v = doc.get(k)
-        if isinstance(v, datetime):
-            doc[k] = v.isoformat()
-    return doc
+    """Serialize all datetimes without relying on a hard-coded field list."""
+    return _serialize_value(doc)
 
 
 @router.get("/admin/orders", response_class=HTMLResponse)
