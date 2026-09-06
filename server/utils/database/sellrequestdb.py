@@ -16,8 +16,8 @@ SELL_REQUEST_STATUS = ["pending", "approved", "rejected", "paid"]
 
 # Anti-abuse limits
 SELL_RATE_LIMIT_HOURS = 24     # rolling window
-SELL_RATE_LIMIT_MAX   = 5      # max submissions per window
-SELL_MAX_PENDING      = 3      # max simultaneous pending requests per user
+SELL_RATE_LIMIT_MAX   = 100      # max submissions per window
+SELL_MAX_PENDING      = 100      # max simultaneous pending requests per user
 
 # Lifecycle statuses (stored alongside the main "status" field):
 #   "pending"              — awaiting admin review (normal path)
