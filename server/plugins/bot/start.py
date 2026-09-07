@@ -62,6 +62,7 @@ Start plugin — Home panel, Profile, Transactions, Language, API Key, Cancel.
 """
 
 import config
+import math
 from pyrogram import filters
 from pyrogram.types import (
     InlineKeyboardButton as TelegramInlineKeyboardButton,
@@ -75,7 +76,7 @@ from server.utils.msg_builder import MsgBuilder
 
 from server import bot, LOGGER
 from server.core import memstore
-from server.utils.bot_utils import DIV as _DIV, safe_edit as _safe_edit
+from server.utils.bot_utils import DIV as _DIV, safe_edit as _safe_edit, is_admin as _is_admin
 from server.utils.database import (
     add_served_user,
     is_served_user,
@@ -83,6 +84,7 @@ from server.utils.database import (
     set_user_lang,
     get_api_key,
     get_balance,
+    get_reserve_balance,
     get_rank,
     is_banned_user,
     get_user_stats,
@@ -180,6 +182,65 @@ async def _render_home(client, user_id: int, mention: str, lang: str = "en") -> 
     rank = await get_rank(user_id)
     caption = _home_caption(mention, user_id, balance, rank, s)
     return caption, _home_buttons(s)
+
+
+# ── Admin: adjust withdrawable reserve ───────────────────────────────────────
+# Usage: /adjustreserve <user_id> <amount>
+# Positive amount credits Balance + Reserve; negative amount debits both.
+@bot.on_message(filters.command(["adjustreserve", "adjust_reserve"]) & filters.private)
+async def adjust_reserve_cmd(client, message: Message):
+    if not await _is_admin(message.from_user.id):
+        return
+
+    args = message.command[1:]
+    if len(args) != 2:
+        await message.reply_text(
+            "❌ Usage: `/adjustreserve <user_id> <amount>`\n\n"
+            "Example: `/adjustreserve 123456789 5`\n"
+            "Remove: `/adjustreserve 123456789 -2`"
+        )
+        return
+
+    try:
+        target_id = int(args[0])
+        amount = float(args[1])
+    except ValueError:
+        await message.reply_text("❌ User ID and amount must be valid numbers.")
+        return
+
+    if target_id <= 0:
+        await message.reply_text("❌ Invalid user ID.")
+        return
+    if not math.isfinite(amount) or amount == 0:
+        await message.reply_text("❌ Amount must be a non-zero finite number.")
+        return
+
+    try:
+        from server.utils.database import adjust_reserve_balance
+        ok, new_balance, new_reserve = await adjust_reserve_balance(target_id, amount)
+    except Exception as exc:
+        _log.error("adjustreserve failed for %s: %s", target_id, exc, exc_info=True)
+        await message.reply_text("❌ Adjustment failed. Nothing was changed.")
+        return
+
+    if not ok:
+        if amount < 0:
+            await message.reply_text(
+                "❌ Adjustment failed. The user does not have enough Balance/Reserve "
+                "for this deduction, or the user does not exist."
+            )
+        else:
+            await message.reply_text("❌ User not found or adjustment could not be applied.")
+        return
+
+    sign = "+" if amount > 0 else ""
+    await message.reply_text(
+        "✅ **Reserve Balance Updated**\n\n"
+        f"👤 User: `{target_id}`\n"
+        f"💵 Adjustment: `{sign}${amount:.4f}`\n"
+        f"💰 Balance: `${new_balance:.4f}`\n"
+        f"📌 Reserve Balance: `${new_reserve:.4f}`"
+    )
 
 
 # ── /start ────────────────────────────────────────────────────────────────────

@@ -1,14 +1,28 @@
-FINAL Reserve Balance update
+FINAL RESERVE BALANCE + ADMIN ADJUSTMENT UPDATE
 
-Replace each included file at the exact same path in the original project.
+Replace these files at the SAME paths in your GitHub project:
 
-Logic:
-1. balance = total wallet money.
-2. reserve_balance = earned money still available for withdrawal/spending.
-3. Sale/referral earnings increase balance + reserve_balance.
-4. Purchases reduce balance and consume reserve_balance first; once reserve is zero, purchases consume deposit money.
-5. Withdrawals are allowed only from reserve_balance. During a pending withdrawal, the amount is moved from balance + reserve_balance into reserved_balance. Failed/rejected withdrawals restore balance + reserve_balance. Completed withdrawals permanently consume reserved_balance.
-6. total_earn remains lifetime earnings/statistics and is not used as the current withdrawable amount.
-7. Legacy users without reserve_balance get a best-effort migration from lifetime earnings + referral earnings - total spend - total withdrawals, capped by current balance.
+server/plugins/bot/start.py
+server/utils/database/userdb.py
+server/utils/database/__init__.py
 
-Keep a backup before replacing files. Python compile check passed.
+Admin command added:
+/adjustreserve <user_id> <amount>
+
+Examples:
+/adjustreserve 123456789 5
+/adjustreserve 123456789 -2
+
+Alias also supported:
+/adjust_reserve <user_id> <amount>
+
+Security:
+- Only the existing bot admin check (OWNER_ID + sudoers) can use this command.
+- Positive adjustment increases BOTH balance and reserve_balance.
+- Negative adjustment decreases BOTH, only if sufficient funds exist.
+- Zero/invalid/infinite amounts are rejected.
+- If an adjustment fails, no balance is changed.
+
+The reserve balance remains the withdrawable earned balance. Purchases consume reserve first, then ordinary deposit balance. Withdrawals can use reserve only.
+
+IMPORTANT: Keep a backup of the current GitHub files before replacing them.

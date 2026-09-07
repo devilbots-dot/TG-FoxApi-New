@@ -14,6 +14,7 @@ from .userdb import (
     get_reserve_balance,
     get_wallet_snapshot,
     update_balance,
+    adjust_reserve_balance,
     set_balance,
     deduct_balance_atomic,
     reserve_earned_balance_atomic,

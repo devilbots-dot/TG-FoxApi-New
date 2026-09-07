@@ -223,6 +223,57 @@ async def update_balance(user_id: int, amount: float):
     memstore.invalidate_user(user_id)
 
 
+async def adjust_reserve_balance(user_id: int, amount: float) -> tuple[bool, float, float]:
+    """Atomically adjust a user's withdrawable earned reserve and total balance.
+
+    Positive ``amount`` credits both balances. Negative ``amount`` debits both
+    balances, but only when both have enough funds. This keeps reserve_balance
+    and balance consistent for admin adjustments.
+
+    Returns: (ok, new_balance, new_reserve_balance).
+    """
+    try:
+        user_id = int(user_id)
+        amount = round(float(amount), 4)
+    except (TypeError, ValueError):
+        return False, 0.0, 0.0
+
+    if not math.isfinite(amount) or amount == 0:
+        return False, 0.0, 0.0
+
+    await ensure_reserve_balance(user_id)
+
+    if amount > 0:
+        doc = await usersdb.find_one_and_update(
+            {"user_id": user_id},
+            {"$inc": {"balance": amount, "reserve_balance": amount}},
+            projection={"balance": 1, "reserve_balance": 1},
+            return_document=ReturnDocument.AFTER,
+        )
+    else:
+        debit = abs(amount)
+        doc = await usersdb.find_one_and_update(
+            {
+                "user_id": user_id,
+                "balance": {"$gte": debit},
+                "reserve_balance": {"$gte": debit},
+            },
+            {"$inc": {"balance": -debit, "reserve_balance": -debit}},
+            projection={"balance": 1, "reserve_balance": 1},
+            return_document=ReturnDocument.AFTER,
+        )
+
+    if not doc:
+        return False, 0.0, 0.0
+
+    memstore.invalidate_user(user_id)
+    return (
+        True,
+        round(float(doc.get("balance") or 0.0), 4),
+        round(max(0.0, float(doc.get("reserve_balance") or 0.0)), 4),
+    )
+
+
 async def set_balance(user_id: int, amount: float):
     await usersdb.update_one(
         {"user_id": user_id},
