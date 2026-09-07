@@ -125,6 +125,7 @@ async def get_my_profile(user=Depends(require_api_key)):
 
         # Financials
         "balance":            snapshot["balance"],
+        "reserve_balance":    snapshot["reserve_balance"],
         "reserved_balance":   snapshot["reserved_balance"],
         "net_spendable":      round(max(0.0, snapshot["balance"] - snapshot["reserved_balance"]), 4),
         "currency":           "USD",

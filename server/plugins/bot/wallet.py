@@ -54,7 +54,7 @@ from server.utils.bot_utils import Btn as InlineKeyboardButton
 
 import config
 from server import bot, LOGGER
-from server.utils.database import get_balance, get_user_lang
+from server.utils.database import get_balance, get_reserve_balance, get_user_lang
 from server.utils.database.userdb import get_wallet_addresses, set_wallet_address
 from server.utils.database.walletdb import create_deposit_v2
 from server.services.withdrawal.models import FeeCalculation
@@ -337,6 +337,7 @@ async def show_wallet_cb(client, cq: CallbackQuery):
 
         from server.utils.database.userdb import get_pending_balance
         balance = await get_balance(uid)
+        reserve_balance = await get_reserve_balance(uid)
         pending_balance = await get_pending_balance(uid)
         addrs = await get_wallet_addresses(uid)
 
@@ -353,6 +354,7 @@ async def show_wallet_cb(client, cq: CallbackQuery):
             f"![💳](tg://emoji?id=6129731974291527294) **{s.get('wallet_main_title', 'YOUR WALLET')}**\n"
             f"{_DIV}\n\n"
             f"![💰](tg://emoji?id=6129731974291527294) **{s.get('lbl_balance', 'Balance')}:** `${balance:.4f} USD`\n"
+            f"![💵](tg://emoji?id=6129731974291527294) **Reserve Balance (Withdrawable):** `${reserve_balance:.4f} USD`\n"
             f"{pending_line}\n"
             f"{_DIV}\n"
             f"![🏦](tg://emoji?id=5316705578670636235) **{s.get('wallet_addr_section', 'WITHDRAWAL ADDRESSES (USDT)')}**\n"
@@ -983,7 +985,7 @@ def _withdraw_amount_markup(s: dict) -> InlineKeyboardMarkup:
     ]])
 
 
-def _withdraw_review_text(data: dict, balance: float, s: dict) -> str:
+def _withdraw_review_text(data: dict, balance: float, reserve_balance: float, s: dict) -> str:
     """Full confirmation screen shown before the user commits to the withdrawal."""
     amount     = data["amount"]
     network    = data["network"]
@@ -1009,6 +1011,7 @@ def _withdraw_review_text(data: dict, balance: float, s: dict) -> str:
         f"![💵](tg://emoji?id=6129731974291527294) **{s.get('lbl_net_amount', 'You Receive')}:** `${net_amount:.4f} USDT`\n"
         f"{_DIV}\n"
         f"![💰](tg://emoji?id=6129731974291527294) **{s.get('lbl_balance', 'Current Balance')}:** `${balance:.4f} USD`\n"
+        f"![💵](tg://emoji?id=6129731974291527294) **Reserve Balance (Withdrawable):** `${reserve_balance:.4f} USD`\n"
         f"![⏳](tg://emoji?id=6129574787078429498) **{s.get('lbl_after_withdrawal', 'After Withdrawal')}:** `${remaining:.4f} USD`\n"
         f"{_DIV}\n\n"
         f"![⚠️](tg://emoji?id=6129939837823753679) {s.get('wit_confirm_warning', 'Please verify all details carefully. Withdrawals **cannot** be reversed.')}"
@@ -1414,13 +1417,13 @@ async def wit_confirm_cb(client, cq: CallbackQuery):
         if not result["ok"]:
             error = result.get("error", "Unknown error.")
             if "balance" in error.lower() or "insufficient" in error.lower():
-                balance  = await get_balance(uid)
+                reserve_balance = await get_reserve_balance(uid)
                 err_text = (
                     s.get(
                         "wallet_insufficient",
                         "![❌](tg://emoji?id=6129846551134084367) **Insufficient balance.**\n\n"
                         "Available: `${0}`\nRequired: `${1}`"
-                    ).format(f"{balance:.4f}", f"{amount:.2f}")
+                    ).format(f"{reserve_balance:.4f}", f"{amount:.2f}")
                 )
             else:
                 err_text = f"![❌](tg://emoji?id=6129846551134084367) {error}"
@@ -2008,12 +2011,13 @@ async def wallet_text_handler(client, message: Message):
             return
 
         balance = await get_balance(uid)
-        if amount > balance:
+        reserve_balance = await get_reserve_balance(uid)
+        if amount > reserve_balance:
             await message.reply_text(
                 s.get("wallet_insufficient",
-                      "![❌](tg://emoji?id=6129846551134084367) **Insufficient balance.**\n\n"
+                      "![❌](tg://emoji?id=6129846551134084367) **Insufficient withdrawable balance.**\n\n"
                       "Available: `${0}`\nRequested: `${1}`")
-                .format(f"{balance:.4f}", f"{amount:.2f}")
+                .format(f"{reserve_balance:.4f}", f"{amount:.2f}")
             )
             return
 
@@ -2040,7 +2044,7 @@ async def wallet_text_handler(client, message: Message):
         msg_id  = state["data"].get("msg_id")
         await _edit_by_ref(
             client, chat_id, msg_id,
-            _withdraw_review_text(state["data"], balance, s),
+            _withdraw_review_text(state["data"], balance, await get_reserve_balance(uid), s),
             _withdraw_review_markup(s),
         )
 

@@ -15,7 +15,7 @@ from server.utils.database.sellrequestdb import (
     reject_sell_request,
     get_sell_request,
 )
-from server.utils.database.userdb import move_pending_to_available, update_balance, clear_pending_balance
+from server.utils.database.userdb import move_pending_to_available, record_sale, clear_pending_balance
 from server.utils.database.walletdb import log_transaction
 
 _log = LOGGER(__name__)
@@ -68,7 +68,7 @@ async def finalize_sell_approval(
             user_id, pending_amount,
         )
         # Fallback: credit available balance directly …
-        await update_balance(user_id, final_price)
+        await record_sale(user_id, final_price)
         # … and clear the stuck pending balance so it never appears twice.
         try:
             await clear_pending_balance(user_id, pending_amount)

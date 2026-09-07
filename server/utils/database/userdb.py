@@ -39,6 +39,7 @@ def _generate_referral_code() -> str:
 
 DEFAULT_PROFILE = {
     "balance":                 0.0,
+    "reserve_balance":         0.0,
     "pending_balance":         0.0,
     "rank":                    "VIP1",
     "language":                "en",
@@ -151,23 +152,65 @@ async def set_user_lang(user_id: int, lang: str):
 async def get_balance(user_id: int) -> float:
     # Always fetch from Mongo — balance must be current.
     user = await usersdb.find_one({"user_id": user_id}, {"balance": 1})
-    return round((user or {}).get("balance", 0.0), 4)
+    return round(float((user or {}).get("balance", 0.0) or 0.0), 4)
+
+
+async def _legacy_reserve_value(user: dict) -> float:
+    """Best-effort migration value for users created before reserve_balance existed.
+
+    Reserve represents earnings still present in the wallet.  Because older
+    documents did not track which source (deposit vs earnings) each purchase
+    consumed, the safest recoverable estimate is lifetime earnings/referrals
+    minus lifetime spend/withdrawals, capped by the current wallet balance.
+    """
+    earned = float(user.get("total_earn") or 0.0) + float(user.get("referral_earnings") or 0.0)
+    spent = float(user.get("total_spend") or 0.0)
+    withdrawn = float(user.get("total_withdrawal") or 0.0)
+    balance = float(user.get("balance") or 0.0)
+    return max(0.0, min(balance, earned - spent - withdrawn))
+
+
+async def ensure_reserve_balance(user_id: int) -> float:
+    """Ensure legacy users get a persistent reserve_balance field."""
+    user = await usersdb.find_one(
+        {"user_id": user_id},
+        {"reserve_balance": 1, "balance": 1, "total_earn": 1,
+         "referral_earnings": 1, "total_spend": 1, "total_withdrawal": 1},
+    ) or {}
+    if "reserve_balance" in user:
+        return round(max(0.0, float(user.get("reserve_balance") or 0.0)), 4)
+    value = round(await _legacy_reserve_value(user), 4)
+    result = await usersdb.update_one(
+        {"user_id": user_id, "reserve_balance": {"$exists": False}},
+        {"$set": {"reserve_balance": value}},
+    )
+    if result.modified_count:
+        memstore.invalidate_user(user_id)
+    return value
+
+
+async def get_reserve_balance(user_id: int) -> float:
+    """Return earned money that is still withdrawable/spendable."""
+    return await ensure_reserve_balance(user_id)
 
 
 async def get_wallet_snapshot(user_id: int) -> dict:
     """Return fresh wallet fields from one canonical MongoDB document read."""
     user = await usersdb.find_one(
         {"user_id": user_id},
-        {"balance": 1, "reserved_balance": 1, "wallet_addresses": 1},
+        {"balance": 1, "reserve_balance": 1, "reserved_balance": 1,
+         "total_earn": 1, "referral_earnings": 1, "total_spend": 1,
+         "total_withdrawal": 1, "wallet_addresses": 1},
     ) or {}
+    reserve = user.get("reserve_balance")
+    if reserve is None:
+        reserve = await _legacy_reserve_value(user)
     addresses = user.get("wallet_addresses") or {}
     return {
         "balance": round(float(user.get("balance") or 0.0), 4),
+        "reserve_balance": round(max(0.0, float(reserve or 0.0)), 4),
         "reserved_balance": round(float(user.get("reserved_balance") or 0.0), 4),
-        "addresses": {
-            "trc20": addresses.get("trc20"),
-            "bep20": addresses.get("bep20"),
-        },
+        "addresses": {"trc20": addresses.get("trc20"), "bep20": addresses.get("bep20")},
     }
 
 
@@ -190,9 +233,24 @@ async def set_balance(user_id: int, amount: float):
 
 
 async def deduct_balance_atomic(user_id: int, amount: float) -> bool:
+    """Spend from total balance and consume earned reserve first.
+
+    The total ``balance`` is reduced by the purchase amount.  ``reserve_balance``
+    is reduced by the same amount up to zero, so earned funds are consumed before
+    deposit funds.  This preserves the meaning: reserve = earned money still
+    remaining after spending/withdrawals.
+    """
+    amount = round(float(amount), 4)
+    if amount <= 0:
+        return True
+    # Initialise legacy documents before the atomic purchase deduction.
+    await ensure_reserve_balance(user_id)
     result = await usersdb.update_one(
-        {"user_id": user_id, "balance": {"$gte": round(amount, 4)}},
-        {"$inc": {"balance": -round(amount, 4)}},
+        {"user_id": user_id, "balance": {"$gte": amount}},
+        [{"$set": {
+            "balance": {"$round": [{"$subtract": ["$balance", amount]}, 4]},
+            "reserve_balance": {"$round": [{"$max": [0.0, {"$subtract": [{"$ifNull": ["$reserve_balance", 0.0]}, amount]}]}, 4]},
+        }}],
     )
     if result.modified_count > 0:
         memstore.invalidate_user(user_id)
@@ -205,42 +263,38 @@ async def deduct_balance_atomic(user_id: int, amount: float) -> bool:
 #   2. finalize_reserved_balance — remove from reserved_balance (permanent deduction)
 #   3. release_reserved_balance  — move reserved_balance → balance (refund)
 
-async def reserve_balance_atomic(user_id: int, amount: float) -> bool:
+async def reserve_earned_balance_atomic(user_id: int, amount: float) -> bool:
+    """Lock an earned amount for withdrawal. Removes it from both spendable
+    balance and withdrawable reserve while keeping a separate temporary lock.
     """
-    Atomically move `amount` from spendable balance to reserved_balance.
-    Returns True if successful (sufficient balance), False otherwise.
-    Prevents double-spend: balance can't be used for purchases while reserved.
-    """
-    amount = round(amount, 4)
+    amount = round(float(amount), 4)
+    if amount <= 0:
+        return False
+    await ensure_reserve_balance(user_id)
     result = await usersdb.update_one(
-        {"user_id": user_id, "balance": {"$gte": amount}},
-        {
-            "$inc": {
-                "balance":          -amount,
-                "reserved_balance":  amount,
-            }
-        },
+        {"user_id": user_id, "balance": {"$gte": amount}, "reserve_balance": {"$gte": amount}},
+        {"$inc": {
+            "balance": -amount,
+            "reserve_balance": -amount,
+            "reserved_balance": amount,
+        }},
     )
     if result.modified_count > 0:
         memstore.invalidate_user(user_id)
     return result.modified_count > 0
 
 
+async def reserve_balance_atomic(user_id: int, amount: float) -> bool:
+    """Backward-compatible alias: withdrawals now reserve earned balance only."""
+    return await reserve_earned_balance_atomic(user_id, amount)
+
+
 async def finalize_reserved_balance(user_id: int, amount: float) -> bool:
-    """
-    Permanently deduct `amount` from reserved_balance (withdrawal completed).
-    Also increments total_withdrawal for lifetime stats.
-    Returns True if sufficient reserved_balance existed.
-    """
-    amount = round(amount, 4)
+    """Permanently consume a withdrawal amount already locked in reserved_balance."""
+    amount = round(float(amount), 4)
     result = await usersdb.update_one(
         {"user_id": user_id, "reserved_balance": {"$gte": amount}},
-        {
-            "$inc": {
-                "reserved_balance": -amount,
-                "total_withdrawal":  amount,
-            }
-        },
+        {"$inc": {"reserved_balance": -amount, "total_withdrawal": amount}},
     )
     if result.modified_count > 0:
         memstore.invalidate_user(user_id)
@@ -248,20 +302,15 @@ async def finalize_reserved_balance(user_id: int, amount: float) -> bool:
 
 
 async def release_reserved_balance(user_id: int, amount: float) -> None:
-    """
-    Release `amount` from reserved_balance back to spendable balance.
-    Called when a withdrawal fails, is rejected, or is cancelled.
-    """
-    amount = round(amount, 4)
+    """Return a failed/cancelled withdrawal to both balance and reserve."""
+    amount = round(float(amount), 4)
     await usersdb.update_one(
-        {"user_id": user_id},
-        {
-            "$inc": {
-                "reserved_balance": -amount,
-                "balance":           amount,
-            }
-        },
-        upsert=True,
+        {"user_id": user_id, "reserved_balance": {"$gte": amount}},
+        {"$inc": {
+            "reserved_balance": -amount,
+            "balance": amount,
+            "reserve_balance": amount,
+        }},
     )
     memstore.invalidate_user(user_id)
 
@@ -325,23 +374,13 @@ async def set_wallet_address(user_id: int, network: str, address: str) -> None:
 
 
 async def record_purchase(user_id: int, amount: float, *, units: int = 1):
-    """Charge the wallet for a purchase that is still awaiting delivery.
-
-    This function intentionally does *not* update ``total_spend`` or buy
-    counters.  Those are successful-sale statistics and are recorded only by
-    ``record_successful_purchase`` after the buyer actually receives the OTP or
-    session delivery.
-    """
-    result = await usersdb.update_one(
-        {"user_id": user_id, "balance": {"$gte": round(amount, 4)}},
-        {"$inc": {"balance": -round(amount, 4)}},
-    )
-    if result.modified_count == 0:
+    """Charge the wallet. Earned reserve is consumed first, then deposits."""
+    ok = await deduct_balance_atomic(user_id, amount)
+    if not ok:
         raise BalanceError(
-            f"Balance fell below ${amount:.4f} between pre-check and deduction "
+            f"Balance fell below ${float(amount):.4f} between pre-check and deduction "
             "(concurrent purchase likely drained the wallet)."
         )
-    memstore.invalidate_user(user_id)
 
 
 async def record_successful_purchase(
@@ -406,6 +445,7 @@ async def record_sale(user_id: int, amount: float):
         {
             "$inc": {
                 "balance":            round(amount, 4),
+                "reserve_balance":    round(amount, 4),
                 "total_earn":         round(amount, 4),
                 "total_account_sell": 1,
             }
@@ -437,6 +477,7 @@ async def move_pending_to_available(user_id: int, amount: float) -> bool:
             "$inc": {
                 "pending_balance":    -round(amount, 4),
                 "balance":             round(amount, 4),
+                "reserve_balance":    round(amount, 4),
                 "total_earn":          round(amount, 4),
                 "total_account_sell":  1,
             }
@@ -593,7 +634,7 @@ async def get_user_by_referral(code: str) -> Optional[dict]:
     return await usersdb.find_one({"referral_code": code})
 
 
-async def apply_referral(user_id: int, referral_code: str, bonus: float = 0.001) -> bool:
+async def apply_referral(user_id: int, referral_code: str, bonus: float = 1.0) -> bool:
     # Validate the referral code and ensure it doesn't point back at the same user
     referrer = await usersdb.find_one({"referral_code": referral_code}, {"user_id": 1})
     if not referrer or referrer["user_id"] == user_id:
@@ -620,6 +661,7 @@ async def apply_referral(user_id: int, referral_code: str, bonus: float = 0.001)
                 "referral_count":    1,
                 "referral_earnings": bonus,
                 "balance":           bonus,
+                "reserve_balance":  bonus,
             }
         },
     )
@@ -780,6 +822,7 @@ async def get_user_stats(user_id: int) -> dict:
         "username":           user.get("username"),
         "full_name":          user.get("full_name"),
         "balance":            user.get("balance", 0.0),
+        "reserve_balance":    user.get("reserve_balance", 0.0),
         "rank":               user.get("rank", "VIP1"),
         "total_account_buy":  user.get("total_account_buy", 0),
         "total_account_sell": user.get("total_account_sell", 0),

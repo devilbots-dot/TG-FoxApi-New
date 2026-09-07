@@ -419,6 +419,7 @@ async def show_profile_cb(client, cq: CallbackQuery):
         b.t(f"{D}\n").bold(f"![💰](tg://emoji?id=6129731974291527294) {s.get('wallet_title_section', 'WALLET')}").t(f"\n{D}\n\n")
         _bq = b.bq_start()
         b.bold(f"![💳](tg://emoji?id=6129731974291527294) {s.get('lbl_balance', 'Balance')}: ").code(f"${stats.get('balance', 0):.4f}").t("\n")
+        b.bold("![💵](tg://emoji?id=6129731974291527294) Reserve Balance (Withdrawable): ").code(f"${stats.get('reserve_balance', 0):.4f}").t("\n")
         b.bold(f"![📥](tg://emoji?id=6131886699254388574) {s.get('lbl_total_deposited', 'Total Deposited')}: ").code(f"${stats.get('total_deposit', 0):.2f}").t("\n")
         b.bold(f"![💸](tg://emoji?id=6129731974291527294) {s.get('lbl_total_spent', 'Total Spent')}: ").code(f"${stats.get('total_spend', 0):.2f}").t("\n")
         b.bold(f"![💵](tg://emoji?id=6129731974291527294) {s.get('lbl_total_earned', 'Total Earned')}: ").code(f"${stats.get('total_earn', 0):.2f}")

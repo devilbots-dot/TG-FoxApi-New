@@ -255,7 +255,7 @@ async def finalize_withdrawal(
     Mark withdrawal as COMPLETED and permanently deduct from reserved balance.
 
     Steps (both must succeed atomically per-collection):
-      1. Move amount from reserved_balance (deduct permanently)
+      1. Move amount from reserved earned balance (deduct permanently)
       2. Update withdrawal status to completed
     """
     from server.utils.database.userdb import finalize_reserved_balance

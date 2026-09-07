@@ -146,11 +146,13 @@ async def wallet_overview(user=Depends(require_api_key)):
             # Balance
             "balance": {
                 "available":   round(balance, 4),
+                "reserve_balance": round(reserve, 4),
                 "reserved":    round(res_f, 4),
                 "net_spendable": round(net, 4),
                 "currency":    "USD",
                 "formatted": {
                     "available":   f"${balance:.2f}",
+                    "reserve_balance": f"${reserve:.2f}",
                     "reserved":    f"${res_f:.2f}",
                     "net_spendable": f"${net:.2f}",
                 },
@@ -192,11 +194,13 @@ async def get_wallet_balance(user=Depends(require_api_key)):
     return ok(
         data={
             "available":       round(balance, 4),
+            "reserve_balance": round(reserve, 4),
             "reserved":        round(res_f, 4),
             "net_spendable":   round(net, 4),
             "currency":        "USD",
             "formatted": {
                 "available":     f"${balance:.2f}",
+                "reserve_balance": f"${reserve:.2f}",
                 "reserved":      f"${res_f:.2f}",
                 "net_spendable": f"${net:.2f}",
             },

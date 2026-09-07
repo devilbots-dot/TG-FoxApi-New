@@ -41,7 +41,7 @@ from server.utils.database.withdrawaldb import (
     get_in_flight_withdrawals,
 )
 from server.utils.database.userdb import (
-    reserve_balance_atomic,
+    reserve_earned_balance_atomic,
     release_reserved_balance,
     finalize_reserved_balance,
     get_balance,
@@ -110,9 +110,9 @@ class WithdrawalService:
             return {"ok": False, "error": f"Invalid {network} address: {addr_err}"}
 
         # ── 4. Balance check ──────────────────────────────────────────────────
-        balance = await get_balance(user_id)
-        if balance < amount:
-            return {"ok": False, "error": f"Insufficient balance. You have ${balance:.2f}, need ${amount:.2f}."}
+        reserve_balance = await get_reserve_balance(user_id)
+        if reserve_balance < amount:
+            return {"ok": False, "error": f"Insufficient withdrawable balance. You have ${reserve_balance:.2f}, need ${amount:.2f}."}
 
         # ── 5. Daily limit ────────────────────────────────────────────────────
         daily_total = await get_user_daily_withdrawal_total(user_id)
@@ -141,11 +141,11 @@ class WithdrawalService:
             return {"ok": False, "error": "Amount too small after fees."}
 
         # ── 9. Reserve balance ────────────────────────────────────────────────
-        reserved = await reserve_balance_atomic(user_id, amount)
+        reserved = await reserve_earned_balance_atomic(user_id, amount)
         if not reserved:
             # Re-read for accurate error message
             balance = await get_balance(user_id)
-            return {"ok": False, "error": f"Insufficient balance. Available: ${balance:.2f}."}
+            return {"ok": False, "error": f"Insufficient withdrawable balance. Available: ${await get_reserve_balance(user_id):.2f}."}
 
         # ── 10. Determine mode + provider ─────────────────────────────────────
         mode = config.WITHDRAWAL_GATEWAY  # "auto" or "manual"
