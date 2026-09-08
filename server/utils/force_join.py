@@ -18,8 +18,54 @@ def _chat_ref(value):
         return value
 
 
+async def _is_member_or_pending_request(client, chat, user_id: int) -> bool:
+    """Accept an actual member OR an active pending join request."""
+    try:
+        member = await client.get_chat_member(chat, user_id)
+        status = getattr(member, "status", None)
+        if status in (
+            ChatMemberStatus.OWNER,
+            ChatMemberStatus.ADMINISTRATOR,
+            ChatMemberStatus.MEMBER,
+        ):
+            return True
+        if status == ChatMemberStatus.RESTRICTED and bool(getattr(member, "is_member", False)):
+            return True
+    except Exception:
+        pass
+
+    # Private-group join requests are not returned by get_chat_member().
+    # Search Telegram's pending-request list and verify the exact user ID.
+    try:
+        user = await client.get_users(user_id)
+        queries = []
+        if getattr(user, "username", None):
+            queries.append(user.username)
+        if getattr(user, "first_name", None):
+            queries.append(user.first_name)
+        if getattr(user, "last_name", None):
+            queries.append(user.last_name)
+
+        seen = set()
+        for query in queries:
+            query = str(query).strip()
+            if not query or query.lower() in seen:
+                continue
+            seen.add(query.lower())
+            async for req in client.get_chat_join_requests(chat, query=query, limit=100):
+                if req.from_user and req.from_user.id == user_id:
+                    return True
+    except Exception:
+        pass
+
+    return False
+
+
 async def is_force_joined(client, user_id: int) -> bool:
-    """Return True only when the user is currently a member of both targets."""
+    """Return True when the user is a member of both targets or has a pending
+    join request for the private target. Membership/request status is checked
+    live on every call.
+    """
     if not getattr(_cfg, "FORCE_JOIN_ENABLED", False):
         return True
 
@@ -31,20 +77,9 @@ async def is_force_joined(client, user_id: int) -> bool:
         chat = _chat_ref(raw)
         if not chat:
             return False
-        try:
-            member = await client.get_chat_member(chat, user_id)
-            status = getattr(member, "status", None)
-            if status in (
-                ChatMemberStatus.OWNER,
-                ChatMemberStatus.ADMINISTRATOR,
-                ChatMemberStatus.MEMBER,
-            ):
-                continue
-            if status == ChatMemberStatus.RESTRICTED and bool(getattr(member, "is_member", False)):
-                continue
-            return False
-        except Exception:
-            return False
+        if await _is_member_or_pending_request(client, chat, user_id):
+            continue
+        return False
     return True
 
 
