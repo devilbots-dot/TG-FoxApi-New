@@ -18,6 +18,7 @@ from server.utils.bot_utils import Btn as InlineKeyboardButton
 
 import config as _cfg
 from server import bot, LOGGER
+from server.utils.force_join import is_force_joined, force_join_keyboard, force_join_text
 from server.utils.bot_utils import safe_edit as _safe_edit
 from server.utils.database import is_banned_user
 from server.plugins.bot._shared_state import sell_account_state as _SA_STATE
@@ -127,6 +128,11 @@ async def sell_account_start_cb(client, cq: CallbackQuery):
 
         if await is_banned_user(user_id):
             await cq.answer("You are banned.", show_alert=True)
+            return
+
+        if not await is_force_joined(client, user_id):
+            await _safe_edit(cq, force_join_text(), force_join_keyboard("forcejoin_verify"))
+            await cq.answer()
             return
 
         text, keyboard = await begin_sell_account_flow(user_id)

@@ -73,6 +73,7 @@ from pyrogram.types import (
 )
 from server.utils.bot_utils import Btn as InlineKeyboardButton
 from server.utils.msg_builder import MsgBuilder
+from server.utils.force_join import is_force_joined, force_join_keyboard, force_join_text
 
 from server import bot, LOGGER
 from server.core import memstore
@@ -306,6 +307,16 @@ async def start_pm(client, message: Message):
             except Exception as ref_exc:
                 _log.warning("apply_referral failed for user %s ref=%s: %s", user.id, ref_code, ref_exc)
 
+        # ── Force Join gate ────────────────────────────────────────────────
+        if not await is_force_joined(client, user.id):
+            _target = ref_code or ""
+            _verify_cb = "forcejoin_verify" + (f":{_target}" if _target else "")
+            await message.reply_text(
+                force_join_text(),
+                reply_markup=force_join_keyboard(_verify_cb),
+            )
+            return
+
         # Mini App seller control center uses this explicit deep-link to enter
         # the existing phone/OTP/2FA bot workflow. It is not a referral code.
         if ref_code == "sell":
@@ -354,6 +365,75 @@ async def start_pm(client, message: Message):
         _log.error("start_pm: %s", e, exc_info=True)
 
 
+# ── Force Join verification ─────────────────────────────────────────────────
+@bot.on_callback_query(filters.regex(r"^forcejoin_verify(?::(.*))?$"))
+async def forcejoin_verify_cb(client, cq: CallbackQuery):
+    try:
+        user_id = cq.from_user.id
+        if not await is_force_joined(client, user_id):
+            await cq.answer("Please join both the channel and group first.", show_alert=True)
+            try:
+                await _safe_edit(
+                    cq,
+                    force_join_text(),
+                    force_join_keyboard(cq.data or "forcejoin_verify"),
+                )
+            except Exception:
+                pass
+            return
+
+        # Verification succeeded: remove the gate message so the chat stays clean.
+        try:
+            if cq.message:
+                await cq.message.delete()
+        except Exception as exc:
+            _log.debug("forcejoin gate message delete failed for %s: %s", user_id, exc)
+
+        target = ""
+        try:
+            target = (cq.data or "").split(":", 1)[1]
+        except IndexError:
+            pass
+
+        if target == "sell":
+            try:
+                from server.plugins.bot.sell_account import begin_sell_account_flow
+                text, keyboard = await begin_sell_account_flow(user_id)
+                await client.send_message(user_id, text=text, reply_markup=keyboard)
+                await cq.answer("Verified successfully.")
+                return
+            except Exception as exc:
+                _log.error("forcejoin sell deep-link failed for %s: %s", user_id, exc, exc_info=True)
+
+        if target == "avail_list":
+            try:
+                from pyrogram import enums as _enums
+                from server.plugins.bot.market import _build_available_countries_message
+                text = await _build_available_countries_message()
+                await client.send_message(
+                    user_id,
+                    text,
+                    parse_mode=_enums.ParseMode.HTML,
+                    disable_web_page_preview=True,
+                )
+                await cq.answer("Verified successfully.")
+                return
+            except Exception as exc:
+                _log.error("forcejoin avail_list deep-link failed for %s: %s", user_id, exc, exc_info=True)
+
+        lang = await get_user_lang(user_id)
+        mention = cq.from_user.mention
+        caption, buttons = await _render_home(client, user_id, mention, lang)
+        await client.send_message(user_id, text=caption, reply_markup=buttons)
+        await cq.answer("Verified successfully.")
+    except Exception as exc:
+        _log.error("forcejoin_verify_cb: %s", exc, exc_info=True)
+        try:
+            await cq.answer("Verification failed. Please try again.", show_alert=True)
+        except Exception:
+            pass
+
+
 # ── Back to Home ──────────────────────────────────────────────────────────────
 
 @bot.on_callback_query(filters.regex("^(back_home|back_start)$"))
@@ -380,6 +460,10 @@ async def back_home_cb(client, cq: CallbackQuery):
 @bot.on_callback_query(filters.regex("^sessions_menu$"))
 async def sessions_menu_cb(client, cq: CallbackQuery):
     try:
+        if not await is_force_joined(client, cq.from_user.id):
+            await _safe_edit(cq, force_join_text(), force_join_keyboard("forcejoin_verify"))
+            await cq.answer()
+            return
         await _safe_edit(
             cq,
             "![📦](tg://emoji?id=6131886699254388574) **Sessions**\n\nChoose an option:",
@@ -407,6 +491,10 @@ async def noop_cb(client, cq: CallbackQuery):
 async def extra_menu_cb(client, cq: CallbackQuery):
     try:
         user_id = cq.from_user.id
+        if not await is_force_joined(client, user_id):
+            await _safe_edit(cq, force_join_text(), force_join_keyboard("forcejoin_verify"))
+            await cq.answer()
+            return
         lang = await get_user_lang(user_id)
         s = get_string(lang)
         text = (

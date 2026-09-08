@@ -52,6 +52,7 @@ from server.utils.bot_utils import Btn as InlineKeyboardButton
 
 import config as _cfg
 from server import bot, LOGGER
+from server.utils.force_join import is_force_joined, force_join_keyboard, force_join_text
 from server.utils.bot_utils import safe_edit as _safe_edit
 from server.utils.database import get_user_lang, is_banned_user
 from server.utils.pricing_discounts import rank_index, get_user_rank, get_user_total_spend, get_required_spend_for
@@ -81,6 +82,11 @@ async def sell_session_start_cb(client, cq: CallbackQuery):
         user_id = cq.from_user.id
         if await is_banned_user(user_id):
             await cq.answer("You are banned.", show_alert=True)
+            return
+
+        if not await is_force_joined(client, user_id):
+            await _safe_edit(cq, force_join_text(), force_join_keyboard("forcejoin_verify"))
+            await cq.answer()
             return
 
         # Session-selling gate: master toggle + rank threshold

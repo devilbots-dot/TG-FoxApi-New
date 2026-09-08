@@ -90,6 +90,7 @@ from server.utils.bot_utils import Btn as InlineKeyboardButton
 from telethon import TelegramClient
 
 from server import bot, LOGGER
+from server.utils.force_join import is_force_joined, force_join_keyboard, force_join_text
 from server.utils.database import get_balance, get_all_countries, get_country, get_user_lang
 from server.utils.database.userdb import update_balance
 from server.utils.database.orderdb import refund_order
@@ -808,6 +809,10 @@ async def _build_buy_grid(page: int, s: dict, mode: str = "account") -> tuple[in
 async def buy_page_cb(client, cq: CallbackQuery):
     try:
         user_id = cq.from_user.id
+        if not await is_force_joined(client, user_id):
+            await _safe_edit(cq, force_join_text(), force_join_keyboard("forcejoin_verify"))
+            await cq.answer()
+            return
         lang = await get_user_lang(user_id)
         s = get_string(lang)
 

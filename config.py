@@ -45,6 +45,39 @@ _require("SESSION_SECRET", str, "Fernet key for encrypting 2FA passwords.")
 # ── Owner ────────────────────────────────────────────────────────────────────
 OWNER_ID = _require("OWNER_ID", int, "Your Telegram user ID. Get it from @MissRose_Bot via /id")
 
+# ── Force Join ────────────────────────────────────────────────────────────────
+FORCE_JOIN_ENABLED: bool = getenv("FORCE_JOIN_ENABLED", "true").strip().lower() not in (
+    "0", "false", "no", "off"
+)
+FORCE_JOIN_CHANNEL_ID: str = getenv("FORCE_JOIN_CHANNEL_ID", "-1003849086510").strip()
+FORCE_JOIN_CHANNEL_URL: str = getenv("FORCE_JOIN_CHANNEL_URL", "https://t.me/TgFoxApi").strip()
+FORCE_JOIN_GROUP_ID: str = getenv("FORCE_JOIN_GROUP_ID", "-1004376859237").strip()
+FORCE_JOIN_GROUP_URL: str = getenv("FORCE_JOIN_GROUP_URL", "https://t.me/+B_lftBVWPKA2ODk8").strip()
+
+if FORCE_JOIN_ENABLED:
+    _fj_missing = [
+        key for key, value in (
+            ("FORCE_JOIN_CHANNEL_ID", FORCE_JOIN_CHANNEL_ID),
+            ("FORCE_JOIN_CHANNEL_URL", FORCE_JOIN_CHANNEL_URL),
+            ("FORCE_JOIN_GROUP_ID", FORCE_JOIN_GROUP_ID),
+            ("FORCE_JOIN_GROUP_URL", FORCE_JOIN_GROUP_URL),
+        ) if not value
+    ]
+    if _fj_missing:
+        print(
+            "[FATAL] Force Join is enabled but these settings are missing: "
+            + ", ".join(_fj_missing),
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+    for _fj_key, _fj_url in (
+        ("FORCE_JOIN_CHANNEL_URL", FORCE_JOIN_CHANNEL_URL),
+        ("FORCE_JOIN_GROUP_URL", FORCE_JOIN_GROUP_URL),
+    ):
+        if not _fj_url.startswith(("http://", "https://")):
+            print(f"[FATAL] {_fj_key} must start with http:// or https://", file=sys.stderr)
+            raise SystemExit(1)
+
 # ── API server ────────────────────────────────────────────────────────────────
 # Port the uvicorn server binds on. Render/Heroku/Railway inject $PORT
 # automatically — honour it first, then fall back to API_PORT, then 1470.
