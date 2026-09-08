@@ -1,0 +1,344 @@
+{% extends "admin/base.html" %}
+{% block title %}Sales Feed{% endblock %}
+{% block topbar_title %}📡 Sales Feed & Fake Activity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Sales Feed & Fake Activity</div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" onclick="loadSettings()">🔄 Refresh</button>
+  </div>
+</div>
+
+<!-- ── Real Sales Feed Card ────────────────────────────────────────────── -->
+<div class="card" style="margin-bottom:20px">
+  <div class="card-header">
+    <span class="card-title">📡 Real Sales Feed</span>
+    <span class="badge" id="feed-status-badge" style="font-size:11px">Loading…</span>
+  </div>
+  <div class="card-body">
+    <p style="color:var(--text3);font-size:13px;margin-bottom:16px">
+      Automatically posts a formatted message to a Telegram chat whenever a real purchase is completed.
+      Supports channels, groups, and private chats.
+    </p>
+
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <!-- Enable toggle -->
+      <div class="form-group">
+        <label class="form-label">Sales Feed</label>
+        <div class="toggle-row">
+          <label class="toggle">
+            <input type="checkbox" id="sales_feed_enabled" onchange="markDirty()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label" id="feed-enabled-label">Disabled</span>
+        </div>
+      </div>
+      <!-- Silent mode -->
+      <div class="form-group">
+        <label class="form-label">Silent Mode</label>
+        <div class="toggle-row">
+          <label class="toggle">
+            <input type="checkbox" id="sales_feed_silent" onchange="markDirty()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label">No notification sound</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:16px">
+      <label class="form-label">Destination Chat ID</label>
+      <input type="text" class="form-control" id="sales_feed_chat_id"
+             placeholder="-1001234567890 (Channel / Group / User ID)"
+             oninput="markDirty()">
+      <div style="font-size:12px;color:var(--text3);margin-top:4px">
+        Forward a message from your target chat to <a href="https://t.me/userinfobot" target="_blank" style="color:var(--accent)">@userinfobot</a> to get its ID.
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:20px">
+      <label class="form-label">Notification Delay (seconds)</label>
+      <input type="number" class="form-control" id="sales_feed_delay_seconds"
+             min="0" max="300" placeholder="0" style="max-width:160px" oninput="markDirty()">
+      <div style="font-size:12px;color:var(--text3);margin-top:4px">
+        Delay before sending — useful for avoiding spam filters. 0 = instant.
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="save-feed-btn" onclick="saveSettings()">💾 Save Settings</button>
+      <button class="btn btn-secondary" onclick="testFeed()">📨 Send Test Notification</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Fake Sales Card ──────────────────────────────────────────────────── -->
+<div class="card" style="margin-bottom:20px">
+  <div class="card-header">
+    <span class="card-title">🎭 Fake Sales Activity</span>
+    <span class="badge" id="fake-status-badge" style="font-size:11px">Loading…</span>
+  </div>
+  <div class="card-body">
+    <div class="alert-info" style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:var(--text2)">
+      ⚠️ <strong>Fake sales never affect real orders, balances, stock or analytics.</strong>
+      They are purely cosmetic — shown only in the sales feed channel to build social proof.
+      All fake events are internally flagged and completely isolated from business logic.
+    </div>
+
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="form-group">
+        <label class="form-label">Fake Sales</label>
+        <div class="toggle-row">
+          <label class="toggle">
+            <input type="checkbox" id="fake_sales_enabled" onchange="markDirty()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label" id="fake-enabled-label">Disabled</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Randomization Level (1–10)</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="range" id="fake_sales_randomization_level" min="1" max="10" step="1"
+                 style="flex:1" oninput="updateRandLabel(); markDirty()">
+          <span id="rand-label" style="min-width:24px;text-align:center;font-weight:600">5</span>
+        </div>
+        <div style="font-size:12px;color:var(--text3);margin-top:4px">
+          Higher = more price & timing variation.
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="form-group">
+        <label class="form-label">Min Interval (seconds)</label>
+        <input type="number" class="form-control" id="fake_sales_interval_min"
+               min="30" placeholder="300" oninput="markDirty()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Max Interval (seconds)</label>
+        <input type="number" class="form-control" id="fake_sales_interval_max"
+               min="30" placeholder="900" oninput="markDirty()">
+        <div style="font-size:12px;color:var(--text3);margin-top:4px">
+          A random wait between min and max is chosen each cycle.
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:16px">
+      <label class="form-label">Product Pool</label>
+      <div style="display:flex;gap:16px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px">
+          <input type="checkbox" id="pool_account" onchange="updateProductPool()"> Account (OTP Delivery)
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px">
+          <input type="checkbox" id="pool_session" onchange="updateProductPool()"> Session File
+        </label>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="save-fake-btn" onclick="saveSettings()">💾 Save Settings</button>
+      <button class="btn btn-secondary" onclick="sendFakePreview()">🎭 Send Preview Fake Sale</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Message Preview Card ────────────────────────────────────────────── -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">👁 Message Preview</span>
+  </div>
+  <div class="card-body">
+    <p style="color:var(--text3);font-size:13px;margin-bottom:12px">
+      This is how real purchase notifications will look in your sales feed channel.
+    </p>
+    <div id="preview-box" style="
+      background:var(--bg3,#1a1a2e);
+      border:1px solid var(--border,#2a2a4a);
+      border-radius:10px;
+      padding:16px;
+      font-family:monospace;
+      font-size:13px;
+      line-height:1.7;
+      white-space:pre-wrap;
+      color:var(--text1,#e8e8f0);
+    ">Loading preview…</div>
+  </div>
+</div>
+
+<style>
+.toggle-row { display:flex; align-items:center; gap:10px; margin-top:6px; }
+.toggle { position:relative; display:inline-block; width:42px; height:22px; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider {
+  position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0;
+  background:var(--bg4,#2a2a4a); border-radius:22px; transition:.3s;
+}
+.toggle-slider:before {
+  position:absolute; content:""; height:16px; width:16px;
+  left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.3s;
+}
+input:checked + .toggle-slider { background:var(--accent,#4f7fff); }
+input:checked + .toggle-slider:before { transform:translateX(20px); }
+.toggle-label { font-size:13px; color:var(--text2); }
+</style>
+
+<script>
+let _dirty = false;
+let _settings = {};
+
+function markDirty() { _dirty = true; }
+
+async function loadSettings() {
+  try {
+    const d = await apiGET('/admin/api/sales-feed/settings');
+    _settings = d;
+
+    // Real feed
+    document.getElementById('sales_feed_enabled').checked = d.sales_feed_enabled;
+    document.getElementById('sales_feed_chat_id').value = d.sales_feed_chat_id || '';
+    document.getElementById('sales_feed_silent').checked = d.sales_feed_silent;
+    document.getElementById('sales_feed_delay_seconds').value = d.sales_feed_delay_seconds;
+    updateFeedBadge(d.sales_feed_enabled);
+
+    // Fake
+    document.getElementById('fake_sales_enabled').checked = d.fake_sales_enabled;
+    document.getElementById('fake_sales_interval_min').value = d.fake_sales_interval_min;
+    document.getElementById('fake_sales_interval_max').value = d.fake_sales_interval_max;
+    document.getElementById('fake_sales_randomization_level').value = d.fake_sales_randomization_level;
+    document.getElementById('rand-label').textContent = d.fake_sales_randomization_level;
+    updateFakeBadge(d.fake_sales_enabled);
+
+    // Product pool
+    const pool = d.fake_sales_product_pool || ['account','session'];
+    document.getElementById('pool_account').checked = pool.includes('account');
+    document.getElementById('pool_session').checked = pool.includes('session');
+
+    // Labels
+    document.getElementById('feed-enabled-label').textContent = d.sales_feed_enabled ? 'Enabled' : 'Disabled';
+    document.getElementById('fake-enabled-label').textContent = d.fake_sales_enabled ? 'Enabled' : 'Disabled';
+
+    _dirty = false;
+    renderPreview(d.sales_feed_chat_id);
+  } catch(e) {
+    showToast('Failed to load settings', 'error');
+  }
+}
+
+function updateFeedBadge(on) {
+  const b = document.getElementById('feed-status-badge');
+  b.textContent = on ? '🟢 Active' : '🔴 Inactive';
+  b.style.background = on ? 'rgba(34,197,94,.15)' : 'rgba(239,68,68,.15)';
+  b.style.color = on ? '#22c55e' : '#ef4444';
+  b.style.padding = '3px 8px'; b.style.borderRadius = '12px';
+}
+
+function updateFakeBadge(on) {
+  const b = document.getElementById('fake-status-badge');
+  b.textContent = on ? '🟢 Running' : '🔴 Stopped';
+  b.style.background = on ? 'rgba(34,197,94,.15)' : 'rgba(239,68,68,.15)';
+  b.style.color = on ? '#22c55e' : '#ef4444';
+  b.style.padding = '3px 8px'; b.style.borderRadius = '12px';
+}
+
+function updateRandLabel() {
+  document.getElementById('rand-label').textContent =
+    document.getElementById('fake_sales_randomization_level').value;
+}
+
+function updateProductPool() { markDirty(); }
+
+function getProductPool() {
+  const pool = [];
+  if (document.getElementById('pool_account').checked) pool.push('account');
+  if (document.getElementById('pool_session').checked) pool.push('session');
+  if (pool.length === 0) {
+    pool.push('account'); pool.push('session');
+    document.getElementById('pool_account').checked = true;
+    document.getElementById('pool_session').checked = true;
+  }
+  return pool;
+}
+
+async function saveSettings() {
+  const payload = {
+    sales_feed_enabled:           document.getElementById('sales_feed_enabled').checked,
+    sales_feed_chat_id:           document.getElementById('sales_feed_chat_id').value.trim(),
+    sales_feed_silent:            document.getElementById('sales_feed_silent').checked,
+    sales_feed_delay_seconds:     parseInt(document.getElementById('sales_feed_delay_seconds').value) || 0,
+    fake_sales_enabled:           document.getElementById('fake_sales_enabled').checked,
+    fake_sales_interval_min:      parseInt(document.getElementById('fake_sales_interval_min').value) || 300,
+    fake_sales_interval_max:      parseInt(document.getElementById('fake_sales_interval_max').value) || 900,
+    fake_sales_randomization_level: parseInt(document.getElementById('fake_sales_randomization_level').value) || 5,
+    fake_sales_product_pool:      getProductPool(),
+  };
+  try {
+    const d = await apiPOST('/admin/api/sales-feed/settings', payload);
+    if (d.ok) {
+      showToast('Settings saved ✅', 'success');
+      _dirty = false;
+      updateFeedBadge(payload.sales_feed_enabled);
+      updateFakeBadge(payload.fake_sales_enabled);
+      document.getElementById('feed-enabled-label').textContent = payload.sales_feed_enabled ? 'Enabled' : 'Disabled';
+      document.getElementById('fake-enabled-label').textContent = payload.fake_sales_enabled ? 'Enabled' : 'Disabled';
+      renderPreview(payload.sales_feed_chat_id);
+    } else {
+      showToast('Save failed', 'error');
+    }
+  } catch(e) {
+    showToast('Error saving settings', 'error');
+  }
+}
+
+async function testFeed() {
+  const chatId = document.getElementById('sales_feed_chat_id').value.trim();
+  if (!chatId) {
+    showToast('Set a Chat ID first', 'error');
+    return;
+  }
+  showToast('Sending test…', 'info');
+  try {
+    const d = await apiPOST('/admin/api/sales-feed/test');
+    showToast(d.ok ? '✅ Test sent!' : ('❌ ' + (d.error || 'Failed')), d.ok ? 'success' : 'error');
+  } catch(e) {
+    showToast('Error sending test', 'error');
+  }
+}
+
+async function sendFakePreview() {
+  const chatId = document.getElementById('sales_feed_chat_id').value.trim();
+  if (!chatId) {
+    showToast('Set a Chat ID first', 'error');
+    return;
+  }
+  showToast('Sending fake preview…', 'info');
+  try {
+    const d = await apiPOST('/admin/api/sales-feed/fake-preview');
+    showToast(d.ok ? '✅ Preview sent!' : ('❌ ' + (d.error || 'Failed')), d.ok ? 'success' : 'error');
+  } catch(e) {
+    showToast('Error sending preview', 'error');
+  }
+}
+
+function renderPreview(chatId) {
+  const id = chatId || '—';
+  const now = new Date().toISOString().replace('T',' ').slice(0,16) + ' UTC';
+  document.getElementById('preview-box').textContent =
+`🛒 New Account Purchase
+
+🌍 Country: 🇮🇳 India (IN)
+💵 Amount Paid: $1.20 USDT
+📦 Type: Account (OTP Delivery)
+
+👤 Buyer ID: 1234***890
+📱 Username: @joh***
+🆔 Order: #a1b2c3d4
+
+🕐 Time: ${now}`;
+}
+
+loadSettings();
+</script>
+{% endblock %}
