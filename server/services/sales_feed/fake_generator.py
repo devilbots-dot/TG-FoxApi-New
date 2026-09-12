@@ -11,9 +11,12 @@ import random
 from typing import Literal
 
 
-_DEFAULT_COUNTRIES: list[tuple[str, str, float]] = [
-    ("TH", "Thailand", 0.50),
-    ("IN", "India", 0.29),
+_DEFAULT_COUNTRIES: list[tuple[str, str, float]] =  [
+    ("TH", "Thailand", 0.60),
+    ("IN", "India", 0.30),
+    ("US", "United States", 0.30),
+    ("DE", "Germany", 1.30),
+    ("PK", "Pakistan", 0.45),
 ]
 
 _PAYMENT_METHODS = [
