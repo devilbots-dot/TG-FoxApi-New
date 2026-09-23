@@ -1,10 +1,12 @@
 """
 Displayed-stock helper.
 
-This is display-only: purchases still always consume real inventory.  A
-country may show its configured fake stock while it is in fake mode.  The
-admin safety toggle can force fake-mode countries to show zero as soon as
-their real stock reaches zero.
+For fake-stock mode the buyer-visible stock is the configured fake stock
+PLUS the current real unsold inventory.  Real inventory is consumed by
+purchases, so the displayed number decreases with each real purchase.
+
+When real inventory reaches zero, the country is hidden as out-of-stock
+(displayed stock becomes 0), even if a fake stock value is configured.
 """
 
 from __future__ import annotations
@@ -16,7 +18,7 @@ SETTING_KEY = "hide_fake_stock_when_real_zero"
 
 
 def hide_fake_when_real_zero() -> bool:
-    """Read the admin safety toggle from RAM without an async DB round-trip."""
+    """Read the legacy admin safety toggle from RAM."""
     try:
         value = memstore.settings.get(SETTING_KEY, False)
     except Exception:
@@ -27,19 +29,33 @@ def hide_fake_when_real_zero() -> bool:
 
 
 def displayed_stock(country: dict, real_stock: int) -> int:
-    """Return the buyer-visible stock for a country."""
+    """Return the buyer-visible stock for a country.
+
+    Normal mode:
+        displayed stock = real stock
+
+    Fake mode:
+        displayed stock = fake stock + real stock while real stock > 0
+
+    Once real inventory reaches zero:
+        displayed stock = 0
+    """
     try:
-        real_stock = int(real_stock or 0)
+        real_stock = max(0, int(real_stock or 0))
     except (TypeError, ValueError):
         real_stock = 0
 
     if (country or {}).get("stock_mode") != "fake":
-        return max(0, real_stock)
+        return real_stock
 
-    if real_stock <= 0 and hide_fake_when_real_zero():
+    # Real inventory is required for the country to remain available.
+    if real_stock <= 0:
         return 0
 
     try:
-        return max(0, int((country or {}).get("fake_stock", 0) or 0))
+        fake_stock = max(0, int((country or {}).get("fake_stock", 0) or 0))
     except (TypeError, ValueError):
-        return 0
+        fake_stock = 0
+
+    return fake_stock + real_stock
+    
